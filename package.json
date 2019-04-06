@@ -1,0 +1,14 @@
+{
+  "name": "lexar-gui",
+  "version": "1.0.0",
+  "description": "GUI Application for lexar",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "author": "lexar",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^4.1.4"
+  }
+}
