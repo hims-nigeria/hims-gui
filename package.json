@@ -1,14 +1,24 @@
 {
-  "name": "lexar-gui",
-  "version": "1.0.0",
-  "description": "GUI Application for lexar",
-  "main": "index.js",
-  "scripts": {
-    "test": "npm run test"
-  },
-  "author": "lexar",
-  "license": "ISC",
-  "dependencies": {
-    "electron": "^4.1.4"
-  }
+    "name": "lexar-gui",
+    "version": "1.0.0",
+    "description": "GUI Application for lexar",
+    "main": "./src/main/index.js",
+    "scripts": {
+        "start": "export NODE_ENV=development ; electron .",
+        "watch": "gulp",
+        "test": "npm run test"
+    },
+    "author": "lexar",
+    "license": "ISC",
+    "dependencies": {
+        "electron": "^4.1.4"
+    },
+    "devDependencies": {
+        "electron-reload": "^1.4.0",
+        "gulp": "^4.0.0",
+        "gulp-imagemin": "^5.0.3",
+        "gulp-pug": "^4.0.1",
+        "gulp-sass": "^4.0.2",
+        "gulp-sourcemaps": "^2.6.5"
+    }
 }
