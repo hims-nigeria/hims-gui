@@ -1,0 +1,26 @@
+
+.toast-parent {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+
+    box-shadow: 5px 5px 5px 5px darken(white,70%);
+    padding-top: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+
+    font-size: 3em;
+    .toast-close {
+        cursor: pointer;
+        transition: ease-in-out;
+        float: right;
+        &:hover {
+            opacity: .5s;
+        }
+    }
+
+    .toast-text {
+        clear: right;
+    }
+}

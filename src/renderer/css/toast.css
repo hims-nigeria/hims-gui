@@ -1,0 +1,18 @@
+.toast-parent {
+  display: block;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  box-shadow: 5px 5px 5px 5px #990000;
+  padding-top: 3px;
+  padding-left: 5px; }
+  .toast-parent .toast-close {
+    cursor: pointer;
+    transition: ease-in-out;
+    float: right; }
+    .toast-parent .toast-close:hover {
+      opacity: .5s; }
+  .toast-parent .toast-text {
+    clear: right; }
+
+/*# sourceMappingURL=maps/toast.css.map */

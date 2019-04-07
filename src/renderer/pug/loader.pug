@@ -1,0 +1,19 @@
+extends ./templates/head.pug
+
+block title
+  title Loading...
+
+append link
+  link(rel="stylesheet" href="../css/loading.css")
+  link(rel="stylesheet" href="../css/toast.css")
+
+
+block content
+  section(class="loading-spin-parent")
+    i(class="load-spinning fa fa-8x fa-spinner fa-pulse")
+    div.spin-dots
+      span.checking-internet Checking for internet connection
+      span.dot.loading-dots-1  .
+      span.dot.loading-dots-2 .
+      span.dot.loading-dots-3 .
+  script(src="../js/loaders.js")

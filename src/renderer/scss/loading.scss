@@ -1,0 +1,49 @@
+@import "./variables/loader-variable.scss";
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-spin-parent {
+    
+    text-align: center;
+    margin-top: 150px;
+    
+    .load-spinning {
+        display: block;
+    }
+
+    > div {
+        
+        margin-top: 25px;
+        font-size: $loaders-font-size;
+
+        > .dot {
+            visibility: hidden;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+            animation-direction: reverse;
+        }
+        
+        @for $i from 1 through 3 {
+            .loading-dots-#{$i} {
+                animation-name: loading-dots-#{$i};
+                animation-delay: $i + s;
+                animation-duration: $i + 2 + s;
+            }
+        }
+    }
+}
+
+@for $i from 1 through 3 {
+    @keyframes loading-dots-#{$i} {
+        from {
+            visibility: visible;
+        }
+        to {
+            visibility: hidden;
+        }
+    }
+}

@@ -1,0 +1,50 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center; }
+
+.loading-spin-parent {
+  text-align: center;
+  margin-top: 150px; }
+  .loading-spin-parent .load-spinning {
+    display: block; }
+  .loading-spin-parent > div {
+    margin-top: 25px;
+    font-size: 3em; }
+    .loading-spin-parent > div > .dot {
+      visibility: hidden;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+      animation-direction: reverse; }
+    .loading-spin-parent > div .loading-dots-1 {
+      animation-name: loading-dots-1;
+      animation-delay: 1s;
+      animation-duration: 3s; }
+    .loading-spin-parent > div .loading-dots-2 {
+      animation-name: loading-dots-2;
+      animation-delay: 2s;
+      animation-duration: 4s; }
+    .loading-spin-parent > div .loading-dots-3 {
+      animation-name: loading-dots-3;
+      animation-delay: 3s;
+      animation-duration: 5s; }
+
+@keyframes loading-dots-1 {
+  from {
+    visibility: visible; }
+  to {
+    visibility: hidden; } }
+
+@keyframes loading-dots-2 {
+  from {
+    visibility: visible; }
+  to {
+    visibility: hidden; } }
+
+@keyframes loading-dots-3 {
+  from {
+    visibility: visible; }
+  to {
+    visibility: hidden; } }
+
+/*# sourceMappingURL=maps/loading.css.map */
