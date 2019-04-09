@@ -11,6 +11,7 @@
     "author": "lexar",
     "license": "ISC",
     "dependencies": {
+        "axios": "^0.18.0",
         "electron": "^4.1.4"
     },
     "devDependencies": {
