@@ -1,0 +1,18 @@
+extend ./templates/head.pug
+
+block title
+  title Section to work with
+  
+append link
+  link(rel="stylesheet" href="../css/user-section.css")
+  
+block content
+  section(class="user-section")
+    ul(class="user-section-list")
+      - const users = [ "Admin", "Doctor", "Nurse" ];
+      - for ( let user of users ) {
+        li(class="user-section-item")
+          button(type="button" data-fire=user.toLowerCase()) #{user}
+      - }
+  script(src="../js/user-section.js")
+      
