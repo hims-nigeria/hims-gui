@@ -1,7 +1,7 @@
 "use strict";
 
 const electron = require("electron");
-const { BrowserWindow , app } = electron;
+const { BrowserWindow , Menu , app } = electron;
 
 if ( process.env.NODE_ENV === "development" )
     require("electron-reload")(app.getAppPath() , {
@@ -12,7 +12,9 @@ if ( process.env.NODE_ENV === "development" )
 
 function createWindow() {
 
-    require("./menu.js");
+    //require("./menu.js");
+
+    Menu.setApplicationMenu(null);
     
     app.setName("Himi Nigeria");
     app.setVersion("1.0");
