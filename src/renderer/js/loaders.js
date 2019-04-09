@@ -22,8 +22,10 @@
             } else {
                 toast({ text: "This device is connected to the internet" , createAfter : 0 });
             }
-            console.log("Connected");
+            clearInterval(id);
+            getCurrentWindow().webContents.loadURL(`file://${app.getAppPath()}/src/renderer/html/user-section.html`);
+
         });
     });
-    
+
 })();
