@@ -1,3 +1,4 @@
 node_modules/
 src/renderer/css/**/*
 !src/renderer/css/all.min.css
+src/renderer/html/
