@@ -1,10 +1,5 @@
 @import "./variables/loader-variable.scss";
-
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+@import "./utils.scss";
 
 .loading-spin-parent {
     
