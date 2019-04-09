@@ -1,2 +1,3 @@
 node_modules/
-src/renderer/css/maps/
+src/renderer/css/**/*
+!src/renderer/css/all.min.css
