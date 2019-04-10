@@ -5,20 +5,24 @@ block title
 
 append link
   link(rel="stylesheet" href="../css/login.css")
+  link(rel="stylesheet" href="../css/toast.css")
 
 block content
+
   section(class="user-login")
-    img(class="user-login-logo" src="" alt="logo")
-    form(class="user-login-form")
-      div#user-login-email-section
-        label.user-login-label
-          p#user-login-email= Email Address
-          input(type="email" required)
-      div#user-login-email-password
-        label.user-login-label
-          p#user-login-password= Password
-          input(type="password", required)
+  
+    form(class="user-login-form" enctype="application/x-www-form-urlencoded")
+    
+      img(class="user-login-logo" src="../assets/victory.jpg" alt="logo")
+      
+      input(type="email" placeholder="Email" name="email" required)
+      input(type="password" placeholder="Password" name="password" required)
 
       div#user-login-buttons
         button(type="submit") Submit
         button(type="reset") Reset
+        
+      p= "Forget Password"
+      p= "Haven't Registered Your Hospital Yet?"
+      
+  script(src="../js/login.js")
