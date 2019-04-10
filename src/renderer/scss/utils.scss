@@ -1,5 +1,14 @@
 @import "./variables/font-variables.scss";
 
+* {
+    outline: none;
+    user-select: none;
+}
+
+*:disabled {
+    cursor: not-allowed;
+}
+
 body {
     display: flex;
     justify-content: center;
