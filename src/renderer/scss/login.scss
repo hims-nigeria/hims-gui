@@ -1,0 +1,60 @@
+@import "./variables/loader-variable.css";
+@import "./override.scss";
+@import "./utils.scss";
+
+
+.user-login {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 150px;
+    .user-login-form {
+        padding: 20px;
+        img {
+            width: 50px;
+            border-radius: 15px;
+        }
+        > * {
+            margin: auto;
+            display: block;
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+        input {
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: black;
+            color: white;
+        }
+        p {
+            text-align: center;
+            text-decoration: underline;
+            transition: .2s ease-in-out;
+            cursor: pointer;
+            font-size: 1em;
+            &:hover {
+                opacity: .5;
+            }
+        }
+        #user-login-buttons {
+            display: flex;
+            justify-content: center;
+            button {
+                padding: 15px;
+                width: 100px;
+                border: none;
+                border-radius: 12px;
+                font-size: 0.7em;
+                cursor: pointer;
+                transition: .2s ease-in-out;
+                &:hover {
+                    opacity: .5;
+                }
+                &:last-of-type {
+                    margin-left: 50px;
+                }
+            }
+        }
+    }
+}
