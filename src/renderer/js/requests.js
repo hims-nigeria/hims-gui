@@ -21,14 +21,14 @@ const apiCallError = (result,obj) => {
         });
 
 
-        setTimeout(() => {
-            getCurrentWindow().webContents.loadURL(obj.nextUrl);
-        },6000);
+        // setTimeout(() => {
+        //     getCurrentWindow().webContents.loadURL(obj.nextUrl);
+        // },6000);
 
         return;
     }
 
-    if ( result.response.data.status === 404 ) {
+    if ( result.response.data.status >= 400 ) {
         toast({
             text: result.response.data.message
         });
