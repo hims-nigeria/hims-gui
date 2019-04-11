@@ -1,14 +1,16 @@
 ; ( () => {
     "use strict";
 
-    const { remote: { dialog } } = require("electron");
+    const { remote: { getCurrentWindow , dialog } } = require("electron");
     const { login } = require("../js/requests.js");
     
     const form   = document.querySelector("form");
     const submit = document.querySelector("[type=submit]");
     const reset  = document.querySelector("[type=reset]");
 
-    const { DASHBOARD_URL } = require("../js/constants.js");
+    const register = document.querySelector(".user-register");
+
+    const { REGISTER_URL , DASHBOARD_URL } = require("../js/constants.js");
 
     form.addEventListener("submit", async evt => {
         
@@ -22,17 +24,17 @@
         submit.disabled = true;
         reset.disabled  = true;
 
-        const result = await login(
-            {
-                email: document.querySelector("[name=email]").value,
-                password: document.querySelector("[name=password]").value
-            },
+        const result = await login(new FormData(form),
             {
                 disabled: [ submit, reset ],
                 nextUrl:  DASHBOARD_URL
             }
         );
         
+    });
+
+    register.addEventListener("click", evt => {
+        getCurrentWindow().loadURL(REGISTER_URL);
     });
     
 })();
