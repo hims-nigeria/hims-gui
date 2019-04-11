@@ -1,6 +1,7 @@
 @import "./variables/loader-variable.css";
 @import "./override.scss";
 @import "./utils.scss";
+@import "./extends.scss";
 
 
 .user-login {
@@ -24,8 +25,6 @@
             padding: 12px;
             border: none;
             border-radius: 12px;
-            background: black;
-            color: white;
         }
         p {
             text-align: center;
@@ -41,19 +40,7 @@
             display: flex;
             justify-content: center;
             button {
-                padding: 15px;
-                width: 100px;
-                border: none;
-                border-radius: 12px;
-                font-size: 0.7em;
-                cursor: pointer;
-                transition: .2s ease-in-out;
-                &:hover {
-                    opacity: .5;
-                }
-                &:last-of-type {
-                    margin-left: 50px;
-                }
+                @extend %button;
             }
         }
     }
