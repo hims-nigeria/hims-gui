@@ -1,7 +1,7 @@
 "use strict";
 
 const electron = require("electron");
-const { BrowserWindow , Menu , app } = electron;
+const { BrowserWindow , nativeImage, Menu , app } = electron;
 
 if ( process.env.NODE_ENV === "development" )
     require("electron-reload")(app.getAppPath() , {
@@ -19,10 +19,11 @@ function createWindow() {
     app.setName("Himi Nigeria");
     app.setVersion("1.0");
 
-    const win = new BrowserWindow({
+    let win = new BrowserWindow({
         show: false,
         title: "HIMI Hospital Management System",
         ...electron.screen.getPrimaryDisplay().size,
+        icon: nativeImage.createFromPath("../renderer/assets/logo-1.png"),
         webPreferences: {
             nodeIntegration: true
         }
