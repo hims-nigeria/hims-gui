@@ -1,4 +1,9 @@
 
+@import "./variables/color.scss";
+@import "./variables/font-variables.scss";
+
 ::-webkit-input-placeholder {
-    color: darken(white,45%);
+    color: darkgrey;
+    font-size: 15px;
+    font-family: $default-font-family;
 }
