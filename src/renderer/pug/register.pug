@@ -1,0 +1,41 @@
+extend ./templates/head.pug
+
+block title
+  title Register Health CareCenter
+  
+append link
+  link(rel="stylesheet" href="../css/register.css")
+ 
+block content
+ 
+  section(class="user-register")
+   
+    form(class="user-register-form" enctype="multipart/form-data")
+     
+      img(class="user-logo-log" src="../assets/logo-1.png")
+       
+      input(type="text" placeholder="Healthcare Facility Name" name="healthCareName" required)
+
+      select(name="state" required)
+        option(value="" selected hidden) Please Select State
+        
+      select(name="lga" required dropdown)
+        option(value="" selected hidden) Please Select LGA
+        
+      //- select(name="zone" required dropdown)
+      //-   option(value="" selected hidden) Please Select Zone
+       
+      input(type="email" placeholder="Admin Email" name="email" required)
+      
+      input(type="text" placeholder="Full Name" name="fullName" required)
+            
+      input(type="password" placeholder="Password" name="password" required)
+      input(type="password" placeholder="Confirm Password" name="confirmPassword" required)
+
+      input(type="password" placeholder="Activation Key" name="activationKey" required)
+
+      div#user-register-buttons
+        button(type="submit") Register
+        button(type="reset") Reset
+        
+  script(src="../js/register.js")

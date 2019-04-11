@@ -1,0 +1,46 @@
+@import "./variables/loader-variable.css";
+@import "./override.scss";
+@import "./utils.scss";
+@import "./extends.scss";
+@import "./toast.scss";
+
+
+.user-register {
+
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .user-register-form {
+        select {
+            display: inline;
+            font-size: 1em;
+            border: none;
+            padding: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: .2s background ease-in-out;
+            background: $background-input-color;
+            color: darkgrey;
+            &:not(:first-of-type) {
+                margin-left: 30px;
+            }
+            &:hover {
+                background: darken(white,10%);
+            }
+        }
+        input {
+            border-radius: 12px;
+            border: none;
+            padding: 12px;
+        }
+        #user-register-buttons {
+            display: flex;
+            justify-content: center;
+            button {
+                @extend %button;
+            }
+        }
+    }
+}
