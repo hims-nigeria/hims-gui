@@ -1,0 +1,26 @@
+@import "./variables/font-variables.scss";
+@import "./variables/color.scss";
+
+%button {
+    
+    padding: 15px;
+    width: 100px;
+    border: none;
+    border-radius: 25px;
+    font-size: 0.7em;
+    cursor: pointer;
+    transition: .2s ease-in-out;
+
+    background: $background-button-color;
+    color: white;
+    
+    font-weight: bolder;
+    font-family: $default-font-family;
+    
+    &:hover {
+        opacity: .85;
+    }
+    &:last-of-type {
+        margin-left: 50px;
+    }
+}
