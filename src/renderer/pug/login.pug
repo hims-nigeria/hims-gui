@@ -11,9 +11,9 @@ block content
 
   section(class="user-login")
   
-    form(class="user-login-form" enctype="application/x-www-form-urlencoded")
+    form(class="user-login-form" enctype="multipart/form-data")
     
-      img(class="user-login-logo" src="../assets/victory.jpg" alt="logo")
+      img(class="user-login-logo" src="../assets/logo-1.png" alt="logo")
       
       input(type="email" placeholder="Email" name="email" required)
       input(type="password" placeholder="Password" name="password" required)
@@ -22,7 +22,7 @@ block content
         button(type="submit") Submit
         button(type="reset") Reset
         
-      p= "Forget Password"
-      p= "Haven't Registered Your Hospital Yet?"
+      p.user-forget-pwd= "Forget Password"
+      p.user-register= "Haven't Registered Your Hospital Yet?"
       
   script(src="../js/login.js")
