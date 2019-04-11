@@ -50,7 +50,16 @@ module.exports.getDashboard = async obj => {
 
 module.exports.login = async (data,obj) => {
     try {
-        return await axios.post(`${REQUEST_URL}/login/`, qs.stringify(data) );
+        return await axios.post(`${REQUEST_URL}/login/`, data );
+    } catch(ex) {
+        return apiCallError(ex,obj);
+    }
+};
+
+module.exports.register = async (data,obj) => {
+    console.log(obj);
+    try {
+        return await axios.post(`${REQUEST_URL}/register/health-care-center`, data);
     } catch(ex) {
         return apiCallError(ex,obj);
     }
