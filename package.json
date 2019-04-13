@@ -6,15 +6,19 @@
     "scripts": {
         "start": "export NODE_ENV=development ; electron .",
         "watch": "gulp",
-        "test": "npm run test"
+        "test": "npm run test",
+        "postinstall": "npm rebuild ; electron-rebuild -w bcrypt"
     },
     "author": "lexar",
     "license": "ISC",
     "dependencies": {
         "axios": "^0.18.0",
+        "bcrypt": "^3.0.5",
+        "dexie": "^2.0.4",
         "electron": "^4.1.4"
     },
     "devDependencies": {
+        "electron-rebuild": "^1.8.4",
         "electron-reload": "^1.4.0",
         "gulp": "^4.0.0",
         "gulp-imagemin": "^5.0.3",
