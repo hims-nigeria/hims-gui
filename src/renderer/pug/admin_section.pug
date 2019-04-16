@@ -1,0 +1,104 @@
+extends ./templates/head.pug
+
+block title
+  title Administrator Section
+
+append link
+  link(rel="stylesheet" href="../css/admin_section.css")
+  link(rel="stylesheet" href="../css/admin/admin_dashboard.css")
+  link(rel="stylesheet" href="../css/toast.css")
+
+
+block content
+
+  section(class="admin-section")
+
+    aside(class="section-nav")
+
+      div(class="nav-header")
+        img(class="nav-header-img" src="../assets/logo-1.png" alt="logo")
+        i(class="fa fa-2x fa-list nav-header-toggler")
+
+      ul(class="admin-nav-list")
+        li(class="admin-nav-item admin-descr")
+          div(class="admin-image-parent")
+            img(class="admin-image" src="../assets/victory.jpg" alt="admin-image")
+          div(class="admin-text")
+            span= "Welcome"
+            p.admin-name I Am The Admin
+
+        li(class="admin-nav-item" data-fire="dashboard")
+          i(class="fa fa-desktop admin-nav-item-icon")
+          span Dashboard
+
+        li(class="admin-nav-item" data-fire="interventions")
+          i(class="fa fa-briefcase-medical admin-nav-item-icon")
+          span Interventions
+
+        li(class="admin-nav-item" data-fire="subinterventions")
+          i(class="fa fa-plus-square admin-nav-item-icon")
+          span Sub Interventions
+
+        li(class="admin-nav-item" data-fire="department")
+          i(class="fa fa-sitemap admin-nav-item-icon")
+          span Department
+
+        li(class="admin-nav-item" data-fire="doctor")
+          i(class="fa fa-user-md admin-nav-item-icon")
+          span Doctor
+
+        li(class="admin-nav-item" data-fire="client")
+          i(class="fa fa-user-circle admin-nav-item-icon")
+          span Client
+
+        li(class="admin-nav-item" data-fire="nurse")
+          i(class="fa fa-user-nurse admin-nav-item-icon")
+          span Nurse
+
+        li(class="admin-nav-item" data-fire="pharmacist")
+          i(class="fa fa-user-md admin-nav-item-icon")
+          span Pharmacist
+
+        li(class="admin-nav-item" data-fire="laboratorist")
+          i(class="fa fa-user-md admin-nav-item-icon")
+          span Laboratorist
+
+        li(class="admin-nav-item" data-fire="accountant")
+          i(class="fa fa-user admin-nav-item-icon")
+          span Accountant
+
+
+        li(class="admin-nav-item" data-fire="intern")
+          i(class="fa fa-user admin-nav-item-icon")
+          span Intern
+
+
+        li(class="admin-nav-item" data-fire="receptionist")
+          i(class="fa fa-user admin-nav-item-icon")
+          span Receptionist
+
+
+        li(class="admin-nav-item" data-fire="noticeboard")
+          i(class="fa fa-sticky-note fa-desktop admin-nav-item-icon")
+          span Noticeboard
+
+
+        li(class="admin-nav-item" data-fire="settings")
+          i(class="fa fa-cog admin-nav-item-icon")
+          span Settings
+          
+          
+        li(class="admin-nav-item" data-fire="contactemails")
+          i(class="fa fa-envelope admin-nav-item-icon")
+          span Contact Emails
+          
+          
+        li(class="admin-nav-item" data-fire="account")
+          i(class="fa fa-user admin-nav-item-icon")
+          span Account          
+          
+
+    aside(class="section-nav-operation")
+
+  script(src="../js/admin_section.js")
+  script(src="../js/onlineOfflne.js")

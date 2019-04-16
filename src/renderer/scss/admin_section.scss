@@ -1,0 +1,107 @@
+@import "./variables/loader-variable.css";
+@import "./override.scss";
+@import "./utils.scss";
+@import "./extends.scss";
+@import "./toast.scss";
+
+
+
+.admin-section {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    font-size: 1.1em;
+}
+
+.section-nav {
+    width: 20%;
+    .nav-header {
+        padding: 20px;
+        .nav-header-img {
+            float: left;
+        }
+        .nav-header-toggler {
+            float: right;
+            color: lighten($background-input-color,10%);
+            box-shadow: 0px 0px 1px 0px black;
+            border-radius: 5px;
+            padding: 3px;
+            cursor: pointer;
+            transition: .2s ease-in-out;
+            &:hover {
+                color: darken($background-input-color,10%);
+            }
+        }
+    }
+
+    .admin-nav-list {
+        clear: both;
+        background: $background-list-color;
+        color: white;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        margin-top: 50px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: 500px;
+        .admin-descr {
+            padding: 12px;
+            display: flex;
+            justify-content: flex-start;
+            img {
+                border-radius: 50px;
+                width: 70%;
+                vertical-align: center;
+            }
+            span {
+                margin-right: 40px;
+            }
+            .admin-name {
+                font-weight: bolder;
+                margin-top: 0px;
+            }
+        }
+        .admin-nav-item[data-fire] {
+            cursor: pointer;
+            margin-left: -40px;
+            margin-top: 10px;
+            padding: 5px;
+            transition: .2s ease-in-out;
+            
+            > i {
+                margin-left: 15%;
+            }
+            > span {
+                margin-left: 20px;
+            }
+            
+            &:hover,&.active {
+                background: lighten($background-list-color,30%);
+            }
+            
+        }
+    }
+}
+
+
+.section-nav-operation {
+    width: 80%;
+}
+
+[data-hide-nav] {
+    p,span {
+        display: none;
+    }
+    .nav-header-img {
+        display: none;
+    }
+    .nav-header-toggler {
+        margin-right: 21px;
+    }
+    img {
+        margin-left: -12px;
+    }
+    .admin-nav-item-icon {
+        margin-left: 40% !important;
+    }
+}
