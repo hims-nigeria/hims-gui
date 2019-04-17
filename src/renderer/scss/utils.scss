@@ -21,10 +21,11 @@ body {
     font-weight: bolder;
 }
 
+img {
+    width: 100px;
+}
+
 form {
-    img {
-        width: 100px;
-    }
     > * {
         margin: auto;
         display: block;

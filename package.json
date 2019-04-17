@@ -15,7 +15,9 @@
         "axios": "^0.18.0",
         "bcrypt": "^3.0.5",
         "dexie": "^2.0.4",
-        "electron": "^4.1.4"
+        "dotenv": "^7.0.0",
+        "electron": "^4.1.4",
+        "mongodb": "^3.2.3"
     },
     "devDependencies": {
         "electron-rebuild": "^1.8.4",

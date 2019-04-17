@@ -8,7 +8,7 @@
     const { toast } = require("../js/domutils.js");
     const { getDashboard } = require("../js/requests.js");
 
-    const { DASHBOARD_URL , LOGIN_URL } = require("../js/constants.js");
+    const constants = require("../js/constants.js");
 
     window.addEventListener("DOMContentLoaded", async () => {
 
@@ -33,10 +33,13 @@
                 clearInterval(id);
 
                 const result = await getDashboard({
-                    nextUrl  :  LOGIN_URL
+                    nextUrl  :  constants.LOGIN_URL
                 });
 
-                if ( result ) getCurrentWindow().webContents.loadURL(DASHBOARD_URL);
+                if ( result && result.role ) {
+                    // load the relivant user
+                    getCurrentWindow().webContents.loadURL(constants[`${result.role.toUpperCase()}_URL`]);
+                }
 
             },10000);
         });

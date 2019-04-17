@@ -1,5 +1,5 @@
 ; ( () => {
-    
+
     "use strict";
 
     const toggler = document.querySelector(".nav-header-toggler");
@@ -8,7 +8,7 @@
 
     const { getDashboard } = require("../js/requests.js");
     const { LOGIN_URL } = require("../js/constants.js");
-    
+
     toggler.addEventListener("click", evt => {
         if ( asideNav.hasAttribute("data-hide-nav") ) {
             asideNav.removeAttribute("data-hide-nav");
@@ -18,14 +18,19 @@
         }
         asideNav.setAttribute("data-hide-nav", true);
         asideNav.style.width = "10%";
-        navOperations.style.width = "90%";    
+        navOperations.style.width = "90%";
     });
 
     window.addEventListener("DOMContentLoaded", async () => {
+
         const result = await getDashboard({
             nextUrl: LOGIN_URL
         });
+
+        if ( ! result ) return;
+
+        // append to dom
         console.log(result);
     });
-    
+
 })();

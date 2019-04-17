@@ -10,7 +10,7 @@
 
     const register = document.querySelector(".user-register");
 
-    const { REGISTER_URL , DASHBOARD_URL } = require("../js/constants.js");
+    const { REGISTER_URL , ADMIN_URL } = require("../js/constants.js");
 
     form.addEventListener("submit", async evt => {
 
@@ -24,9 +24,9 @@
         submit.disabled = true;
         reset.disabled  = true;
 
-        const result = await login(new FormData(form), { disabled: [ submit, reset ], nextUrl:  DASHBOARD_URL });
+        const result = await login(new FormData(form), { disabled: [ submit, reset ], nextUrl:  ADMIN_URL });
 
-        if ( result ) getCurrentWindow().webContents.loadURL(DASHBOARD_URL);
+        if ( result ) getCurrentWindow().webContents.loadURL(ADMIN_URL);
 
     });
 

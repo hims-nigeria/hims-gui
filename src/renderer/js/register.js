@@ -15,7 +15,7 @@
     const form         = document.querySelector("form");
     const registerBtns = document.querySelectorAll("button");
 
-    const { DASHBOARD_URL } = require("../js/constants.js");
+    const { ADMIN_URL } = require("../js/constants.js");
 
 
     window.addEventListener("DOMContentLoaded", () => {
@@ -54,9 +54,9 @@
 
         registerBtns.forEach( x => x.disabled = true);
 
-        const result =  await register(new FormData(form) , { disabled: Array.from(registerBtns) , nextUrl: DASHBOARD_URL } );
+        const result =  await register(new FormData(form) , { disabled: Array.from(registerBtns) , nextUrl: ADMIN_URL } );
 
-        if ( result ) getCurrentWindow().webContents.loadURL(DASHBOARD_URL);
+        if ( result ) getCurrentWindow().webContents.loadURL(ADMIN_URL);
 
     });
 

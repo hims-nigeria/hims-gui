@@ -47,7 +47,7 @@ const apiCallHandler = async (result,obj, cb = function() {}) => {
         return await __cb();
     }
 
-    if ( result.response.data.status >= 500 ) {
+    if ( result.response.data.status >= 400 ) {
 
         toast({
             text: result.response.data.message,
@@ -78,17 +78,28 @@ module.exports.getDashboard = async obj => {
     } catch(ex) {
         result = ex;
     } finally {
+
         return await apiCallHandler(result,obj, async () => {
+
+            let userInfo = {} ;
+
             if ( ! result.response ) {
-                const session = await hospitalDb.sessionObject.count();
-                if ( ! session ) {
+
+                const session = await hospitalDb.sessionObject.toArray();
+
+                if ( ! session.length ) {
                     getCurrentWindow().webContents.loadURL(obj.nextUrl);
                     return false;
                 }
+
+                switch( session[0].role ) {
+                case "admin":
+                    const { fullName, role , dashboardInfo } = await hospitalDb.healthFacility.get({ healthFacilityId : session[0].healthFacilityId });
+                    Object.assign( userInfo , { dashboardInfo, fullName, role } );
+                    break;
+                }
             }
-            // redirect user to the dashboard
-            // retrieve relevant role , email , and session
-            return true;
+            return Object.keys(userInfo).length !== 0 ? userInfo : result.response.data.message ;
         });
     }
 };
@@ -145,11 +156,13 @@ module.exports.login = async (data,obj) => {
                     return false;
                 }
             }
-            console.log(usersProm);
+
             await hospitalDb.sessionObject.put({
-                id: 0,
-                role: usersProm.role || result.response.data.message.role,
-                email: OBJECT_TO_CHECK_AGAINST.email
+                role: usersProm ? usersProm.role : result.response.data.message.role,
+                healthFacilityId: OBJECT_TO_CHECK_AGAINST.healthFacilityId,
+                fullName: OBJECT_TO_CHECK_AGAINST.fullName,
+                email: OBJECT_TO_CHECK_AGAINST.email,
+                id: 0
             });
 
             return true;
@@ -196,18 +209,40 @@ module.exports.register = async (data,obj) => {
     } catch(ex) {
         result = ex;
     } finally {
+
         return await apiCallHandler(result,obj, async () => {
-            console.log(OBJECT_TO_CACHE);
-            await hospitalDb.healthFacility.add(OBJECT_TO_CACHE);
-            await hospitalDb.sessionObject.put({
-                id: 0,
-                role: "admin",
-                email: OBJECT_TO_CACHE.email
+
+            await hospitalDb.healthFacility.add({
+                ...OBJECT_TO_CACHE,
+                dashboardInfo: {
+                    laboratorists: 0,
+                    transactions: 0,
+                    pharamcists: 0,
+                    accountants: 0,
+                    patients: 0,
+                    doctors: 0,
+                    nurses: 0,
+                    interns: 0
+                }
             });
+
+            await hospitalDb.sessionObject.put({
+                healthFacilityId: OBJECT_TO_CACHE.healthFacilityId,
+                fullName: OBJECT_TO_CACHE.fullName,
+                email: OBJECT_TO_CACHE.email,
+                role: "admin",
+                id: 0
+            });
+
             toast({
                 text: "Registration was succesfull. Data will be synced with remote database when your device is online",
                 createAfter : 0
             });
+
+            if ( ! result.response ) {
+                await hospitalDb.offlineAccounts.add({ ...OBJECT_TO_CACHE , newInformationType: "healthfacilities" });
+            }
+
             return true;
         });
     }

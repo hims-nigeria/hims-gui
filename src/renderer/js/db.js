@@ -12,7 +12,8 @@ hospitalDb.version(1).stores({
        put method will be used to replace whatever is in the session object
        during registration or logging in
      **/
-    sessionObject: "id,&email"
+    sessionObject: "id,&email",
+    offlineAccounts: "++id,[id+newInformationType]"
 });
 
 module.exports = hospitalDb;

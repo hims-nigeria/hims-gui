@@ -7,3 +7,25 @@
     font-size: 15px;
     font-family: $default-font-family;
 }
+
+::-webkit-scrollbar {
+    width: 7px;
+    cursor: pointer;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: lighten($background-list-color,10%);
+}
+
+::-webkit-scrollbar-button {
+    visibility: hidden;
+}
+
+
+li {
+    list-style: none;
+}
+
+i {
+    font-style: unset;
+}
