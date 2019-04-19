@@ -1,0 +1,36 @@
+@import "../variables/color.scss";
+
+$colorMaps: ( 0: red , 1: blue , 2: green, 3: pink , 4: black, 6: gold, 7: lightgrey);
+
+.dashboard-list {
+    clear: both;
+    margin-top: 80px;
+    padding-left: 80px;
+    .dashboard-item {
+        clear: both;
+        display: inline-block;
+        padding-left: 15px;
+        padding-right: 15px;
+        width: 17%;
+        margin: 12px;
+        border-radius: 3px;
+        box-shadow: 0px 0px 20px 1px darken(lightgrey,10%);
+        cursor: pointer;
+        transition: .2s ease-in-out;
+        @for $i from 0 through 7 {
+            &-#{$i} {
+                color: map-get($colorMaps, $i);
+            }
+        }
+        &:hover {
+            box-shadow: 0px 0px 20px 1px lighten(darken(lightgrey,10%),10%);
+        }
+        .dashboard-item-name {
+            float: left;
+        }
+        .dashboard-item-count {
+            font-size: 2em;
+            float: right;
+        }
+    }
+}

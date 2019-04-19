@@ -4,101 +4,85 @@ block title
   title Administrator Section
 
 append link
-  link(rel="stylesheet" href="../css/admin_section.css")
+  link(rel="stylesheet" href="../css/users_section.css")
   link(rel="stylesheet" href="../css/admin/admin_dashboard.css")
   link(rel="stylesheet" href="../css/toast.css")
 
 
 block content
+  section(class="user-section")  
+    include ./templates/users_header.pug
+      li(class="user-nav-item" data-fire="dashboard")
+        i(class="fa fa-desktop user-nav-item-icon")
+        span Dashboard
 
-  section(class="admin-section")
+      li(class="user-nav-item" data-fire="interventions")
+        i(class="fa fa-briefcase-medical user-nav-item-icon")
+        span Interventions
 
-    aside(class="section-nav")
+      li(class="user-nav-item" data-fire="subinterventions")
+        i(class="fa fa-plus-square user-nav-item-icon")
+        span Sub Interventions
 
-      div(class="nav-header")
-        img(class="nav-header-img" src="../assets/logo-1.png" alt="logo")
-        i(class="fa fa-2x fa-list nav-header-toggler")
+      li(class="user-nav-item" data-fire="department")
+        i(class="fa fa-sitemap user-nav-item-icon")
+        span Department
 
-      ul(class="admin-nav-list")
-        li(class="admin-nav-item admin-descr")
-          div(class="admin-image-parent")
-            img(class="admin-image" src="../assets/victory.jpg" alt="admin-image")
-          div(class="admin-text")
-            span= "Welcome"
-            p.admin-name I Am The Admin
+      li(class="user-nav-item" data-fire="doctor")
+        i(class="fa fa-user-md user-nav-item-icon")
+        span Doctor
 
-        li(class="admin-nav-item" data-fire="dashboard")
-          i(class="fa fa-desktop admin-nav-item-icon")
-          span Dashboard
+      li(class="user-nav-item" data-fire="client")
+        i(class="fa fa-user-circle user-nav-item-icon")
+        span Client
 
-        li(class="admin-nav-item" data-fire="interventions")
-          i(class="fa fa-briefcase-medical admin-nav-item-icon")
-          span Interventions
+      li(class="user-nav-item" data-fire="nurse")
+        i(class="fa fa-user-nurse user-nav-item-icon")
+        span Nurse
 
-        li(class="admin-nav-item" data-fire="subinterventions")
-          i(class="fa fa-plus-square admin-nav-item-icon")
-          span Sub Interventions
+      li(class="user-nav-item" data-fire="pharmacist")
+        i(class="fa fa-user-md user-nav-item-icon")
+        span Pharmacist
 
-        li(class="admin-nav-item" data-fire="department")
-          i(class="fa fa-sitemap admin-nav-item-icon")
-          span Department
+      li(class="user-nav-item" data-fire="laboratorist")
+        i(class="fa fa-user-md user-nav-item-icon")
+        span Laboratorist
 
-        li(class="admin-nav-item" data-fire="doctor")
-          i(class="fa fa-user-md admin-nav-item-icon")
-          span Doctor
-
-        li(class="admin-nav-item" data-fire="client")
-          i(class="fa fa-user-circle admin-nav-item-icon")
-          span Client
-
-        li(class="admin-nav-item" data-fire="nurse")
-          i(class="fa fa-user-nurse admin-nav-item-icon")
-          span Nurse
-
-        li(class="admin-nav-item" data-fire="pharmacist")
-          i(class="fa fa-user-md admin-nav-item-icon")
-          span Pharmacist
-
-        li(class="admin-nav-item" data-fire="laboratorist")
-          i(class="fa fa-user-md admin-nav-item-icon")
-          span Laboratorist
-
-        li(class="admin-nav-item" data-fire="accountant")
-          i(class="fa fa-user admin-nav-item-icon")
-          span Accountant
+      li(class="user-nav-item" data-fire="accountant")
+        i(class="fa fa-user user-nav-item-icon")
+        span Accountant
 
 
-        li(class="admin-nav-item" data-fire="intern")
-          i(class="fa fa-user admin-nav-item-icon")
-          span Intern
+      li(class="user-nav-item" data-fire="intern")
+        i(class="fa fa-user user-nav-item-icon")
+        span Intern
 
 
-        li(class="admin-nav-item" data-fire="receptionist")
-          i(class="fa fa-user admin-nav-item-icon")
-          span Receptionist
+      li(class="user-nav-item" data-fire="receptionist")
+        i(class="fa fa-user user-nav-item-icon")
+        span Receptionist
 
 
-        li(class="admin-nav-item" data-fire="noticeboard")
-          i(class="fa fa-sticky-note fa-desktop admin-nav-item-icon")
-          span Noticeboard
+      li(class="user-nav-item" data-fire="noticeboard")
+        i(class="fa fa-sticky-note fa-desktop user-nav-item-icon")
+        span Noticeboard
 
 
-        li(class="admin-nav-item" data-fire="settings")
-          i(class="fa fa-cog admin-nav-item-icon")
-          span Settings
-          
-          
-        li(class="admin-nav-item" data-fire="contactemails")
-          i(class="fa fa-envelope admin-nav-item-icon")
-          span Contact Emails
-          
-          
-        li(class="admin-nav-item" data-fire="account")
-          i(class="fa fa-user admin-nav-item-icon")
-          span Account          
-          
+      li(class="user-nav-item" data-fire="settings")
+        i(class="fa fa-cog user-nav-item-icon")
+        span Settings
 
-    aside(class="section-nav-operation")
 
+      li(class="user-nav-item" data-fire="contactemails")
+        i(class="fa fa-envelope user-nav-item-icon")
+        span Contact Emails
+
+
+      li(class="user-nav-item" data-fire="account")
+        i(class="fa fa-user user-nav-item-icon")
+        span Account
+
+    include ./templates/users_footer.pug
+  
   script(src="../js/admin_section.js")
   script(src="../js/onlineOfflne.js")

@@ -6,7 +6,7 @@
 
 
 
-.admin-section {
+.user-section {
     display: flex;
     width: 100%;
     justify-content: space-between;
@@ -34,7 +34,7 @@
         }
     }
 
-    .admin-nav-list {
+    .nav-list {
         clear: both;
         background: $background-list-color;
         color: white;
@@ -44,7 +44,7 @@
         overflow-y: auto;
         overflow-x: hidden;
         height: 500px;
-        .admin-descr {
+        .user-descr {
             padding: 12px;
             display: flex;
             justify-content: flex-start;
@@ -56,12 +56,12 @@
             span {
                 margin-right: 40px;
             }
-            .admin-name {
+            .user-name {
                 font-weight: bolder;
                 margin-top: 0px;
             }
         }
-        .admin-nav-item[data-fire] {
+        .user-nav-item[data-fire] {
             cursor: pointer;
             margin-left: -40px;
             margin-top: 10px;
@@ -86,6 +86,31 @@
 
 .section-nav-operation {
     width: 80%;
+    padding: 10px;
+    .section-nav-operation-header {
+        width: 100%;
+        .user-role {
+            color: black;
+            float: left;
+        }
+        > button {
+            float: right;
+            margin-top: 10px;
+            border: none;
+            width: 12%;
+            padding: 12px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-family: $default-font-family;
+            background: darken(white,10%);
+            cursor: pointer;
+            transition: .2s ease-in-out;
+            &:hover {
+                background: darken(white,20%);
+            }
+        }
+    }
+
 }
 
 [data-hide-nav] {
@@ -101,7 +126,7 @@
     img {
         margin-left: -12px;
     }
-    .admin-nav-item-icon {
+    .user-nav-item-icon {
         margin-left: 40% !important;
     }
 }
