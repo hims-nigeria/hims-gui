@@ -142,15 +142,13 @@ module.exports.login = async (data,obj) => {
          **/
         return apiCallHandler(result,obj, async () => {
 
-            let usersProm;
+            let result;
 
             if ( ! result.response ) {
 
-                usersProm = await Promise.all([
-                    await hospitalDb.healthFacility.get({ email: OBJECT_TO_CHECK_AGAINST.email })
-                ]);
+                result = await isEmailExists( OBJECT_TO_CHECK_AGAINST.email );
 
-                if ( ! usersProm.every( x => x !== undefined) ) {
+                if ( ! result.length ) {
                     toast({
                         text: `No account is associated with ${OBJECT_TO_CHECK_AGAINST.email}`,
                         createAfter: 6000
@@ -158,9 +156,9 @@ module.exports.login = async (data,obj) => {
                     return false;
                 }
 
-                usersProm = usersProm.find( x => x !== undefined );
+                ( [ result ] = result );
 
-                const pwd = await comparePassword(OBJECT_TO_CHECK_AGAINST.password,usersProm.password);
+                const pwd = await comparePassword(OBJECT_TO_CHECK_AGAINST.password,result.password);
 
                 if ( pwd instanceof Error ||  ! pwd ) {
                     toast({
@@ -172,7 +170,7 @@ module.exports.login = async (data,obj) => {
             }
 
             await hospitalDb.sessionObject.put({
-                role: usersProm ? usersProm.role : result.response.data.message.role,
+                role: result ? result.role : result.response.data.message.role,
                 healthFacilityId: OBJECT_TO_CHECK_AGAINST.healthFacilityId,
                 fullName: OBJECT_TO_CHECK_AGAINST.fullName,
                 email: OBJECT_TO_CHECK_AGAINST.email,
@@ -188,17 +186,7 @@ module.exports.register = async (data,obj) => {
 
     const OBJECT_TO_CACHE = {};
 
-    for ( let [ key , value ] of data.entries() ) OBJECT_TO_CACHE[key] = value;
-
-    const hpwd = await hashPassword(OBJECT_TO_CACHE.password,OBJECT_TO_CACHE.confirmPassword);
-
-    if ( hpwd instanceof Error ) {
-        toast({
-            text: "An unexpected error has occurred. Please contact the system administrator",
-            createAfter: 0
-        });
-        return false;
-    }
+    const hpwd = await formDataToObject(data,OBJECT_TO_CACHE);
 
     if ( ! hpwd ) {
         toast({
@@ -225,6 +213,16 @@ module.exports.register = async (data,obj) => {
     } finally {
 
         return await apiCallHandler(result,obj, async () => {
+
+            const result = await isEmailExists( OBJECT_TO_CACHE.email );
+
+            if ( result.length ) {
+                toast({
+                    text: `${OBJECT_TO_CACHE.email} is not avaiable`,
+                    createAfter: 6000
+                });
+                return false;
+            }
 
             await hospitalDb.healthFacility.add({
                 ...OBJECT_TO_CACHE,
