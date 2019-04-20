@@ -259,3 +259,95 @@ module.exports.register = async (data,obj) => {
         });
     }
 };
+
+module.exports.adminLoadNurse = async ( obj ) => {
+
+    let result;
+
+    try {
+        result = await axios.get(`${REQUEST_URL}/admin/nurse`);
+    } catch(ex) {
+        result = ex;
+    } finally {
+        return apiCallHandler(result, obj, async () => {
+            let nurses = {};
+            if ( ! result.response ) {
+
+                const session = await hospitalDb.sessionObject.toArray();
+
+                if ( ! session.length ) {
+                    getCurrentWindow().webContents.loadURL(obj.nextUrl);
+                    return false;
+                }
+
+                const [ { role , fullName, healthFacilityId } ] = session;
+                Object.assign(nurses, { fullName, role, nurses:  await hospitalDb.nurses.where({ healthFacility : healthFacilityId }).toArray() });
+            }
+            return Object.keys(nurses).length ? nurses : result.response.data.message;
+        });
+    }
+};
+
+
+module.exports.saveNurse = async ( data , obj ) => {
+
+
+    const OBJECT_TO_CACHE = {};
+
+    const hpwd = await formDataToObject(data,OBJECT_TO_CACHE);
+
+    if ( ! hpwd ) {
+        toast({
+            text: "Registration of patient failed. Retry creating patient",
+            createAfter: 0
+        });
+        return false;
+    }
+
+    OBJECT_TO_CACHE.role = "nurse";
+    OBJECT_TO_CACHE.image = obj.dataUri;
+
+    let result;
+
+    try {
+        result = await axios.post(`${REQUEST_URL}/admin/nurse` , data );
+    } catch(ex) {
+        result = ex;
+    } finally {
+
+        return apiCallHandler(result, obj, async () => {
+
+            const result = await isEmailExists( OBJECT_TO_CACHE.email );
+
+            if ( result.length ) {
+                toast({
+                    text: `${OBJECT_TO_CACHE.email} is not avaiable`,
+                    createAfter: 5000
+                });
+                return false;
+            }
+
+            const [ { healthFacilityId } ] = await hospitalDb.sessionObject.toArray();
+
+            OBJECT_TO_CACHE.nurseId = createExternalId(
+                OBJECT_TO_CACHE.email,
+                OBJECT_TO_CACHE.phoneNumber,
+                Date.now()
+            );
+
+            OBJECT_TO_CACHE.healthFacility = healthFacilityId;
+
+            await hospitalDb.nurses.add(OBJECT_TO_CACHE);
+
+            await hospitalDb.healthFacility.where({ healthFacilityId }).modify( result => {
+                result.dashboardInfo.nurses += 1;
+            });
+
+            if ( ! result.response ) {
+                await hospitalDb.offlineAccounts.add({ ...OBJECT_TO_CACHE , newInformationType: "nurses" });
+            }
+
+            return OBJECT_TO_CACHE;
+        });
+    }
+};
