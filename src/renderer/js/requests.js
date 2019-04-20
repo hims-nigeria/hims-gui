@@ -67,6 +67,11 @@ const apiCallHandler = async (result,obj, cb = function() {}) => {
         // redirect that user to another url
 
         if ( result.response.data.status === 401 ) {
+
+            if ( ! obj.nextUrl ) {
+                return dialog.showErrorBox("You are not authorized to carry out this operation", "Please logout and login again");
+            }
+
             setTimeout(() => {
                 getCurrentWindow().webContents.loadURL(obj.nextUrl);
             },6000);
