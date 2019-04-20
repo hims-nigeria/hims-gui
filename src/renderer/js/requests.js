@@ -49,7 +49,7 @@ const apiCallHandler = async (result,obj, cb = function() {}) => {
     // when internet is down
     if ( ! result.response ) {
         toast({
-            text: "Oops. We can't communicate with server now. All changes will be saved offline",
+            text: "Oops. We can't communicate with server now",
             createAfter : 0
         });
         // save data from api
