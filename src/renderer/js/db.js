@@ -6,15 +6,15 @@ const hospitalDb = new Dexie("HospitalDB");
 
 hospitalDb.version(1).stores({
     healthFacility: "++id, &healthFacilityId, &email",
-    accountants: "++id, &accontantId, &phoneNumber, &email",
-    departments: "++id",
-    doctors: "++id, &doctorId, &phoneNumber, &email",
-    interns: "++id, &internId, &phoneNumber, &email",
-    laboratorists: "++id, &laboratoristId, &phoneNumber, &email",
-    nurses: "++id, &nurseId, &phoneNumber, &email",
-    patients: "++id, &patientId, &phoneNumber, &email",
-    pharamcists: "++id, &pharmacistId, &phoneNumber, &email",
-    transactions: "++id",
+    accountants: "++id, healthFacility, &accontantId, &phoneNumber, &email",
+    departments: "++id, healthFacility",
+    doctors: "++id, healthFacility, &doctorId, &phoneNumber, &email",
+    interns: "++id, healthFacility, &internId, &phoneNumber, &email",
+    laboratorists: "++id, healthFacility, &laboratoristId, &phoneNumber, &email",
+    nurses: "++id, healthFacility, &nurseId, &phoneNumber, &email",
+    patients: "++id, healthFacility, &patientId, &phoneNumber, &email",
+    pharmacists: "++id, healthFacility, &pharmacistId, &phoneNumber, &email",
+    transactions: "++id, healthFacility",
     
     /**
        sessionObject will contain an email address
@@ -22,7 +22,7 @@ hospitalDb.version(1).stores({
        put method will be used to replace whatever is in the session object
        during registration or logging in
      **/
-    sessionObject: "id,&email",
+    sessionObject: "id,[healthFacilityId+role],&email",
     offlineAccounts: "++id,[id+newInformationType]"
 });
 
