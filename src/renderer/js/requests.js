@@ -229,7 +229,7 @@ module.exports.register = async (data,obj) => {
                 dashboardInfo: {
                     laboratorists: 0,
                     transactions: 0,
-                    pharamcists: 0,
+                    pharmacists: 0,
                     accountants: 0,
                     patients: 0,
                     doctors: 0,
