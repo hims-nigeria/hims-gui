@@ -54,3 +54,27 @@ module.exports.toast = ( { text , createAfter, deleteAfter } ) => {
 
     }, createAfter );
 };
+
+module.exports.spinner = () => {
+
+    const spinnerParent = document.createElement("div");
+    const spinner = document.createElement("i");
+
+    spinner.classList.add("fa");
+    spinner.classList.add("fa-spinner");
+    spinner.classList.add("fa-pulse");
+    spinner.classList.add("fa-5x");
+
+    spinner.style.color = "black";
+
+    Object.assign( spinnerParent.style, {
+        display: "flex",
+        justifyContent: "center",
+        position: "relative",
+        top: "250px"
+    });
+
+    spinnerParent.appendChild(spinner);
+
+    return spinnerParent;
+};
