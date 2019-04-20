@@ -1,14 +1,17 @@
 "use strict";
 
-const { remote: { getCurrentWindow } } = require("electron");
+const { remote: { getCurrentWindow, dialog } } = require("electron");
 const axios = require("axios");
 const qs    = require("querystring");
 
 const { toast } = require("../js/domutils.js");
+
 const {
     hashPassword,
     createExternalId,
-    comparePassword
+    formDataToObject,
+    comparePassword,
+    isEmailExists
 } = require("../js/utils.js");
 
 const hospitalDb = require("../js/db.js");
@@ -21,6 +24,12 @@ const REQUEST_URL = process.env.NODE_ENV === "development"
 // this will read from local database
 
 const apiCallHandler = async (result,obj, cb = function() {}) => {
+
+    if ( typeof(obj) === "function" ) {
+        cb = obj;
+        obj = {};
+    }
+
 
     if ( obj.disabled ) obj.disabled.forEach( el => el.disabled = false );
 
