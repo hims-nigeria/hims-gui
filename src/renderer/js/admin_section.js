@@ -6,8 +6,10 @@
     const asideNav = document.querySelector(".section-nav");
     const navOperations = document.querySelector(".section-nav-operation");
 
-    const { getDashboard } = require("../js/requests.js");
-    const { LOGIN_URL } = require("../js/constants.js");
+
+    const navList = document.querySelector(".nav-list");
+
+    const admin = require("../js/admin.js");
 
     toggler.addEventListener("click", evt => {
         if ( asideNav.hasAttribute("data-hide-nav") ) {
@@ -22,49 +24,21 @@
     });
 
     window.addEventListener("DOMContentLoaded", async () => {
+        //admin.emit("admin-dashboard");
+        admin.emit("admin-nurse");
+    });
 
-        const result = await getDashboard({
-            nextUrl: LOGIN_URL
-        });
-
-        if ( ! result ) return;
-
-        const reportUl = document.createElement("ul");
-
-        reportUl.setAttribute("class", "dashboard-list");
-
-        let idx = 0;
+    navList.addEventListener("click", evt => {
         
-        Object.keys(result.dashboardInfo).sort().forEach( x => {
+        let { target } = evt;
 
-            const li = document.createElement("li");
-            const p  = document.createElement("p");
-            const i  = document.createElement("i");
-
-            const pText  = document.createElement("p");
-
-            li.classList.add("dashboard-item");
-            li.classList.add(`dashboard-item-${idx++}`);
-            p.setAttribute("class", "dashboard-item-count");
-            pText.setAttribute("class", "dashboard-item-name");
-
-            p.textContent = result.dashboardInfo[x];
-            pText.textContent = x.replace(/^./, x[0].toUpperCase());
-
-            li.appendChild(pText);
-            li.appendChild(p);
-            li.appendChild(i);
+        if ( target instanceof HTMLUListElement ) return;
             
-            reportUl.appendChild(li);
-        });
+        if ( ! (target instanceof HTMLLIElement) )
+            target = target.parentNode;
 
-        const userRole = document.querySelector(".user-role");
-        const userName = document.querySelector(".user-name");
-        const sectionNavOps = document.querySelector(".section-nav-operation");
-        
-        userRole.textContent = result.role;
-        userName.textContent = result.fullName;
-        sectionNavOps.appendChild(reportUl);
+        const eventName = target.getAttribute("data-fire");
+        admin.emit(eventName);
     });
 
 })();
