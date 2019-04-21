@@ -3,6 +3,8 @@
 const Dexie = require("dexie");
 const hospitalDb = new Dexie("HospitalDB");
 
+Dexie.debug = true;
+
 
 hospitalDb.version(1).stores({
     healthFacility: "++id, &healthFacilityId, &email",
