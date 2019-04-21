@@ -28,3 +28,32 @@ module.exports.createExternalId = (...criteria) => {
     const crypto = require("crypto");
     return crypto.createHash("sha1").update(criteria.join("")).digest("hex");
 };
+
+module.exports.formDataToObject = async(formData,OBJECT_TO_CACHE) => {
+
+    for ( let [ key , value ] of formData.entries() ) OBJECT_TO_CACHE[key] = value;
+
+    const hpwd = await hashPassword(OBJECT_TO_CACHE.password,OBJECT_TO_CACHE.confirmPassword);
+
+    if ( hpwd instanceof Error ) {
+        toast({
+            text: "An unexpected error has occurred. Please contact the system administrator",
+            createAfter: 0
+        });
+        return false;
+    }
+
+    return hpwd;
+};
+
+module.exports.isEmailExists = async ( email ) => (
+    await Promise.all([
+        await hospitalDb.healthFacility.get({ email }),
+        await hospitalDb.accountants.get({ email }),
+        await hospitalDb.doctors.get({ email }),
+        await hospitalDb.interns.get({ email }),
+        await hospitalDb.laboratorists.get({ email }),
+        await hospitalDb.pharmacists.get({ email }),
+        await hospitalDb.nurses.get({ email }),
+    ])
+).filter( x => x !== undefined);
