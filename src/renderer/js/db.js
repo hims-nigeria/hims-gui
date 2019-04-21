@@ -25,7 +25,7 @@ hospitalDb.version(1).stores({
        during registration or logging in
      **/
     sessionObject: "id,[healthFacilityId+role],&email",
-    offlineAccounts: "++id,[id+newInformationType]"
+    offlineAccounts: "++,newInformationType"
 });
 
 module.exports = hospitalDb;
