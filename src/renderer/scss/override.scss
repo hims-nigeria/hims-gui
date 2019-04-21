@@ -29,3 +29,13 @@ li {
 i {
     font-style: unset;
 }
+
+.currently-shown {
+    clear: both;
+    margin-top: 80px;
+}
+
+* {
+    outline: none;
+    user-select: none;
+}
