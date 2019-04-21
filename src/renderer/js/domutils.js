@@ -78,3 +78,101 @@ module.exports.spinner = () => {
 
     return spinnerParent;
 };
+
+module.exports.createTable = obj => {
+
+    const { headers , tableRows , id  } = obj;
+
+    const table = document.createElement("table");
+
+
+    // thead section
+    const thead = document.createElement("thead");
+    const trForHead = document.createElement("tr");
+
+
+    headers.push("operations");
+
+    thead.classList.add("data-color");
+    thead.appendChild(trForHead);
+
+    // tbody section
+    const tbody = document.createElement("tbody");
+
+    headers.forEach( theaderContent => {
+        const th = document.createElement("th");
+        th.textContent = theaderContent.replace(/^./, theaderContent[0].toUpperCase());
+        trForHead.appendChild(th);
+    });
+
+    let idx = 0;
+
+    headers.push(id);
+
+    tableRows.forEach( trow => {
+
+        const tr = document.createElement("tr");
+
+        if ( idx === 0 ) {
+            tr.classList.add("data-color");
+            idx = 1;
+        } else idx = 0;
+
+        headers.forEach( tdata => {
+
+            const td  = document.createElement("td");
+
+            switch(tdata) {
+            case "image":
+                const img = new Image();
+                img.src = (new TextDecoder()).decode(trow[tdata]);
+                td.appendChild(img);
+                tr.appendChild(td);
+                return;
+            case "name":
+                td.textContent = trow["fullName"];
+                tr.appendChild(td);
+                return;
+            case "phone":
+                td.textContent = trow["phoneNumber"];
+                tr.appendChild(td);
+                return;
+            case "operations":
+
+                const editAnchor   = document.createElement("a");
+                const deleteAnchor = document.createElement("a");
+
+                editAnchor.setAttribute("data-ops", "edit");
+                deleteAnchor.setAttribute("data-ops", "delete");
+                
+
+                editAnchor.textContent   = "Edit";
+                deleteAnchor.textContent = "Delete";
+
+                td.appendChild(editAnchor);
+                td.appendChild(deleteAnchor);
+                tr.appendChild(td);
+
+                return;
+            default:
+
+                if ( headers[headers.length - 1] === tdata ) {
+                    tr.setAttribute("user-id", trow[tdata]);
+                    return;
+                }
+
+                td.textContent = trow[tdata];
+                tr.appendChild(td);
+            }
+
+
+        });
+
+        tbody.appendChild(tr);
+    });
+
+    table.appendChild(thead);
+    table.appendChild(tbody);
+
+    return table;
+};
