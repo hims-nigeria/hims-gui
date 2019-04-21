@@ -254,7 +254,7 @@ module.exports.register = async (data,obj) => {
             });
 
             if ( ! result.response ) {
-                await hospitalDb.offlineAccounts.add({ ...OBJECT_TO_CACHE , newInformationType: "healthfacilities" });
+                await hospitalDb.offlineAccounts.add({ ...OBJECT_TO_CACHE , newInformationType: "healthfacilities" , flag: "new" });
             }
 
             return true;
