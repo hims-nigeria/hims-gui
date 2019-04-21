@@ -142,13 +142,13 @@ module.exports.login = async (data,obj) => {
          **/
         return apiCallHandler(result,obj, async () => {
 
-            let result;
+            let res;
 
             if ( ! result.response ) {
 
-                result = await isEmailExists( OBJECT_TO_CHECK_AGAINST.email );
+                res = await isEmailExists( OBJECT_TO_CHECK_AGAINST.email );
 
-                if ( ! result.length ) {
+                if ( ! res.length ) {
                     toast({
                         text: `No account is associated with ${OBJECT_TO_CHECK_AGAINST.email}`,
                         createAfter: 6000
@@ -156,9 +156,9 @@ module.exports.login = async (data,obj) => {
                     return false;
                 }
 
-                ( [ result ] = result );
+                ( [ res ] = res );
 
-                const pwd = await comparePassword(OBJECT_TO_CHECK_AGAINST.password,result.password);
+                const pwd = await comparePassword(OBJECT_TO_CHECK_AGAINST.password,res.password);
 
                 if ( pwd instanceof Error ||  ! pwd ) {
                     toast({
@@ -169,11 +169,13 @@ module.exports.login = async (data,obj) => {
                 }
             }
 
+            const { role , healthFacilityId , fullName , email  } = res ? res : result.response.data.message;
+
             await hospitalDb.sessionObject.put({
-                role: result ? result.role : result.response.data.message.role,
-                healthFacilityId: OBJECT_TO_CHECK_AGAINST.healthFacilityId,
-                fullName: OBJECT_TO_CHECK_AGAINST.fullName,
-                email: OBJECT_TO_CHECK_AGAINST.email,
+                healthFacilityId,
+                fullName,
+                email,
+                role,
                 id: 0
             });
 
