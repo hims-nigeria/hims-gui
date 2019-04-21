@@ -81,7 +81,7 @@
                         delete document.id;
                         delete document.newInformationType;
                         await db.collection( newInformationType ).insert( document );
-                        await hospitalDb.offlineAccounts.where({ id , newInformationType}).delete();
+                        await hospitalDb.offlineAccounts.where("newInformationType").equals(newInformationType).and( x => x.id === id ).delete();
                     });
 
                     toast({
