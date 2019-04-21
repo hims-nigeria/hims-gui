@@ -284,6 +284,7 @@ module.exports.adminLoadNurse = async ( obj ) => {
 
                 const [ { role , fullName, healthFacilityId } ] = session;
                 Object.assign(nurses, { fullName, role, nurses:  await hospitalDb.nurses.where({ healthFacility : healthFacilityId }).toArray() });
+                console.log(nurses);
             }
             return Object.keys(nurses).length ? nurses : result.response.data.message;
         });
@@ -307,7 +308,7 @@ module.exports.saveNurse = async ( data , obj ) => {
     }
 
     OBJECT_TO_CACHE.role = "nurse";
-    OBJECT_TO_CACHE.image = obj.dataUri;
+    OBJECT_TO_CACHE.image = (new TextEncoder()).encode(obj.dataUri);
 
     let result;
 
