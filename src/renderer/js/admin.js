@@ -11,10 +11,10 @@ const {
 } = require("electron");
 
 const { EventEmitter } = require("events");
-const { getDashboard , adminLoadNurse } = require("../js/requests.js");
+const { getDashboard , adminLoadNurse , deleteNurse } = require("../js/requests.js");
 const { LOGIN_URL, ADD_NURSE_URL } = require("../js/constants.js");
 
-const { spinner } = require("../js/domutils.js");
+const { spinner , createTable } = require("../js/domutils.js");
 
 const admin = new(class Admin extends EventEmitter {
 
@@ -104,7 +104,7 @@ Object.defineProperties( admin.nurse , {
             this.spin.remove();
 
             console.log(result);
-            
+
             if ( ! result )
                 return;
 
@@ -117,6 +117,39 @@ Object.defineProperties( admin.nurse , {
 
             this.__setCredentials(result);
             this.sectionNavOps.appendChild(nurseDiv);
+
+            const table = createTable(
+                {
+                    headers: [ "image", "name" , "rank", "email", "address" , "phone"],
+                    tableRows: result.nurses,
+                    id: "nurseId"
+                }
+            );
+
+            nurseDiv.appendChild(table);
+
+            table.addEventListener("click", async evt => {
+
+                const { target } = evt;
+
+                if ( ! (target instanceof HTMLAnchorElement) ) {
+                    return;
+                }
+
+                const parentTr = target.parentNode.parentNode;
+                const ops      = target.getAttribute("data-ops");
+                const uId      = parentTr.getAttribute("user-id");
+
+                if ( ops === "delete" ) {
+                    const result = await deleteNurse(
+                        { nurseId: uId },
+                        {}
+                    );
+                    if ( result ) parentTr.remove();
+                    return;
+                }
+
+            });
 
         }
     },
