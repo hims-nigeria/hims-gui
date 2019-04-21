@@ -347,10 +347,53 @@ module.exports.saveNurse = async ( data , obj ) => {
             });
 
             if ( ! result.response ) {
-                await hospitalDb.offlineAccounts.add({ ...OBJECT_TO_CACHE , newInformationType: "nurses" });
+                await hospitalDb.offlineAccounts.add({ ...OBJECT_TO_CACHE , newInformationType: "nurses" , flag: "new" });
             }
 
             return OBJECT_TO_CACHE;
+        });
+    }
+};
+
+
+module.exports.deleteNurse = async (data,obj) => {
+    let result;
+    try {
+        result = await axios.delete(`${REQUEST_URL}/nurse`, data );
+    } catch(ex) {
+        result = ex;
+    } finally {
+        return apiCallHandler(result,obj, async () => {
+            await hospitalDb.nurses.where({ nurseId: data.nurseId }).delete();
+            if ( ! result.response ) {
+                await hospitalDb.offlineAccounts.where(
+                    {
+                        newInformationType: "nurses"
+                    }
+                ).and(
+                    x => x.nurseId === data.nurseId
+                ).modify(
+                    {
+                        flag: "delete"
+                    }
+                );
+            }
+            return true;
+        });
+    }
+};
+
+
+module.exports.logout = async obj => {
+    let result;
+    try {
+        result = await axios.post(`${REQUEST_URL}/logout`);
+    } catch(ex) {
+        result = ex;
+    } finally {
+        return apiCallHandler( result , obj , async () => {
+            await hospitalDb.sessionObject.clear();
+            return true;
         });
     }
 };
