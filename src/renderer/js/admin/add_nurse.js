@@ -58,6 +58,7 @@
         if ( ! result ) return;
 
         ipc.sendTo( 1 , "admin-nurse");
+        window.location.reload();
 
     });
 
