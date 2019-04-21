@@ -1,0 +1,55 @@
+extends ../templates/head.pug
+
+block title
+  title Add Nurse
+
+append link
+  link(rel="stylesheet" href="../../css/admin/admin_add_nurse.css")
+  link(rel="stylesheet" href="../../css/toast.css")
+  
+block fa-link
+  link(rel="stylesheet" href="../../css/all.min.css")
+  
+  
+block content
+  section(class="admin-add-nurse")
+    form(class="admin-add-nurse-form" enctype="multipart/form-data")
+      p Add Nurse
+      label
+        span Name
+        input(type="text" name="fullName" required)
+      
+      label
+        span Email
+        input(type="email" name="email" required)
+        
+      label
+        span Password
+        input(type="password" name="password" required)
+        
+      label
+        span Address
+        textarea(name="address")
+        
+      label
+        span Rank
+        select(name="rank" required)
+          option(value="Please Select" selected hidden) Please Select
+          option(value="Standard") Standard
+          option(value="Matron") Matron
+          option(value="Head Nurse") Head Nurse
+      
+      label
+        span Phone
+        input(type="text" name="phoneNumber" required)
+        
+      div
+        label Image
+        div.image-preview
+          p.image-preview-text Image Preview
+          img.previewer
+        input(type="file" name="image" accept="image/*" hidden required)
+        button(type="button" class="select-image") Select Image
+        
+      button(type="submit") Save
+  script(src="../../js/admin/add_nurse.js")

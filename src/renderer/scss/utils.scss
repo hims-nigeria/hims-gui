@@ -1,11 +1,6 @@
 @import "./variables/font-variables.scss";
 @import "./variables/color.scss";
 
-* {
-    outline: none;
-    user-select: none;
-}
-
 *:disabled {
     cursor: not-allowed;
 }
