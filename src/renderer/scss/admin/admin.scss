@@ -3,3 +3,10 @@
 @import "../table.scss";
 
 
+.navigator-icon {
+    cursor: pointer;
+    &.no-more {
+        cursor: not-allowed;
+        color: lightgrey;
+    }
+}

@@ -5,6 +5,7 @@ const axios = require("axios");
 const qs    = require("querystring");
 
 const { toast } = require("../js/domutils.js");
+const { PAGE_LIMIT } = require("../js/constants.js");
 
 const {
     hashPassword,
@@ -267,12 +268,15 @@ module.exports.adminLoadNurse = async ( obj ) => {
     let result;
 
     try {
-        result = await axios.get(`${REQUEST_URL}/admin/nurse`);
+        result = await axios.get(`${REQUEST_URL}/admin/nurse?page=${obj.PAGE}`);
     } catch(ex) {
         result = ex;
     } finally {
+
         return apiCallHandler(result, obj, async () => {
+
             let nurses = {};
+
             if ( ! result.response ) {
 
                 const session = await hospitalDb.sessionObject.toArray();
@@ -283,7 +287,15 @@ module.exports.adminLoadNurse = async ( obj ) => {
                 }
 
                 const [ { role , fullName, healthFacilityId } ] = session;
-                Object.assign(nurses, { fullName, role, nurses:  await hospitalDb.nurses.where({ healthFacility : healthFacilityId }).toArray() });
+
+                const cursor = hospitalDb.nurses.where({healthFacility : healthFacilityId});
+                
+                Object.assign(nurses, {
+                    hasMore: await cursor.count() > ((obj.PAGE + 1) * PAGE_LIMIT),
+                    nurses: await cursor.offset(PAGE_LIMIT * obj.PAGE).limit(PAGE_LIMIT).toArray(),
+                    fullName,
+                    role
+                });
                 console.log(nurses);
             }
             return Object.keys(nurses).length ? nurses : result.response.data.message;

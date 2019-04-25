@@ -88,37 +88,73 @@ const admin = new(class Admin extends EventEmitter {
 });
 
 Object.defineProperties( admin.nurse , {
+
     getNurse: {
 
-        async value(ev) {
-
-            console.log(ev,"hi");
+        async value() {
 
             this.__removeOnDom();
             this.sectionNavOps.appendChild(this.spin);
 
             const result = await adminLoadNurse({
-                nextUrl: LOGIN_URL
+                nextUrl: LOGIN_URL,
+                PAGE: 0
             });
 
             this.spin.remove();
 
-            console.log(result);
-
             if ( ! result )
                 return;
 
-            const nurseDiv = document.createElement("div");
 
-            nurseDiv.classList.add("nurse-div");
-            nurseDiv.classList.add("currently-shown");
+            this.on("navigated", location => {
 
-            nurseDiv.appendChild(this.nurse.__nurseOps());
+                const prevIcon = document.querySelector(".prev");
+                const nextIcon = document.querySelector(".next");
+
+                if ( location === "prev" && this.nurse.__first__page === 0 ) {
+                    prevIcon.classList.add("no-more");
+                    nextIcon.classList.remove("no-more");
+                    return;
+                }
+
+                if ( location === "next" && ! this.nurse.hasMore ) {
+                    nextIcon.classList.add("no-more");
+                    prevIcon.classList.remove("no-more");
+                    return;
+                }
+            });
+
+            this.nurse.nurseDiv = document.createElement("div");
+
+            this.nurse.nurseDiv.classList.add("nurse-div");
+            this.nurse.nurseDiv.classList.add("currently-shown");
+
+            this.nurse.nurseDiv.appendChild(this.nurse.__nurseOps.bind(this)());
 
             this.__setCredentials(result);
-            this.sectionNavOps.appendChild(nurseDiv);
+            this.sectionNavOps.appendChild(this.nurse.nurseDiv);
 
-            const table = createTable(
+            this.nurse.__appendNurseTable.bind(this)(result,"prev");
+
+            this.nurse.__first__page = 0;
+            this.nurse.hasMore = result.hasMore;
+        }
+    },
+
+
+    __appendNurseTable: {
+
+        value(result,location) {
+
+            if ( ! result.nurses.length ) return;
+
+            let table;
+
+            if ( ( table = document.querySelector("table") )  )
+                table.remove();
+
+            table = createTable(
                 {
                     headers: [ "image", "name" , "rank", "email", "address" , "phone"],
                     tableRows: result.nurses,
@@ -126,7 +162,7 @@ Object.defineProperties( admin.nurse , {
                 }
             );
 
-            nurseDiv.appendChild(table);
+            this.nurse.nurseDiv.appendChild(table);
 
             table.addEventListener("click", async evt => {
 
@@ -149,7 +185,7 @@ Object.defineProperties( admin.nurse , {
                     return;
                 }
 
-                await createNewWindow( {
+                await createNewWindow({
                     id: "AddNurse",
                     url: ADD_NURSE_URL,
                     title: "Edit Nurse",
@@ -159,6 +195,7 @@ Object.defineProperties( admin.nurse , {
 
             });
 
+            this.emit("navigated" , location);
         }
     },
 
@@ -176,9 +213,24 @@ Object.defineProperties( admin.nurse , {
 
             prevIcon.classList.add("fa");
             prevIcon.classList.add("fa-arrow-alt-circle-left");
+            prevIcon.classList.add("prev");
+            prevIcon.classList.add("navigator-icon");
 
             nextIcon.classList.add("fa");
             nextIcon.classList.add("fa-arrow-alt-circle-right");
+            nextIcon.classList.add("next");
+            nextIcon.classList.add("navigator-icon");
+
+            prevIcon.addEventListener("click", async () => {
+                if ( this.nurse.__first__page > 0 )
+                    this.nurse.__page.bind(this)("prev",--this.nurse.__first__page);
+                nextIcon.classList.remove("no-more");
+            });
+
+            nextIcon.addEventListener("click", () => {
+                if ( this.nurse.hasMore )
+                    this.nurse.__page.bind(this)("next",++this.nurse.__first__page);
+            });
 
             nurseOps.setAttribute("class", "nurse-ops");
 
@@ -192,8 +244,26 @@ Object.defineProperties( admin.nurse , {
         }
     },
 
-    createNurse: {
-        value() {
+    __page: {
+
+        async value(location,page) {
+
+            if ( Math.sign(page) === -1 ) return;
+
+            this.sectionNavOps.appendChild(this.spin);
+
+            const result = await adminLoadNurse({
+                nextUrl: LOGIN_URL,
+                PAGE: page
+            });
+
+            this.spin.remove();
+
+            if ( ! result )
+                return;
+
+            this.nurse.hasMore = result.hasMore;
+            this.nurse.__appendNurseTable.bind(this)(result,location);
         }
     }
 });
@@ -201,7 +271,6 @@ Object.defineProperties( admin.nurse , {
 
 admin.on("admin-dashboard", admin.dashboard );
 admin.on("admin-nurse", admin.nurse.getNurse.bind(admin) );
-admin.on("admin-nurse-create", admin.nurse.createNurse );
 
 ipc.on("admin-nurse", admin.nurse.getNurse.bind(admin) );
 
