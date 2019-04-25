@@ -1,5 +1,7 @@
 "use strict";
 
+const { ipcRenderer: ipc, remote: { BrowserWindow, dialog } } = require("electron");
+
 const util = require("util");
 const https = require("https");
 const bcrypt = require("bcrypt");

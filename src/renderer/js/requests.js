@@ -139,7 +139,7 @@ module.exports.login = async (data,obj) => {
            if it is undefined we would search our local cache to login user and set sessionObject
            but in a situation were the internet is not down we are only interested in setting the sessionObject
            in indexDB. We are not interested in reading from the cache to login user
-         **/
+        **/
         return apiCallHandler(result,obj, async () => {
 
             let res;
@@ -216,9 +216,9 @@ module.exports.register = async (data,obj) => {
 
         return await apiCallHandler(result,obj, async () => {
 
-            const result = await isEmailExists( OBJECT_TO_CACHE.email );
+            const resultEmail = await isEmailExists( OBJECT_TO_CACHE.email );
 
-            if ( result.length ) {
+            if ( resultEmail.length ) {
                 toast({
                     text: `${OBJECT_TO_CACHE.email} is not avaiable`,
                     createAfter: 6000
@@ -308,6 +308,7 @@ module.exports.saveNurse = async ( data , obj ) => {
     }
 
     OBJECT_TO_CACHE.role = "nurse";
+    OBJECT_TO_CACHE.password = hpwd;
     OBJECT_TO_CACHE.image = (new TextEncoder()).encode(obj.dataUri);
 
     let result;
@@ -363,8 +364,15 @@ module.exports.deleteNurse = async (data,obj) => {
     } catch(ex) {
         result = ex;
     } finally {
+
         return apiCallHandler(result,obj, async () => {
+
+            const [  { healthFacilityId }  ] = await hospitalDb.sessionObject.toArray();
             await hospitalDb.nurses.where({ nurseId: data.nurseId }).delete();
+            await hospitalDb.healthFacility.where({ healthFacilityId }).modify( result => {
+                result.dashboardInfo.nurses -= 1;
+            });
+
             if ( ! result.response ) {
                 await hospitalDb.offlineAccounts.where(
                     {
@@ -384,7 +392,72 @@ module.exports.deleteNurse = async (data,obj) => {
 };
 
 
+module.exports.editNurse = async (data,obj) => {
+
+    let result;
+
+    const OBJECT_TO_CACHE = {};
+
+    const hpwd = await formDataToObject(data,OBJECT_TO_CACHE);
+
+    if ( ! hpwd ) {
+        toast({
+            text: "Registration of patient failed. Retry creating patient",
+            createAfter: 0
+        });
+        return false;
+    }
+
+    OBJECT_TO_CACHE.image = (new TextEncoder()).encode(obj.dataUri);
+    OBJECT_TO_CACHE.password = hpwd;
+
+    try {
+        result = await axios.post(`${REQUEST_URL}/nurse/edit`);
+    } catch(ex) {
+        result = ex;
+    } finally {
+
+        return apiCallHandler( result , obj , async () => {
+
+            const resEmail = await isEmailExists(OBJECT_TO_CACHE.email);
+
+            if ( resEmail[0].email !== OBJECT_TO_CACHE.email ) {
+                toast({
+                    text: `${resEmail[0].email} does not exists`,
+                    createAfter: 5000
+                });
+                return false;
+            }
+
+            const nurseId = OBJECT_TO_CACHE.nurseId;
+
+            delete OBJECT_TO_CACHE.nurseId;
+            await hospitalDb.nurses.where({ nurseId }).modify(OBJECT_TO_CACHE);
+
+            if ( ! result.response ) {
+
+                await hospitalDb.offlineAccounts.where(
+                    {
+                        newInformationType: "nurses"
+                    }
+                ).and(
+                    x => x.nurseId === nurseId
+                ).modify(
+                    {
+                        ...OBJECT_TO_CACHE,
+                        flag: "edit"
+                    }
+                );
+            }
+
+            return true;
+        });
+    }
+};
+
+
 module.exports.logout = async obj => {
+
     let result;
     try {
         result = await axios.post(`${REQUEST_URL}/logout`);
