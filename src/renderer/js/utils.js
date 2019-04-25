@@ -57,3 +57,42 @@ module.exports.isEmailExists = async ( email ) => (
         await hospitalDb.nurses.get({ email }),
     ])
 ).filter( x => x !== undefined);
+
+module.exports.createNewWindow = async ( { id , url , title , state , options }) => {
+
+    const winCreated =  BrowserWindow.getAllWindows().find( x => x.__bid === id );
+
+    if ( winCreated ) {
+        dialog.showErrorBox("Cannot create multiple instance of window","This window is already opened");
+        return;
+    }
+
+    let win = new BrowserWindow({
+        maximizable  : false,
+        minimizable  : true,
+        resizable    : false,
+        center       : true,
+        show         : false,
+        title        : title,
+        height       : 603,
+        width        : 463,
+        __state      : state
+    });
+
+    win.__bid = "AddNurse";
+    
+    win.on("ready-to-show", () => {
+        win.show();
+    });
+
+    win.on("close", () => {
+        win = undefined;
+    });
+
+    ipc.once("get:window:state", (evt,id) => {
+        ipc.sendTo(id,"window-state", state, state && options );
+    });
+
+    win.webContents.openDevTools( { mode: "bottom" } );
+    win.webContents.loadURL(url);
+};

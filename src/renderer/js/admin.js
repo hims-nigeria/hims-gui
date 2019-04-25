@@ -13,7 +13,7 @@ const {
 const { EventEmitter } = require("events");
 const { getDashboard , adminLoadNurse , deleteNurse } = require("../js/requests.js");
 const { LOGIN_URL, ADD_NURSE_URL } = require("../js/constants.js");
-
+const { createNewWindow } = require("../js/utils.js");
 const { spinner , createTable } = require("../js/domutils.js");
 
 const admin = new(class Admin extends EventEmitter {
@@ -149,6 +149,14 @@ Object.defineProperties( admin.nurse , {
                     return;
                 }
 
+                await createNewWindow( {
+                    id: "AddNurse",
+                    url: ADD_NURSE_URL,
+                    title: "Edit Nurse",
+                    state: "EDIT",
+                    options: { userId: uId }
+                });
+
             });
 
         }
@@ -178,38 +186,7 @@ Object.defineProperties( admin.nurse , {
             nurseOps.appendChild(prevIcon);
             nurseOps.appendChild(nextIcon);
 
-            addNurse.addEventListener("click" , () => {
-
-                const winCreated =  BrowserWindow.getAllWindows().find( x => x.__bid === "AddNurse");
-
-                if ( winCreated ) {
-                    dialog.showErrorBox("Cannot create multiple instance of window","This window is already opened");
-                    return;
-                }
-
-                let win = new BrowserWindow({
-                    maximizable  : false,
-                    minimizable  : true,
-                    resizable    : false,
-                    center       : true,
-                    show         : false,
-                    title        : "Add Nurse",
-                    height       : 603,
-                    width        : 463
-                });
-
-                win.__bid = "AddNurse";
-                win.on("ready-to-show", () => {
-                    win.show();
-                });
-
-                win.on("close", () => {
-                    win = undefined;
-                });
-
-                win.webContents.openDevTools( { mode: "bottom" } );
-                win.webContents.loadURL(ADD_NURSE_URL);
-            });
+            addNurse.addEventListener("click" , async () => await createNewWindow( { id: "AddNurse" , url: ADD_NURSE_URL , title: "Add Nurse"  } ) );
 
             return nurseOps;
         }
