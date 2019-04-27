@@ -74,6 +74,8 @@ module.exports.spinner = () => {
         top: "250px"
     });
 
+    spinnerParent.classList.add("spin-pending");
+
     spinnerParent.appendChild(spinner);
 
     return spinnerParent;

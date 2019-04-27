@@ -17,6 +17,7 @@ hospitalDb.version(1).stores({
     patients: "++id, healthFacility, &patientId, &phoneNumber, &email",
     pharmacists: "++id, healthFacility, &pharmacistId, &phoneNumber, &email",
     transactions: "++id, healthFacility",
+    receptionists: "++id, healthFacility, &receptionistId, &phoneNumber, &email",
     
     /**
        sessionObject will contain an email address

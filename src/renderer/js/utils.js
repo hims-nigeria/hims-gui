@@ -1,11 +1,20 @@
 "use strict";
 
-const { ipcRenderer: ipc, remote: { BrowserWindow, dialog } } = require("electron");
+const {
+    ipcRenderer: ipc,
+    remote: {
+        getCurrentWindow,
+        BrowserWindow,
+        dialog
+    }
+} = require("electron");
 
-const util = require("util");
-const https = require("https");
+const util   = require("util");
+const https  = require("https");
 const bcrypt = require("bcrypt");
-const { toast } = require("../js/domutils.js");
+
+const { PAGE_LIMIT } = require("../js/constants.js");
+const { toast , createTable, spinner } = require("../js/domutils.js");
 
 const hospitalDb = require("../js/db.js");
 
@@ -60,7 +69,7 @@ module.exports.isEmailExists = async ( email ) => (
     ])
 ).filter( x => x !== undefined);
 
-module.exports.createNewWindow = async ( { id , url , title , state , options }) => {
+const createNewWindow = async ( { id , url , title , state , options }) => {
 
     const winCreated =  BrowserWindow.getAllWindows().find( x => x.__bid === id );
 
@@ -82,7 +91,7 @@ module.exports.createNewWindow = async ( { id , url , title , state , options })
     });
 
     win.__bid = "AddNurse";
-    
+
     win.on("ready-to-show", () => {
         win.show();
     });
@@ -97,4 +106,176 @@ module.exports.createNewWindow = async ( { id , url , title , state , options })
 
     win.webContents.openDevTools( { mode: "bottom" } );
     win.webContents.loadURL(url);
+};
+
+module.exports.createNewWindow = createNewWindow;
+
+
+module.exports.loadUsersInfo = async ({result,collection,obj}) => {
+
+    const __users = { [collection]: {} };
+
+    if ( ! result.response ) {
+
+        const session = await hospitalDb.sessionObject.toArray();
+
+        if ( ! session.length ) {
+            getCurrentWindow().webContents.loadURL(obj.nextUrl);
+            return false;
+        }
+
+        const [ { role , fullName, healthFacilityId } ] = session;
+
+        const cursor = hospitalDb[collection].where({healthFacility : healthFacilityId});
+
+        Object.assign(__users[collection], {
+            hasMore: await cursor.count() > ((obj.PAGE + 1) * PAGE_LIMIT),
+            [collection]: await cursor.offset(PAGE_LIMIT * obj.PAGE).limit(PAGE_LIMIT).toArray(),
+            fullName,
+            role
+        });
+        console.log(__users[collection]);
+    }
+    return Object.keys(__users[collection]).length ? __users[collection] : result.response.data.message;
+};
+
+
+const appendTable = function ( ops , deleteUser ) {
+
+    const {
+        __internal: { self , property },
+        result: apiResult,
+        tableSpec,
+        location,
+        title,
+        user,
+        url
+    } = ops;
+
+    if ( ! apiResult.nurses.length ) return;
+
+    let table;
+
+    if ( ( table = document.querySelector("table") )  )
+        table.remove();
+
+    table = createTable(
+        {
+            tableRows: apiResult[user],
+            headers  : tableSpec.headers,
+            id       : tableSpec.tableId
+        }
+    );
+
+
+    document.querySelector(".currently-shown").appendChild(table);
+
+    table.addEventListener("click", async evt => {
+
+        const { target } = evt;
+
+        if ( ! (target instanceof HTMLAnchorElement) ) {
+            return;
+        }
+
+        const parentTr = target.parentNode.parentNode;
+        const ops      = target.getAttribute("data-ops");
+        const uId      = parentTr.getAttribute("user-id");
+        console.log(parentTr);
+        if ( ops === "delete" ) {
+            const result = await deleteUser(uId);
+            if ( result ) parentTr.remove();
+            return;
+        }
+
+        await createNewWindow({
+            options: { userId: uId },
+            id: title.replace(/\s+/,""),
+            state: "EDIT",
+            title,
+            url
+        });
+
+    });
+
+    self.emit("navigated" , location);
+};
+
+module.exports.appendTable = appendTable;
+
+module.exports.userOperation = function (op,loadUserCb) {
+
+    const {
+        __internal: { self, property },
+        text,
+        url
+    } = op;
+
+    const userOps    = document.createElement("div");
+    const addNewUser = document.createElement("button");
+    const prevIcon   = document.createElement("i");
+    const nextIcon   = document.createElement("i");
+
+    addNewUser.type = "button";
+    addNewUser.textContent = text;
+
+    prevIcon.classList.add("fa");
+    prevIcon.classList.add("fa-arrow-alt-circle-left");
+    prevIcon.classList.add("prev");
+    prevIcon.classList.add("navigator-icon");
+
+    nextIcon.classList.add("fa");
+    nextIcon.classList.add("fa-arrow-alt-circle-right");
+    nextIcon.classList.add("next");
+    nextIcon.classList.add("navigator-icon");
+
+
+    prevIcon.addEventListener("click", async () => {
+        if ( property.__first__page > 0 )
+            page({
+                location: "prev",
+                page: --property.__first__page,
+                property,
+                self
+            },loadUserCb);
+        nextIcon.classList.remove("no-more");
+    });
+
+    nextIcon.addEventListener("click", () => {
+        if ( property.hasMore )
+            page({
+                location: "next",
+                page: ++property.__first__page,
+                property,
+                self
+            },loadUserCb);
+    });
+
+    userOps.setAttribute("class", "user-ops");
+
+    userOps.appendChild(addNewUser);
+    userOps.appendChild(prevIcon);
+    userOps.appendChild(nextIcon);
+
+    addNewUser.addEventListener("click" , async () => await createNewWindow( { id: text.replace(/\s+/,"") , url , title: text  } ) );
+
+    return userOps;
+};
+
+const page = async (ops,loadUser) => {
+
+    if ( Math.sign(ops.page) === -1 ) return;
+
+    ops.self.sectionNavOps.appendChild(ops.self.spin);
+
+    const result = await loadUser(ops.page);
+
+    ops.self.spin.remove();
+
+    if ( ! result )
+        return;
+
+    ops.property.hasMore = result.hasMore;
+    console.log(result,"done for");
+    ops.self.emit("new-page-append", ops.location , result );
 };

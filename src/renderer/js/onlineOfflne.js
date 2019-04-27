@@ -96,7 +96,8 @@
                         createAfter: 0
                     });
                 } finally {
-                    client.close();
+                    if ( client )
+                        client.close();
                 }
             });
         },5000);

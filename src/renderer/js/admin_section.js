@@ -28,8 +28,8 @@
     });
 
     window.addEventListener("DOMContentLoaded", async () => {
-        //admin.emit("admin-dashboard");
-        admin.emit("admin-nurse");
+        admin.emit("admin-dashboard");
+        //admin.emit("admin-nurse");
     });
 
     navList.addEventListener("click", evt => {

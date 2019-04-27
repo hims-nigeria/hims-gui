@@ -1,5 +1,4 @@
 @import "./admin_dashboard.scss";
-@import "./admin_nurse.scss";
 @import "../table.scss";
 
 
@@ -8,5 +7,34 @@
     &.no-more {
         cursor: not-allowed;
         color: lightgrey;
+    }
+}
+
+.currently-shown {
+    clear: both;
+    margin-top: 80px;
+    .user-ops {
+        display: flex;
+        justify-content: flex-end;
+        padding: 12px;
+        > i {
+            margin-left: 12px;
+            margin-top: 8px;
+            color: black;
+        }
+        > button {
+            border: none;
+            padding: 8px;
+            border-radius: 20px;
+            cursor: pointer;
+            background: darken(red,10%);
+            color: white;
+            font-weight: bolder;
+            font-family: $default-font-family;
+            transition: .2s ease-in-out;
+            &:hover {
+                background: lighten(darken(red,10%),3%);
+            }
+        }
     }
 }
