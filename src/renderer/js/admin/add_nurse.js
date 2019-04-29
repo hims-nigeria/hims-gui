@@ -22,7 +22,7 @@
     const imageText     = document.querySelector(".image-preview-text");
     const fileLoader    = document.querySelector("[type=file]");
 
-    const form = document.querySelector(".admin-add-nurse-form");
+    const form = document.querySelector(".admin-add-user-form");
 
     const fReader = new FileReader();
 
