@@ -72,7 +72,7 @@ module.exports.isEmailExists = async ( email ) => (
 const createNewWindow = async ( { id , url , title , state , options }) => {
 
     const winCreated =  BrowserWindow.getAllWindows().find( x => x.__bid === id );
-
+    console.log(winCreated);
     if ( winCreated ) {
         dialog.showErrorBox("Cannot create multiple instance of window","This window is already opened");
         return;
@@ -90,9 +90,10 @@ const createNewWindow = async ( { id , url , title , state , options }) => {
         __state      : state
     });
 
-    win.__bid = "AddNurse";
+    win.__bid = title.replace(/\s+/,"");
 
     win.on("ready-to-show", () => {
+        console.log(win);
         win.show();
     });
 
@@ -110,36 +111,6 @@ const createNewWindow = async ( { id , url , title , state , options }) => {
 
 module.exports.createNewWindow = createNewWindow;
 
-
-module.exports.loadUsersInfo = async ({result,collection,obj}) => {
-
-    const __users = { [collection]: {} };
-
-    if ( ! result.response ) {
-
-        const session = await hospitalDb.sessionObject.toArray();
-
-        if ( ! session.length ) {
-            getCurrentWindow().webContents.loadURL(obj.nextUrl);
-            return false;
-        }
-
-        const [ { role , fullName, healthFacilityId } ] = session;
-
-        const cursor = hospitalDb[collection].where({healthFacility : healthFacilityId});
-
-        Object.assign(__users[collection], {
-            hasMore: await cursor.count() > ((obj.PAGE + 1) * PAGE_LIMIT),
-            [collection]: await cursor.offset(PAGE_LIMIT * obj.PAGE).limit(PAGE_LIMIT).toArray(),
-            fullName,
-            role
-        });
-        console.log(__users[collection]);
-    }
-    return Object.keys(__users[collection]).length ? __users[collection] : result.response.data.message;
-};
-
-
 const appendTable = function ( ops , deleteUser ) {
 
     const {
@@ -152,7 +123,9 @@ const appendTable = function ( ops , deleteUser ) {
         url
     } = ops;
 
-    if ( ! apiResult.nurses.length ) return;
+    console.log(apiResult);
+
+    if ( ! apiResult[user].length ) return;
 
     let table;
 
