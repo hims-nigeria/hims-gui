@@ -12,8 +12,7 @@ const {
 
 const {
     getDashboard,
-    getReceptionist,
-    adminLoadNurse,
+    adminLoadUser,
     deleteNurse
 } = require("../js/requests.js");
 
@@ -123,7 +122,8 @@ Object.defineProperties( admin.nurse , {
             this.__removeOnDom();
             this.sectionNavOps.appendChild(this.spin);
 
-            const result = await adminLoadNurse({
+            const result = await adminLoadUser({
+                user: "nurses",
                 nextUrl: LOGIN_URL,
                 PAGE: 0
             });
@@ -143,7 +143,8 @@ Object.defineProperties( admin.nurse , {
                 text      : "Add Nurse",
                 url       : ADD_NURSE_URL
             }, async (page) => {
-                return await adminLoadNurse({
+                return await adminLoadUser({
+                    url: "nurses",
                     nextUrl: LOGIN_URL,
                     PAGE: page
                 });
@@ -187,7 +188,8 @@ Object.defineProperties(admin.receptionist, {
 
             this.sectionNavOps.appendChild(this.spin);
 
-            const result = await getReceptionist({
+            const result = await adminLoadUser({
+                user: "receptionists",
                 nextUrl: LOGIN_URL,
                 PAGE   : 0
             });
@@ -206,9 +208,16 @@ Object.defineProperties(admin.receptionist, {
                 result
             }).appendChild(
                 userOperation({
+                    __internal: { self: this , property: this.nurse },
                     property: this.receptionists,
                     text    : "Add Receptionist",
                     url     : ADD_RECEPTIONIST_URL
+                }, async (page) => {
+                    return await adminLoadUser({
+                        user: "receptionists",
+                        nextUrl: LOGIN_URL,
+                        PAGE: page
+                    });
                 })
             );
         }

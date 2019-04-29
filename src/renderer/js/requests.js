@@ -263,26 +263,6 @@ module.exports.register = async (data,obj) => {
     }
 };
 
-module.exports.adminLoadNurse = async ( obj ) => {
-
-    let result;
-
-    try {
-        result = await axios.get(`${REQUEST_URL}/admin/nurse?page=${obj.PAGE}`);
-    } catch(ex) {
-        result = ex;
-    } finally {
-        return apiCallHandler(result, obj, async () => {
-            return await loadUsersInfo({
-                collection: "nurses",
-                result,
-                obj
-            });
-        });
-    }
-};
-
-
 module.exports.saveNurse = async ( data , obj ) => {
 
 
@@ -447,18 +427,18 @@ module.exports.editNurse = async (data,obj) => {
 };
 
 
-module.exports.getReceptionist = async obj => {
-
+module.exports.adminLoadUser = async obj => {
+    
     let result;
 
     try {
-        result = await axios.get(`${REQUEST_URL}/admin/receptionist?page=${obj.PAGE}`);
+        result = await axios.get(`${REQUEST_URL}/admin/${obj.user}?page=${obj.PAGE}`);
     } catch(ex) {
         result = ex;
     } finally {
         return apiCallHandler(result, obj, async () => {
             return await loadUsersInfo({
-                collection: "receptionists",
+                collection: `${obj.user}`,
                 result,
                 obj
             });
