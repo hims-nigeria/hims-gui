@@ -7,11 +7,15 @@ const qs    = require("querystring");
 const { toast } = require("../js/domutils.js");
 
 const {
+    deleteUserInfo,
+    loadUsersInfo
+} = require("../js/dbHelper.js");
+
+const {
     hashPassword,
     createExternalId,
     formDataToObject,
     comparePassword,
-    loadUsersInfo,
     isEmailExists
 } = require("../js/utils.js");
 
@@ -327,7 +331,6 @@ module.exports.saveNurse = async ( data , obj ) => {
     }
 };
 
-
 module.exports.deleteNurse = async (data,obj) => {
     let result;
     try {
@@ -335,29 +338,13 @@ module.exports.deleteNurse = async (data,obj) => {
     } catch(ex) {
         result = ex;
     } finally {
-
         return apiCallHandler(result,obj, async () => {
-
-            const [  { healthFacilityId }  ] = await hospitalDb.sessionObject.toArray();
-            await hospitalDb.nurses.where({ nurseId: data.nurseId }).delete();
-            await hospitalDb.healthFacility.where({ healthFacilityId }).modify( result => {
-                result.dashboardInfo.nurses -= 1;
+            return await deleteUserInfo({
+                collection: "nurses",
+                idType: "nurseId",
+                result,
+                data
             });
-
-            if ( ! result.response ) {
-                await hospitalDb.offlineAccounts.where(
-                    {
-                        newInformationType: "nurses"
-                    }
-                ).and(
-                    x => x.nurseId === data.nurseId
-                ).modify(
-                    {
-                        flag: "delete"
-                    }
-                );
-            }
-            return true;
         });
     }
 };
@@ -428,7 +415,7 @@ module.exports.editNurse = async (data,obj) => {
 
 
 module.exports.adminLoadUser = async obj => {
-    
+
     let result;
 
     try {
