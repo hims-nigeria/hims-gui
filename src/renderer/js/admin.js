@@ -164,7 +164,6 @@ Object.defineProperties( admin.nurse , {
                         result
                     },
                     async (uId) => {
-                        console.log(uId, "wkwkwk inside admin.js");
                         return await deleteNurse(
                             { nurseId: uId },
                             {}
@@ -199,8 +198,6 @@ Object.defineProperties(admin.receptionist, {
             if ( ! result )
                 return;
 
-            console.log(result);
-
             this.__createSectionDiv( {
                 property : this.receptionist,
                 elName   : "receptionistsDiv",
@@ -220,6 +217,28 @@ Object.defineProperties(admin.receptionist, {
                     });
                 })
             );
+
+            this.on("new-page-append", (location,result) => {
+                appendTable(
+                    {
+                        tableSpec   : { tableId: "receptionistId", headers: [ "image", "name" , "email", "address" , "phone"] },
+                        __internal  : { self: this, property: this.nurse },
+                        title       : "Edit Receptionist",
+                        user        : "receptionists",
+                        url         : ADD_NURSE_URL,
+                        location,
+                        result
+                    },
+                    async (uId) => {
+                        return await deleteReceptionist(
+                            { receptionistId: uId },
+                            {}
+                        );
+                    }
+                );
+            });
+
+            this.emit("new-page-append", "prev" , result );
         }
     }
 });
