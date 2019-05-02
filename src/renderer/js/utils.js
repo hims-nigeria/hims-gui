@@ -102,7 +102,7 @@ const createNewWindow = async ( { id , url , title , state , options }) => {
     });
 
     ipc.once("get:window:state", (evt,id) => {
-        ipc.sendTo(id,"window-state", state, state && options );
+        ipc.sendTo(id,"window-state", state, options );
     });
 
     win.webContents.openDevTools( { mode: "bottom" } );
@@ -115,6 +115,7 @@ const appendTable = function ( ops , deleteUser ) {
 
     const {
         __internal: { self , property },
+        __newWindowSpec,
         result: apiResult,
         tableSpec,
         location,
@@ -162,7 +163,7 @@ const appendTable = function ( ops , deleteUser ) {
         }
 
         await createNewWindow({
-            options: { userId: uId },
+            options: { userId: uId , __newWindowSpec: Object.assign(__newWindowSpec,{ title }) },
             id: title.replace(/\s+/,""),
             state: "EDIT",
             title,
@@ -251,4 +252,100 @@ const page = async (ops,loadUser) => {
     ops.property.hasMore = result.hasMore;
     console.log(result,"done for");
     ops.self.emit("new-page-append", ops.location , result );
+};
+
+
+module.exports.loadImageToDom = ({file,fileReader}) => {
+
+    const previewParent = document.querySelector(".image-preview");
+    const previewImage  = document.querySelector(".previewer");
+    const imageText     = document.querySelector(".image-preview-text");
+
+    fileReader.readAsDataURL(file);
+
+    fileReader.addEventListener("load", evt => {
+        imageText.style.display = "none";
+        previewParent.style.padding = "unset";
+        previewImage.src = evt.target.result;
+        previewImage.style.display = "block";
+    });
+};
+
+
+module.exports.addUserFormHandler = async (FORM_STATE,{ evt , role,  _id , ipcEventName  , saveUser, editUser }) => {
+
+    evt.preventDefault();
+
+    if ( ! evt.target.checkValidity() ) {
+        dialog.showErrorBox("Something does not feel right","Please correct the wrong fields");
+        return;
+    }
+
+    const previewImage  = document.querySelector(".previewer");
+    const btns = Array.from(document.querySelectorAll("button"));
+    const fData = new FormData(evt.target);
+
+    let result;
+
+    btns.forEach( x => x.disabled = true );
+
+    if ( FORM_STATE.state === "EDIT" ) {
+        console.log("came in", _id);
+        fData.append(_id.name, _id.value);
+        result = await editUser(fData,btns);
+        ipc.sendTo( 1 , ipcEventName);
+        return ;
+    }
+
+    fData.append("role", role);
+    result = await saveUser(fData,btns);
+
+    if ( ! result ) return;
+    ipc.sendTo( 1 , ipcEventName);
+    window.location.reload();
+};
+
+module.exports.setupEventOnDomLoad = ( FORM_STATE , title ) => {
+
+    const previewParent = document.querySelector(".image-preview");
+    const previewImage  = document.querySelector(".previewer");
+    const imageText     = document.querySelector(".image-preview-text");
+
+    ipc.on("window-state", async (evt,state,opt) => {
+
+        const {
+            collection,
+            idType,
+            title
+        } = FORM_STATE.__newWindowSpec = opt.__newWindowSpec;
+
+        if ( state !== "EDIT" ) return;
+
+        const userToEdit = await hospitalDb[collection].get( { [idType]: opt.userId } );
+
+        document.querySelector("p.op").textContent = document.title = title;
+        FORM_STATE.userId = opt.userId;
+        FORM_STATE.state  = "EDIT";
+
+        Object.keys(userToEdit).forEach( async x => {
+
+            const el = document.querySelector(`[name=${x}]`);
+
+            if ( ! el ) return;
+
+            if ( x === "image" ) {
+                const dataURI = (new TextDecoder()).decode(userToEdit["image"]);
+                el.required = false;
+                imageText.style.display = "none";
+                previewParent.style.padding = "unset";
+                previewImage.src = dataURI;
+                previewImage.style.display = "block";
+                return;
+            }
+            el.value = userToEdit[x];
+        });
+
+    });
+
+    ipc.sendTo(1,"get:window:state", getCurrentWindow().webContents.id);
 };
