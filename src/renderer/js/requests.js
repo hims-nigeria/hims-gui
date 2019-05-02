@@ -5,25 +5,24 @@ const axios = require("axios");
 const qs    = require("querystring");
 
 const { toast } = require("../js/domutils.js");
+const { REQUEST_URL } = require("../js/constants.js");
 
 const {
     deleteUserInfo,
-    loadUsersInfo
+    loadUsersInfo,
+    saveUserInfo,
+    editUserInfo
 } = require("../js/dbHelper.js");
 
 const {
+    formDataToObject,
     hashPassword,
     createExternalId,
-    formDataToObject,
     comparePassword,
     isEmailExists
 } = require("../js/utils.js");
 
 const hospitalDb = require("../js/db.js");
-
-const REQUEST_URL = process.env.NODE_ENV === "development"
-      ? "http://localhost:3001"
-      : "protocol://host:port";
 
 
 // this will read from local database
@@ -87,6 +86,8 @@ const apiCallHandler = async (result,obj, cb = function() {}) => {
 
     return await __cb();
 };
+
+module.exports.apiCallHandler = apiCallHandler;
 
 module.exports.getDashboard = async obj => {
 
@@ -267,165 +268,18 @@ module.exports.register = async (data,obj) => {
     }
 };
 
-module.exports.saveNurse = async ( data , obj ) => {
-
-
-    const OBJECT_TO_CACHE = {};
-
-    const hpwd = await formDataToObject(data,OBJECT_TO_CACHE);
-
-    if ( ! hpwd ) {
-        toast({
-            text: "Registration of patient failed. Retry creating patient",
-            createAfter: 0
-        });
-        return false;
-    }
-
-    OBJECT_TO_CACHE.role = "nurse";
-    OBJECT_TO_CACHE.password = hpwd;
-    OBJECT_TO_CACHE.image = (new TextEncoder()).encode(obj.dataUri);
-
-    let result;
-
-    try {
-        result = await axios.post(`${REQUEST_URL}/admin/nurse` , data );
-    } catch(ex) {
-        result = ex;
-    } finally {
-
-        return apiCallHandler(result, obj, async () => {
-
-            const result = await isEmailExists( OBJECT_TO_CACHE.email );
-
-            if ( result.length ) {
-                toast({
-                    text: `${OBJECT_TO_CACHE.email} is not avaiable`,
-                    createAfter: 5000
-                });
-                return false;
-            }
-
-            const [ { healthFacilityId } ] = await hospitalDb.sessionObject.toArray();
-
-            OBJECT_TO_CACHE.nurseId = createExternalId(
-                OBJECT_TO_CACHE.email,
-                OBJECT_TO_CACHE.phoneNumber,
-                Date.now()
-            );
-
-            OBJECT_TO_CACHE.healthFacility = healthFacilityId;
-
-            await hospitalDb.nurses.add(OBJECT_TO_CACHE);
-
-            await hospitalDb.healthFacility.where({ healthFacilityId }).modify( result => {
-                result.dashboardInfo.nurses += 1;
-            });
-
-            if ( ! result.response ) {
-                await hospitalDb.offlineAccounts.add({ ...OBJECT_TO_CACHE , newInformationType: "nurses" , flag: "new" });
-            }
-
-            return OBJECT_TO_CACHE;
-        });
-    }
-};
-
-module.exports.deleteNurse = async (data,obj) => {
-    let result;
-    try {
-        result = await axios.delete(`${REQUEST_URL}/nurse`, data );
-    } catch(ex) {
-        result = ex;
-    } finally {
-        return apiCallHandler(result,obj, async () => {
-            return await deleteUserInfo({
-                collection: "nurses",
-                idType: "nurseId",
-                result,
-                data
-            });
-        });
-    }
-};
-
-
-module.exports.editNurse = async (data,obj) => {
-
-    let result;
-
-    const OBJECT_TO_CACHE = {};
-
-    const hpwd = await formDataToObject(data,OBJECT_TO_CACHE);
-
-    if ( ! hpwd ) {
-        toast({
-            text: "Registration of patient failed. Retry creating patient",
-            createAfter: 0
-        });
-        return false;
-    }
-
-    OBJECT_TO_CACHE.image = (new TextEncoder()).encode(obj.dataUri);
-    OBJECT_TO_CACHE.password = hpwd;
-
-    try {
-        result = await axios.post(`${REQUEST_URL}/nurse/edit`);
-    } catch(ex) {
-        result = ex;
-    } finally {
-
-        return apiCallHandler( result , obj , async () => {
-
-            const resEmail = await isEmailExists(OBJECT_TO_CACHE.email);
-
-            if ( resEmail[0].email !== OBJECT_TO_CACHE.email ) {
-                toast({
-                    text: `${resEmail[0].email} does not exists`,
-                    createAfter: 5000
-                });
-                return false;
-            }
-
-            const nurseId = OBJECT_TO_CACHE.nurseId;
-
-            delete OBJECT_TO_CACHE.nurseId;
-            await hospitalDb.nurses.where({ nurseId }).modify(OBJECT_TO_CACHE);
-
-            if ( ! result.response ) {
-
-                await hospitalDb.offlineAccounts.where(
-                    {
-                        newInformationType: "nurses"
-                    }
-                ).and(
-                    x => x.nurseId === nurseId
-                ).modify(
-                    {
-                        ...OBJECT_TO_CACHE,
-                        flag: "edit"
-                    }
-                );
-            }
-
-            return true;
-        });
-    }
-};
-
-
 module.exports.adminLoadUser = async obj => {
 
     let result;
 
     try {
-        result = await axios.get(`${REQUEST_URL}/admin/${obj.user}?page=${obj.PAGE}`);
+        result = await axios.get(`${REQUEST_URL}/admin/${obj.url}?page=${obj.PAGE}`);
     } catch(ex) {
         result = ex;
     } finally {
         return apiCallHandler(result, obj, async () => {
             return await loadUsersInfo({
-                collection: `${obj.user}`,
+                collection: obj.collection,
                 result,
                 obj
             });
@@ -433,6 +287,59 @@ module.exports.adminLoadUser = async obj => {
     }
 };
 
+module.exports.adminSaveUser = async ( data , obj ) => {
+    let result;
+    try {
+        result = await axios.post(`${REQUEST_URL}/register/${obj.url}` , data );
+    } catch(ex) {
+        result = ex;
+    } finally {
+        return apiCallHandler(result, obj, async () => {
+            return await saveUserInfo({
+                collection: obj.collection,
+                data,
+                obj
+            });
+        });
+    }
+};
+
+module.exports.adminDeleteUser = async (data,obj) => {
+    let result;
+    try {
+        result = await axios.delete(`${REQUEST_URL}/delete/${obj.url}`, data );
+    } catch(ex) {
+        result = ex;
+    } finally {
+        return apiCallHandler(result,obj, async () => {
+            return await deleteUserInfo({
+                collection: obj.collection,
+                idType: obj.idType,
+                result,
+                data
+            });
+        });
+    }
+};
+
+module.exports.adminEditUser = async (data,obj) => {
+    let result;
+    try {
+        result = await axios.post(`${REQUEST_URL}/edit/${obj.url}` , data);
+    } catch(ex) {
+        result = ex;
+    } finally {
+        return apiCallHandler( result , obj , async () => {
+            return await editUserInfo({
+                collection: obj.collection,
+                idType    : obj.idType,
+                result,
+                data,
+                obj
+            });
+        });
+    }
+};
 
 module.exports.logout = async obj => {
     let result;

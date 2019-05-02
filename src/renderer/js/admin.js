@@ -13,7 +13,7 @@ const {
 const {
     getDashboard,
     adminLoadUser,
-    deleteNurse
+    adminDeleteNurse
 } = require("../js/requests.js");
 
 const { LOGIN_URL, ADD_NURSE_URL, ADD_RECEPTIONIST_URL = "f.html" } = require("../js/constants.js");
@@ -123,7 +123,8 @@ Object.defineProperties( admin.nurse , {
             this.sectionNavOps.appendChild(this.spin);
 
             const result = await adminLoadUser({
-                user: "nurses",
+                url: "nurse",
+                collection: "nurses",
                 nextUrl: LOGIN_URL,
                 PAGE: 0
             });
@@ -144,7 +145,8 @@ Object.defineProperties( admin.nurse , {
                 url       : ADD_NURSE_URL
             }, async (page) => {
                 return await adminLoadUser({
-                    url: "nurses",
+                    url: "nurse",
+                    collection: "nurses",
                     nextUrl: LOGIN_URL,
                     PAGE: page
                 });
@@ -161,12 +163,18 @@ Object.defineProperties( admin.nurse , {
                         user        : "nurses",
                         url         : ADD_NURSE_URL,
                         location,
-                        result
+                        result,
+
+                        __newWindowSpec: {
+                            collection: "nurses",
+                            idType : "nurseId",
+                            url: "nurse"
+                        }
                     },
                     async (uId) => {
-                        return await deleteNurse(
+                        return await adminDeleteNurse(
                             { nurseId: uId },
-                            {}
+                            { url: "nurse", collection: "nurses", idType: "nurseId" }
                         );
                     }
                 );

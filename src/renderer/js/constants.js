@@ -13,3 +13,7 @@ module.exports.NOT_MAIN_WINDOW_URL = `file://${APP_PATH}/${SUBDIR}/not_main_wind
 module.exports.ADD_RECEPTIONIST_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_receptionist.html`;
 
 module.exports.PAGE_LIMIT = 25;
+
+module.exports.REQUEST_URL = process.env.NODE_ENV === "development"
+      ? "http://localhost:3001"
+      : "protocol://host:port";
