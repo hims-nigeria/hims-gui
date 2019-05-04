@@ -42,7 +42,10 @@
             target = target.parentNode;
 
         const eventName = target.getAttribute("data-fire");
+
+        admin.removeAllListeners("new-page-append");
         admin.emit(eventName);
+
     });
 
 
