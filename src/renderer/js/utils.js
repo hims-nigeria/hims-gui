@@ -60,6 +60,7 @@ module.exports.formDataToObject = async(formData,OBJECT_TO_CACHE) => {
 module.exports.isEmailExists = async ( email ) => (
     await Promise.all([
         await hospitalDb.healthFacility.get({ email }),
+        await hospitalDb.receptionists.get( { email }),
         await hospitalDb.accountants.get({ email }),
         await hospitalDb.doctors.get({ email }),
         await hospitalDb.interns.get({ email }),
@@ -69,8 +70,7 @@ module.exports.isEmailExists = async ( email ) => (
     ])
 ).filter( x => x !== undefined);
 
-const createNewWindow = async ( { id , url , title , state , options }) => {
-
+const createNewWindow = async ( { id , url , title , state , options } ) => {
     const winCreated =  BrowserWindow.getAllWindows().find( x => x.__bid === id );
     console.log(winCreated);
     if ( winCreated ) {
@@ -102,7 +102,7 @@ const createNewWindow = async ( { id , url , title , state , options }) => {
     });
 
     ipc.once("get:window:state", (evt,id) => {
-        ipc.sendTo(id,"window-state", state, options );
+        ipc.sendTo(id,"window-state", state, options);
     });
 
     win.webContents.openDevTools( { mode: "bottom" } );
@@ -123,6 +123,8 @@ const appendTable = function ( ops , deleteUser ) {
         user,
         url
     } = ops;
+
+    console.log(ops.__newWindowSpec, "duh");
 
     console.log(apiResult);
 
@@ -172,7 +174,7 @@ const appendTable = function ( ops , deleteUser ) {
 
     });
 
-    self.emit("navigated" , location);
+    self.emit("navigated" , location ,  property );
 };
 
 module.exports.appendTable = appendTable;
@@ -181,8 +183,9 @@ module.exports.userOperation = function (op,loadUserCb) {
 
     const {
         __internal: { self, property },
+        __newWindowSpec,
         text,
-        url
+        url,
     } = op;
 
     const userOps    = document.createElement("div");
@@ -231,7 +234,7 @@ module.exports.userOperation = function (op,loadUserCb) {
     userOps.appendChild(prevIcon);
     userOps.appendChild(nextIcon);
 
-    addNewUser.addEventListener("click" , async () => await createNewWindow( { id: text.replace(/\s+/,"") , url , title: text  } ) );
+    addNewUser.addEventListener("click" , async () => await createNewWindow( { id: text.replace(/\s+/,"") , url , title: text , options:{ __newWindowSpec }}));
 
     return userOps;
 };
@@ -250,7 +253,6 @@ const page = async (ops,loadUser) => {
         return;
 
     ops.property.hasMore = result.hasMore;
-    console.log(result,"done for");
     ops.self.emit("new-page-append", ops.location , result );
 };
 
@@ -272,7 +274,7 @@ module.exports.loadImageToDom = ({file,fileReader}) => {
 };
 
 
-module.exports.addUserFormHandler = async (FORM_STATE,{ evt , role,  _id , ipcEventName  , saveUser, editUser }) => {
+module.exports.addUserFormHandler = async (FORM_STATE,{ evt , saveUser, editUser }) => {
 
     evt.preventDefault();
 
@@ -290,19 +292,22 @@ module.exports.addUserFormHandler = async (FORM_STATE,{ evt , role,  _id , ipcEv
     btns.forEach( x => x.disabled = true );
 
     if ( FORM_STATE.state === "EDIT" ) {
-        console.log("came in", _id);
-        fData.append(_id.name, _id.value);
+        fData.append(FORM_STATE.__newWindowSpec.idType,FORM_STATE.userId);
         result = await editUser(fData,btns);
-        ipc.sendTo( 1 , ipcEventName);
+        ipc.sendTo( 1 , FORM_STATE.__newWindowSpec.ipcEventName);
         return ;
     }
 
-    fData.append("role", role);
+
     result = await saveUser(fData,btns);
 
     if ( ! result ) return;
-    ipc.sendTo( 1 , ipcEventName);
-    window.location.reload();
+
+    ipc.sendTo( 1 , FORM_STATE.__newWindowSpec.ipcEventName);
+
+    console.log(FORM_STATE.__newWindowSpec.ipcEventName);
+
+    //window.location.reload();
 };
 
 module.exports.setupEventOnDomLoad = ( FORM_STATE , title ) => {

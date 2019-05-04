@@ -13,7 +13,7 @@ const {
 const {
     getDashboard,
     adminLoadUser,
-    adminDeleteNurse
+    adminDeleteUser
 } = require("../js/requests.js");
 
 const { LOGIN_URL, ADD_NURSE_URL, ADD_RECEPTIONIST_URL = "f.html" } = require("../js/constants.js");
@@ -27,8 +27,7 @@ const admin = new(class Admin extends EventEmitter {
 
     constructor() {
         super();
-        this.nurse = {};
-        this.receptionist = {};
+        this.currentUser = {};
         this.sectionNavOps = document.querySelector(".section-nav-operation");
         this.spin = spinner();
     }
@@ -111,151 +110,110 @@ const admin = new(class Admin extends EventEmitter {
         this.__setCredentials(result);
         this.sectionNavOps.appendChild(reportUl);
     }
-});
 
-Object.defineProperties( admin.nurse , {
+    async getUser(userObj) {
 
-    getNurse: {
+        const {
+            props: { elName, class: cl, collection, nextUrl , idType , apiUrl },
+            addNew: { text , url: userUrl },
+            table: { tableSpec , title: editTitle, user: editWinUser , ipcEventName }
+        } = userObj;
 
-        async value() {
+        this.__removeOnDom();
+        this.sectionNavOps.appendChild(this.spin);
 
-            this.__removeOnDom();
-            this.sectionNavOps.appendChild(this.spin);
+        const result = await adminLoadUser({ url: apiUrl, collection, nextUrl, PAGE: 0});
 
-            const result = await adminLoadUser({
-                url: "nurse",
-                collection: "nurses",
-                nextUrl: LOGIN_URL,
-                PAGE: 0
-            });
+        this.spin.remove();
 
-            this.spin.remove();
+        if ( ! result )
+            return;
 
-            if ( ! result )
-                return;
-
-            this.__createSectionDiv( {
-                property : this.nurse,
-                elName   : "nurseDiv",
-                class    : "nurse-div",
-                result
-            }).appendChild(userOperation({
-                __internal: { self: this , property: this.nurse },
-                text      : "Add Nurse",
-                url       : ADD_NURSE_URL
-            }, async (page) => {
-                return await adminLoadUser({
-                    url: "nurse",
-                    collection: "nurses",
-                    nextUrl: LOGIN_URL,
-                    PAGE: page
-                });
-            }));
+        this.__createSectionDiv( { property : this.currentUser, elName, class: cl, result})
+            .appendChild(userOperation(
+                {
+                    __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName },
+                    __internal     : { self: this , property: this.currentUser },
+                    url            : userUrl,
+                    text
+                }, async (page) => await adminLoadUser(
+                    { url: apiUrl, collection, nextUrl, PAGE: page }
+                )
+            ));
 
 
-
-            this.on("new-page-append", (location,result) => {
-                appendTable(
-                    {
-                        tableSpec   : { tableId: "nurseId", headers: [ "image", "name" , "rank", "email", "address" , "phone"] },
-                        __internal  : { self: this, property: this.nurse },
-                        title       : "Edit Nurse",
-                        user        : "nurses",
-                        url         : ADD_NURSE_URL,
-                        location,
-                        result,
-
-                        __newWindowSpec: {
-                            collection: "nurses",
-                            idType : "nurseId",
-                            url: "nurse"
-                        }
-                    },
-                    async (uId) => {
-                        return await adminDeleteNurse(
-                            { nurseId: uId },
-                            { url: "nurse", collection: "nurses", idType: "nurseId" }
-                        );
-                    }
-                );
-            });
-
-            this.emit("new-page-append", "prev" , result );
-        }
-    }
-});
-
-Object.defineProperties(admin.receptionist, {
-
-    getReceptionist: {
-
-        async value() {
-
-            this.__removeOnDom();
-
-            this.sectionNavOps.appendChild(this.spin);
-
-            const result = await adminLoadUser({
-                user: "receptionists",
-                nextUrl: LOGIN_URL,
-                PAGE   : 0
-            });
-
-            this.spin.remove();
-
-            if ( ! result )
-                return;
-
-            this.__createSectionDiv( {
-                property : this.receptionist,
-                elName   : "receptionistsDiv",
-                class    : "receptionist-div",
-                result
-            }).appendChild(
-                userOperation({
-                    __internal: { self: this , property: this.nurse },
-                    property: this.receptionists,
-                    text    : "Add Receptionist",
-                    url     : ADD_RECEPTIONIST_URL
-                }, async (page) => {
-                    return await adminLoadUser({
-                        user: "receptionists",
-                        nextUrl: LOGIN_URL,
-                        PAGE: page
-                    });
-                })
+        this.on("new-page-append", (location,result) => {
+            appendTable(
+                {
+                    tableSpec,
+                    __internal  : { self: this, property: this.currentUser },
+                    title       : editTitle,
+                    user        : editWinUser,
+                    url         : userUrl,
+                    location,
+                    result,
+                    __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName }
+                },
+                async (uId) => await adminDeleteUser(
+                    { [idType]: uId },
+                    { url: apiUrl, collection, idType }
+                )
             );
+        });
 
-            this.on("new-page-append", (location,result) => {
-                appendTable(
-                    {
-                        tableSpec   : { tableId: "receptionistId", headers: [ "image", "name" , "email", "address" , "phone"] },
-                        __internal  : { self: this, property: this.nurse },
-                        title       : "Edit Receptionist",
-                        user        : "receptionists",
-                        url         : ADD_NURSE_URL,
-                        location,
-                        result
-                    },
-                    async (uId) => {
-                        return await deleteReceptionist(
-                            { receptionistId: uId },
-                            {}
-                        );
-                    }
-                );
-            });
-
-            this.emit("new-page-append", "prev" , result );
-        }
+        this.emit("new-page-append", "prev" , result );
     }
 });
 
-admin.on("admin-receptionist", admin.receptionist.getReceptionist.bind(admin));
-admin.on("admin-dashboard",    admin.dashboard );
-admin.on("admin-nurse",        admin.nurse.getNurse.bind(admin));
+admin.on("admin-receptionist", async () => {
 
-ipc.on("admin-nurse", admin.nurse.getNurse.bind(admin) );
+    await admin.getUser({
+        props: {
+            elName: "receptionistDiv",
+            class:  "receptionist-div",
+            collection: "receptionists",
+            nextUrl: LOGIN_URL,
+            apiUrl : "receptionist",
+            idType: "receptionistId"
+        },
+        addNew: {
+            text: "Add Receptionist",
+            url: ADD_RECEPTIONIST_URL
+        },
+        table: {
+            tableSpec: { tableId: "receptionistId", headers: [ "image", "name", "email", "address" , "phone"] },
+            title: "Edit Receptionist",
+            user: "receptionists",
+            ipcEventName: "admin-receptionist"
+        }
+    });
+});
+admin.on("admin-dashboard",    admin.dashboard );
+admin.on("admin-nurse", async () => {
+    await admin.getUser({
+        props: {
+            elName: "nurseDiv",
+            class:  "nurse-div",
+            collection: "nurses",
+            nextUrl: LOGIN_URL,
+            apiUrl : "nurse",
+            idType: "nurseId"
+        },
+        addNew: {
+            text: "Add Nurse",
+            url: ADD_NURSE_URL
+        },
+        table: {
+            tableSpec: { tableId: "nurseId", headers: [ "image", "name" , "rank", "email", "address" , "phone"] },
+            title: "Edit Nurse",
+            user: "nurses",
+            ipcEventName: "admin-nurse"
+        }
+    });
+});
+
+ipc.on("admin-nurse", () => admin.emit("admin-nurse"));
+ipc.on("admin-receptionist", () => admin.emit("admin-receptionist"));
 
 
 module.exports = admin;

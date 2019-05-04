@@ -235,6 +235,7 @@ module.exports.register = async (data,obj) => {
             await hospitalDb.healthFacility.add({
                 ...OBJECT_TO_CACHE,
                 dashboardInfo: {
+                    receptionists: 0,
                     laboratorists: 0,
                     transactions: 0,
                     pharmacists: 0,
@@ -289,12 +290,14 @@ module.exports.adminLoadUser = async obj => {
 
 module.exports.adminSaveUser = async ( data , obj ) => {
     let result;
+    data.append("role", obj.url);
     try {
         result = await axios.post(`${REQUEST_URL}/register/${obj.url}` , data );
     } catch(ex) {
         result = ex;
     } finally {
         return apiCallHandler(result, obj, async () => {
+            console.log(obj);
             return await saveUserInfo({
                 collection: obj.collection,
                 data,

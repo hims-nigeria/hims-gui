@@ -27,7 +27,8 @@
         __newWindowSpec: {
             idType: undefined,
             collection: undefined,
-            url: undefined
+            url: undefined,
+            ipcEventName: undefined
         }
     };
 
@@ -41,9 +42,6 @@
     }));
 
     form.addEventListener("submit", evt => addUserFormHandler(FORM_STATE,{
-        _id: { name: "nurseId", value: FORM_STATE.userId },
-        ipcEventName: "admin-nurse",
-        role: "nurse",
         evt,
         saveUser: async (fData,btns) => {
             return await adminSaveUser(  fData , {

@@ -83,7 +83,7 @@ module.exports.saveUserInfo = async ({ data , obj , collection } ) => {
         return false;
     }
 
-    OBJECT_TO_CACHE.role = data.role;
+    OBJECT_TO_CACHE.role = data.get("role");
     OBJECT_TO_CACHE.password = hpwd;
     OBJECT_TO_CACHE.image = (new TextEncoder()).encode(obj.dataUri);
 
