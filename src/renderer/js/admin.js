@@ -16,7 +16,13 @@ const {
     adminDeleteUser
 } = require("../js/requests.js");
 
-const { LOGIN_URL, ADD_NURSE_URL, ADD_RECEPTIONIST_URL = "f.html" } = require("../js/constants.js");
+const {
+    LOGIN_URL,
+    ADD_NURSE_URL,
+    ADD_INTERN_URL,
+    ADD_RECEPTIONIST_URL
+} = require("../js/constants.js");
+
 const { spinner , createTable } = require("../js/domutils.js");
 const { appendTable , userOperation     } = require("../js/utils.js");
 const { EventEmitter } = require("events");
@@ -165,6 +171,8 @@ const admin = new(class Admin extends EventEmitter {
     }
 });
 
+admin.on("admin-dashboard",    admin.dashboard );
+
 admin.on("admin-receptionist", async () => {
 
     await admin.getUser({
@@ -188,7 +196,7 @@ admin.on("admin-receptionist", async () => {
         }
     });
 });
-admin.on("admin-dashboard",    admin.dashboard );
+
 admin.on("admin-nurse", async () => {
     await admin.getUser({
         props: {
@@ -212,7 +220,31 @@ admin.on("admin-nurse", async () => {
     });
 });
 
+admin.on("admin-intern", async () => {
+    await admin.getUser({
+        props: {
+            elName: "internDiv",
+            class:  "intern-div",
+            collection: "interns",
+            nextUrl: LOGIN_URL,
+            apiUrl : "intern",
+            idType: "internId"
+        },
+        addNew: {
+            text: "Add Intern",
+            url: ADD_INTERN_URL
+        },
+        table: {
+            tableSpec: { tableId: "internId", headers: [ "name", "duty", "email", "address" , "phone"] },
+            title: "Edit Intern",
+            user: "interns",
+            ipcEventName: "admin-intern"
+        }
+    });
+});
+
 ipc.on("admin-nurse", () => admin.emit("admin-nurse"));
+ipc.on("admin-intern", () => admin.emit("admin-intern"));
 ipc.on("admin-receptionist", () => admin.emit("admin-receptionist"));
 
 

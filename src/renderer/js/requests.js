@@ -297,11 +297,11 @@ module.exports.adminSaveUser = async ( data , obj ) => {
         result = ex;
     } finally {
         return apiCallHandler(result, obj, async () => {
-            console.log(obj);
             return await saveUserInfo({
                 collection: obj.collection,
                 data,
-                obj
+                obj,
+                result
             });
         });
     }

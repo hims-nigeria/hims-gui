@@ -32,28 +32,30 @@
         }
     };
 
-    selectImage.addEventListener("click", () => {
-        fileLoader.click();
-    });
+    if ( selectImage)
+        selectImage.addEventListener("click", () => {
+            fileLoader.click();
+        });
 
-    fileLoader.addEventListener("input", evt => loadImageToDom({
-        file: evt.target.files[0],
-        fileReader
-    }));
+    if ( fileLoader )
+        fileLoader.addEventListener("input", evt => loadImageToDom({
+            file: evt.target.files[0],
+            fileReader
+        }));
 
     form.addEventListener("submit", evt => addUserFormHandler(FORM_STATE,{
         evt,
         saveUser: async (fData,btns) => {
             return await adminSaveUser(  fData , {
                 disabled  : btns,
-                dataUri   : previewImage.src,
+                dataUri   : previewImage ? previewImage.src : "",
                 ...FORM_STATE.__newWindowSpec
             });
         },
         editUser: async (fData,btns) => {
             return await adminEditUser( fData , {
                 disabled   : btns,
-                dataUri    : previewImage.src,
+                dataUri    : previewImage ? previewImage.src : "",
                 ...FORM_STATE.__newWindowSpec
             });
         }

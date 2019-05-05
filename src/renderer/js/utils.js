@@ -44,7 +44,12 @@ module.exports.formDataToObject = async(formData,OBJECT_TO_CACHE) => {
 
     for ( let [ key , value ] of formData.entries() ) OBJECT_TO_CACHE[key] = value;
 
-    const hpwd = await hashPassword(OBJECT_TO_CACHE.password,OBJECT_TO_CACHE.confirmPassword);
+    let hpwd;
+
+    hpwd = await hashPassword(
+        OBJECT_TO_CACHE.password,
+        OBJECT_TO_CACHE.confirmPassword
+    );
 
     if ( hpwd instanceof Error ) {
         toast({
@@ -68,7 +73,7 @@ module.exports.isEmailExists = async ( email ) => (
         await hospitalDb.pharmacists.get({ email }),
         await hospitalDb.nurses.get({ email }),
     ])
-).filter( x => x !== undefined);
+).filter( x => x !== undefined );
 
 const createNewWindow = async ( { id , url , title , state , options } ) => {
     const winCreated =  BrowserWindow.getAllWindows().find( x => x.__bid === id );
@@ -294,7 +299,7 @@ module.exports.addUserFormHandler = async (FORM_STATE,{ evt , saveUser, editUser
     if ( FORM_STATE.state === "EDIT" ) {
         fData.append(FORM_STATE.__newWindowSpec.idType,FORM_STATE.userId);
         result = await editUser(fData,btns);
-        ipc.sendTo( 1 , FORM_STATE.__newWindowSpec.ipcEventName);
+        if ( result ) ipc.sendTo( 1 , FORM_STATE.__newWindowSpec.ipcEventName);
         return ;
     }
 
@@ -305,9 +310,7 @@ module.exports.addUserFormHandler = async (FORM_STATE,{ evt , saveUser, editUser
 
     ipc.sendTo( 1 , FORM_STATE.__newWindowSpec.ipcEventName);
 
-    console.log(FORM_STATE.__newWindowSpec.ipcEventName);
-
-    //window.location.reload();
+    window.location.reload();
 };
 
 module.exports.setupEventOnDomLoad = ( FORM_STATE , title ) => {
@@ -347,7 +350,12 @@ module.exports.setupEventOnDomLoad = ( FORM_STATE , title ) => {
                 previewImage.style.display = "block";
                 return;
             }
-            el.value = userToEdit[x];
+            el.value = x === "password"
+                ? ( () => {
+                    document.querySelector("input[type=password]").required = false;
+                    return "";
+                })()
+            : userToEdit[x];
         });
 
     });

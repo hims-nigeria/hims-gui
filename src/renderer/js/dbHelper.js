@@ -69,7 +69,7 @@ module.exports.deleteUserInfo = async ({data,idType,result,collection}) => {
     return true;
 };
 
-module.exports.saveUserInfo = async ({ data , obj , collection } ) => {
+module.exports.saveUserInfo = async ({ data , obj , collection , result: apiResult } ) => {
 
     const OBJECT_TO_CACHE = {};
 
@@ -85,7 +85,9 @@ module.exports.saveUserInfo = async ({ data , obj , collection } ) => {
 
     OBJECT_TO_CACHE.role = data.get("role");
     OBJECT_TO_CACHE.password = hpwd;
-    OBJECT_TO_CACHE.image = (new TextEncoder()).encode(obj.dataUri);
+
+    if ( ! /^\s$/.test(obj.dataUri) )
+        OBJECT_TO_CACHE.image = (new TextEncoder()).encode(obj.dataUri);
 
 
     const result = await isEmailExists( OBJECT_TO_CACHE.email );
@@ -114,9 +116,12 @@ module.exports.saveUserInfo = async ({ data , obj , collection } ) => {
         result.dashboardInfo[collection] += 1;
     });
 
-    if ( ! result.response ) {
-        await hospitalDb.offlineAccounts.add({ ...OBJECT_TO_CACHE , newInformationType: collection , flag: "new" });
-    }
+    if ( ! apiResult.response )
+        await hospitalDb.offlineAccounts.add({
+            newInformationType: collection,
+            ...OBJECT_TO_CACHE,
+            flag: "new"
+        });
 
     return OBJECT_TO_CACHE;
 };
@@ -134,20 +139,46 @@ module.exports.editUserInfo = async ({ result , data , obj , collection , idType
         return false;
     }
 
-    OBJECT_TO_CACHE.image = (new TextEncoder()).encode(obj.dataUri);
-    OBJECT_TO_CACHE.password = hpwd;
+
+    if ( ! /^\s{0,}$/.test(obj.dataUri) )
+        OBJECT_TO_CACHE.image = (new TextEncoder()).encode(obj.dataUri);
+
+    if ( ! /^\s{0,}$/.test(data.get("password")) ) OBJECT_TO_CACHE.password = hpwd;
+
+    const userId = OBJECT_TO_CACHE[idType];
 
     const resEmail = await isEmailExists(OBJECT_TO_CACHE.email);
 
-    if ( resEmail[0].email !== OBJECT_TO_CACHE.email ) {
-        toast({
-            text: `${resEmail[0].email} does not exists`,
-            createAfter: 5000
-        });
-        return false;
-    }
+    if ( resEmail.length ) {
 
-    const userId = OBJECT_TO_CACHE[idType];
+        const [ { role , email } ] = resEmail;
+        const __dbUserId  = resEmail[0][idType];
+
+        let error = 0;
+
+        /**
+         * when the collection is the same as the user role(s)
+         * if the userid is different then we show a message of
+         * email unavailability
+         * if the role is different from the collection we still show the same message
+         *
+         * in a situation where the roles are the same and the userId is the same
+         * no need to show an error message , probably the admin only edited
+         * one information other than the email
+         **/
+
+        if ( collection === `${role}s` && userId !== __dbUserId ) error = 1;
+        if ( collection !== `${role}s` ) error = 1;
+
+        if ( error ) {
+            toast({
+                text: `${OBJECT_TO_CACHE.email} is not avaiable`,
+                createAfter: 5000
+            });
+            return false;
+        }
+
+    }
 
     delete OBJECT_TO_CACHE[idType];
     await hospitalDb[collection].where({ [idType]: userId }).modify(OBJECT_TO_CACHE);
