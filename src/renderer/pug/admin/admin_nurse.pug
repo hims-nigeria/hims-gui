@@ -15,21 +15,9 @@ block content
   section(class="admin-add-user")
     form(class="admin-add-user-form" enctype="multipart/form-data")
       p.op Add Nurse
-      label
-        span Name
-        input(type="text" name="fullName" required)
       
-      label
-        span Email
-        input(type="email" name="email" required)
-        
-      label
-        span Password
-        input(type="password" name="password" required)
-        
-      label
-        span Address
-        textarea(name="address")
+      
+      include ../templates/user_cred_form.pug
         
       label
         span Rank
@@ -38,18 +26,9 @@ block content
           option(value="Standard") Standard
           option(value="Matron") Matron
           option(value="Head Nurse") Head Nurse
-      
-      label
-        span Phone
-        input(type="text" name="phoneNumber" required)
         
-      div
-        label Image
-        div.image-preview
-          p.image-preview-text Image Preview
-          img.previewer
-        input(type="file" name="image" accept="image/*" hidden required)
-        button(type="button" class="select-image") Select Image
+      include ../templates/user_image_form.pug      
         
       button(type="submit") Save
+      button(type="reset" class="reset") Reset
   script(src="../../js/editUser.js")

@@ -1,0 +1,103 @@
+extends ../templates/head.pug
+
+mixin emergencyContacts(number)
+  div(class="emergency" + number)
+    p= "Emergency Contact" + number
+    label
+      span Fullname
+      input(type="text" name="emergencyFullName" + number)
+
+    label
+      span Contact Address
+      textarea(name="emergencyAddress" + number)
+
+    label
+      span Phone Number
+      input(type="text" name="emergencyPhoneNumber" + number )
+
+    label
+      span Relationship
+      input(type="text" name="emergencyRelationship" + number )      
+
+block title
+  title Add Doctor
+
+append link
+  link(rel="stylesheet" href="../../css/admin/admin_add.css")
+  link(rel="stylesheet" href="../../css/toast.css")
+
+block fa-link
+  link(rel="stylesheet" href="../../css/all.min.css")
+
+
+block content
+  section(class="admin-add-user")
+    form(class="admin-add-user-form" enctype="multipart/form-data")
+      p.op Add Doctor
+
+      include ../templates/user_image_form.pug
+
+      label
+        span Card Number
+        input(type="text" name="cardNumber" required)
+
+
+      include ../templates/user_cred_form.pug
+
+      label
+        span Occupation
+        input(type="text" name="occupation")
+
+
+
+      label
+        span Sex
+        select(name="sex" required)
+          option(value="male") Male
+          option(value="female") Female
+
+
+      label
+        span Date Of Birth
+        input(type="date" name="dob")
+
+      label
+        span Blood Group
+        select(name="bloodGroup")
+          option(value="Select Blood Group" selected hidden) Select Blood Group
+          option(value="A+") A+
+          option(value="A-") A-
+          option(value="B+") B+
+          option(value="B-") B-
+          option(value="AB+") AB+
+          option(value="AB-") AB-
+          option(value="O+")  O+
+          option(value="O-") O-
+
+      label
+        span Weight
+        input(type="text" name="weight" placeholder="Weight in KG")
+
+      label
+        span Height
+        input(type="text" name="height" placeholder="Height in meters")
+
+      label
+        span Genotype
+        select(name="genotype")
+          option(value="Select Genotype" selected hidden) Select Genotype
+          option(value="AA") AA
+          option(value="AS") AS
+          option(value="SS") SS
+
+      label
+        span Medical History
+        textarea(name="medialHistory")
+
+      div.emergency
+        - for ( let i of [ 1 , 2 , 3 ] )
+          +emergencyContacts(i)
+
+      button(type="submit") Save
+      button(type="reset" class="reset") Reset
+  script(src="../../js/editUser.js")

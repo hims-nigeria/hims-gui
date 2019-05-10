@@ -1,0 +1,63 @@
+extends ../templates/head.pug
+
+block title
+  title Add Doctor
+
+append link
+  link(rel="stylesheet" href="../../css/admin/admin_add.css")
+  link(rel="stylesheet" href="../../css/admin/admin_doctor_add.css")
+  link(rel="stylesheet" href="../../css/toast.css")
+
+block fa-link
+  link(rel="stylesheet" href="../../css/all.min.css")
+
+
+block content
+  section(class="admin-add-user")
+    form(class="admin-add-user-form" enctype="multipart/form-data")
+      p.op Add Doctor
+
+      include ../templates/user_cred_form.pug
+
+      label
+        span Department
+        select(name="department" required)
+          option(value="Please Select" selected hidden) Please Select
+          option(value="Consultant") Consultant
+
+      label
+        span Rank
+        select(name="rank" required)
+          option(value="Please Select" selected hidden) Please Select
+          option(value="Standard" ) Standard
+          option(value="Head of Department") Head of Department
+
+      label
+        span Profile
+        textarea(name="description")
+
+      label
+        span Social Links
+        
+        label.social
+          span Facebook Profile
+          input(type="text" placeholder="facebook profile link" name="fb_link")
+        
+        label.social
+          span Twitter Profile
+          input(type="text" placeholder="twitter profile link" name="twitter_link")
+       
+        label.social
+          span Google Plus Prifle
+          input(type="text" placeholder="google plus profile link" name="googleplus_link")
+        
+        label.social
+          span Linkedin Profile
+          input(type="text" placeholder="linkedin profile link" name="linkedin_link")
+
+
+      include ../templates/user_image_form.pug
+
+      button(type="submit") Save
+      button(type="reset" class="reset") Reset
+  script(src="../../js/editUser.js")

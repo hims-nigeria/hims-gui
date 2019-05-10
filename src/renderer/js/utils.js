@@ -42,7 +42,18 @@ module.exports.createExternalId = (...criteria) => {
 
 module.exports.formDataToObject = async(formData,OBJECT_TO_CACHE) => {
 
-    for ( let [ key , value ] of formData.entries() ) OBJECT_TO_CACHE[key] = value;
+    for ( let [ key , value ] of formData.entries() ) {
+        let _val;
+        try {
+            console.log(value, "in");
+            _val = JSON.parse(value);
+        } catch(ex) {
+            _val = value;
+        } finally {
+            OBJECT_TO_CACHE[key] = _val;
+            console.log(OBJECT_TO_CACHE);
+        }
+    }
 
     let hpwd;
 
@@ -291,6 +302,29 @@ module.exports.addUserFormHandler = async (FORM_STATE,{ evt , saveUser, editUser
     const previewImage  = document.querySelector(".previewer");
     const btns = Array.from(document.querySelectorAll("button"));
     const fData = new FormData(evt.target);
+    console.log(FORM_STATE.__newWindowSpec.ipcEventName,"preetty pie");
+    if  ( FORM_STATE.__newWindowSpec.ipcEventName === "admin-doctor" ) {
+
+        const adminSocials = JSON.stringify(( () => {
+
+            const fb_link = fData.get("fb_link");
+            const twitter_link = fData.get("twitter_link");
+            const googleplus_link = fData.get("googleplus_link");
+            const linkedin_link = fData.get("linkedin_link");
+
+            fData.delete("fb_link");
+            fData.delete("twitter_link");
+            fData.delete("googleplus_link");
+            fData.delete("linkedin_link");
+
+
+            return { fb_link , twitter_link , googleplus_link , linkedin_link };
+
+        })());
+
+        fData.append("socialLinks", adminSocials);
+        console.log(fData);
+    }
 
     let result;
 
@@ -309,8 +343,6 @@ module.exports.addUserFormHandler = async (FORM_STATE,{ evt , saveUser, editUser
     if ( ! result ) return;
 
     ipc.sendTo( 1 , FORM_STATE.__newWindowSpec.ipcEventName);
-
-    window.location.reload();
 };
 
 module.exports.setupEventOnDomLoad = ( FORM_STATE , title ) => {
@@ -336,6 +368,14 @@ module.exports.setupEventOnDomLoad = ( FORM_STATE , title ) => {
         FORM_STATE.state  = "EDIT";
 
         Object.keys(userToEdit).forEach( async x => {
+            if ( typeof(userToEdit[x]) === "object" && ! (userToEdit[x] instanceof Uint8Array) ) {
+                Object.keys(userToEdit[x]).forEach( prop => {
+                    const el = document.querySelector(`[name=${prop}]`);
+                    if ( ! el ) return;
+                    el.value = userToEdit[x][prop];
+                });
+                return;
+            }
 
             const el = document.querySelector(`[name=${x}]`);
 

@@ -19,6 +19,7 @@ const {
 const {
     LOGIN_URL,
     ADD_NURSE_URL,
+    ADD_DOCTOR_URL,
     ADD_INTERN_URL,
     ADD_RECEPTIONIST_URL
 } = require("../js/constants.js");
@@ -243,9 +244,34 @@ admin.on("admin-intern", async () => {
     });
 });
 
+
+admin.on("admin-doctor", async () => {
+    await admin.getUser({
+        props: {
+            elName: "doctorDiv",
+            class:  "doctor-div",
+            collection: "doctors",
+            nextUrl: LOGIN_URL,
+            apiUrl : "doctor",
+            idType: "doctorId"
+        },
+        addNew: {
+            text: "Add Doctor",
+            url: ADD_DOCTOR_URL
+        },
+        table: {
+            tableSpec: { tableId: "doctorId", headers: [ "image", "name", "email" , "phone"] },
+            title: "Edit Doctor",
+            user: "doctors",
+            ipcEventName: "admin-doctor"
+        }
+    });
+});
+
 ipc.on("admin-nurse", () => admin.emit("admin-nurse"));
 ipc.on("admin-intern", () => admin.emit("admin-intern"));
 ipc.on("admin-receptionist", () => admin.emit("admin-receptionist"));
+ipc.on("admin-doctor", () => admin.emit("admin-doctor"));
 
 
 module.exports = admin;

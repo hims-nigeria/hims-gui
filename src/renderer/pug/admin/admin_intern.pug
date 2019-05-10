@@ -15,25 +15,8 @@ block content
   section(class="admin-add-user")
     form(class="admin-add-user-form" enctype="multipart/form-data")
       p.op Add Intern
-      label
-        span Name
-        input(type="text" name="fullName" required)
-
-      label
-        span Email
-        input(type="email" name="email" required)
-
-      label
-        span Password
-        input(type="password" name="password" required)
-
-      label
-        span Address
-        textarea(name="address")
-
-      label
-        span Phone
-        input(type="text" name="phoneNumber" required)
+      
+      include ../templates/user_cred_form.pug
 
       label
         span Role
@@ -47,4 +30,5 @@ block content
           option(value="Laboratorist") Laboratorist
 
       button(type="submit") Save
+      button(type="reset" class="reset") Reset
   script(src="../../js/editUser.js")
