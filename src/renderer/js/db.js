@@ -14,7 +14,7 @@ hospitalDb.version(1).stores({
     interns: "++id, healthFacility, &internId, &phoneNumber, &email",
     laboratorists: "++id, healthFacility, &laboratoristId, &phoneNumber, &email",
     nurses: "++id, healthFacility, &nurseId, &phoneNumber, &email",
-    patients: "++id, healthFacility, &patientId, &phoneNumber, &email",
+    clients: "++id, healthFacility, &clientId, &phoneNumber, &email",
     pharmacists: "++id, healthFacility, &pharmacistId, &phoneNumber, &email",
     transactions: "++id, healthFacility",
     receptionists: "++id, healthFacility, &receptionistId, &phoneNumber, &email",

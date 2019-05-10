@@ -1,0 +1,103 @@
+
+label:not(.img) {
+    display: block;
+    &:first-of-type {
+        > span {
+            margin-left: 120px;
+        }
+    }
+    > span {
+        text-align: center;
+        margin-left: 140px;
+    }
+    > input {
+        display: block;
+        margin-left: 63px !important;
+    }
+    > select {
+        display: block;
+        margin-left: 133px !important;
+    }
+}
+
+label.sex {
+    span {
+        margin-left: 165px;
+    }
+}
+
+.img-parent {
+    width: 100%;
+    margin-left: -40px;
+    .img {
+        margin-left: 150px;
+    }
+    div.image-preview {
+        margin-left: 118px !important;
+    }
+    button {
+        margin-left: 160px !important;
+    }
+}
+
+textarea {
+    margin-left: 65px !important;
+}
+
+label.dob {
+    input[type="date"] {
+        margin-left: 102px !important;
+    }
+}
+
+label:not(.sex) {
+    select {
+        margin-left: 95px !important;
+    }
+}
+
+label.weight , label.height {
+    span {
+        margin-left: 160px;
+    }
+    input {
+        margin-left: 72px !important;
+    }
+}
+
+.mdh {
+    span {
+        margin-left: 109px !important;
+    }
+}
+
+@for $i from 1 to 4 {
+    .emergency#{$i} {
+        margin-top: 20px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        box-shadow: 0px 0px 10px 1px darken(grey,12%);
+        .fname,.pnumber,.rship {
+            span {
+                margin-left: 130px !important;
+            }
+        }
+        .ctadr {
+            span {
+                text-align: center;
+                margin-left: 113px;
+            }
+        }
+
+        input , textarea {
+            margin-top: 10px;
+        }
+
+        .emsec {
+            text-align: center;
+            font-weight: bolder;
+            font-size: 1.5em;
+        }
+    }
+}
+

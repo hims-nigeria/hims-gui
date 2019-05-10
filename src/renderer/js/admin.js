@@ -19,6 +19,7 @@ const {
 const {
     LOGIN_URL,
     ADD_NURSE_URL,
+    ADD_CLIENT_URL,
     ADD_DOCTOR_URL,
     ADD_INTERN_URL,
     ADD_RECEPTIONIST_URL
@@ -268,10 +269,35 @@ admin.on("admin-doctor", async () => {
     });
 });
 
+
+admin.on("admin-client", async () => {
+    await admin.getUser({
+        props: {
+            elName: "clientDiv",
+            class:  "client-div",
+            collection: "clients",
+            nextUrl: LOGIN_URL,
+            apiUrl : "client",
+            idType: "clientId"
+        },
+        addNew: {
+            text: "Add Client",
+            url: ADD_CLIENT_URL
+        },
+        table: {
+            tableSpec: { tableId: "clientId", headers: [ "image", "name", "email" , "phone"] },
+            title: "Edit Client",
+            user: "clients",
+            ipcEventName: "admin-client"
+        }
+    });
+});
+
 ipc.on("admin-nurse", () => admin.emit("admin-nurse"));
 ipc.on("admin-intern", () => admin.emit("admin-intern"));
 ipc.on("admin-receptionist", () => admin.emit("admin-receptionist"));
 ipc.on("admin-doctor", () => admin.emit("admin-doctor"));
+ipc.on("admin-client", () => admin.emit("admin-client"));
 
 
 module.exports = admin;

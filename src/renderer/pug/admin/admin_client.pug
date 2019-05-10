@@ -2,28 +2,29 @@ extends ../templates/head.pug
 
 mixin emergencyContacts(number)
   div(class="emergency" + number)
-    p= "Emergency Contact" + number
-    label
+    p.emsec= "Emergency Contact " + number
+    label.fname
       span Fullname
       input(type="text" name="emergencyFullName" + number)
 
-    label
+    label.ctadr
       span Contact Address
       textarea(name="emergencyAddress" + number)
 
-    label
+    label.pnumber
       span Phone Number
       input(type="text" name="emergencyPhoneNumber" + number )
 
-    label
+    label.rship
       span Relationship
       input(type="text" name="emergencyRelationship" + number )      
 
 block title
-  title Add Doctor
+  title Add Client
 
 append link
   link(rel="stylesheet" href="../../css/admin/admin_add.css")
+  link(rel="stylesheet" href="../../css/admin/admin_add_client.css")
   link(rel="stylesheet" href="../../css/toast.css")
 
 block fa-link
@@ -31,9 +32,10 @@ block fa-link
 
 
 block content
+  i(class="fa fa-times close")
   section(class="admin-add-user")
     form(class="admin-add-user-form" enctype="multipart/form-data")
-      p.op Add Doctor
+      p.op Add Client
 
       include ../templates/user_image_form.pug
 
@@ -50,18 +52,18 @@ block content
 
 
 
-      label
+      label.sex
         span Sex
         select(name="sex" required)
           option(value="male") Male
           option(value="female") Female
 
 
-      label
+      label.dob
         span Date Of Birth
         input(type="date" name="dob")
 
-      label
+      label.bgroup
         span Blood Group
         select(name="bloodGroup")
           option(value="Select Blood Group" selected hidden) Select Blood Group
@@ -74,15 +76,15 @@ block content
           option(value="O+")  O+
           option(value="O-") O-
 
-      label
+      label.weight
         span Weight
         input(type="text" name="weight" placeholder="Weight in KG")
 
-      label
+      label.height
         span Height
         input(type="text" name="height" placeholder="Height in meters")
 
-      label
+      label.gtype
         span Genotype
         select(name="genotype")
           option(value="Select Genotype" selected hidden) Select Genotype
@@ -90,7 +92,7 @@ block content
           option(value="AS") AS
           option(value="SS") SS
 
-      label
+      label.mdh
         span Medical History
         textarea(name="medialHistory")
 

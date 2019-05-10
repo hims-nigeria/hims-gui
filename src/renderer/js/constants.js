@@ -13,7 +13,7 @@ module.exports.ADD_INTERN_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_intern
 module.exports.NOT_MAIN_WINDOW_URL = `file://${APP_PATH}/${SUBDIR}/not_main_window.html`;
 module.exports.ADD_RECEPTIONIST_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_receptionist.html`;
 module.exports.ADD_DOCTOR_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_doctor.html`;
-module.exports.ADD_CLIENT_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_doctor.html`;
+module.exports.ADD_CLIENT_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_client.html`;
 
 module.exports.PAGE_LIMIT = 25;
 

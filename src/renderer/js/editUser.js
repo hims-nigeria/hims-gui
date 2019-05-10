@@ -2,6 +2,8 @@
 
     "use strict";
 
+    const { remote: { getCurrentWindow } } = require("electron");
+
     const {
         setupEventOnDomLoad,
         addUserFormHandler,
@@ -16,7 +18,8 @@
     const previewImage  = document.querySelector(".previewer");
     const fileLoader    = document.querySelector("[type=file]");
 
-    const form = document.querySelector(".admin-add-user-form");
+    const form  = document.querySelector(".admin-add-user-form");
+    const close = document.querySelector(".close");
 
     const fileReader = new FileReader();
 
@@ -62,5 +65,7 @@
     }));
 
     window.addEventListener("DOMContentLoaded", () => setupEventOnDomLoad( FORM_STATE ));
+
+    close.addEventListener("click", () => getCurrentWindow().close() );
 
 })();

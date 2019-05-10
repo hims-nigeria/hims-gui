@@ -101,6 +101,7 @@ const createNewWindow = async ( { id , url , title , state , options } ) => {
         center       : true,
         show         : false,
         title        : title,
+        frame        : false,
         height       : 603,
         width        : 463,
         __state      : state

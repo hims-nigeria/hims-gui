@@ -240,7 +240,7 @@ module.exports.register = async (data,obj) => {
                     transactions: 0,
                     pharmacists: 0,
                     accountants: 0,
-                    patients: 0,
+                    clients: 0,
                     doctors: 0,
                     nurses: 0,
                     interns: 0

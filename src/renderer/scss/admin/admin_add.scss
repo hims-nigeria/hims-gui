@@ -13,17 +13,20 @@ select {
     margin-top: 12px;
 }
 
-label.social {
-    display: block;
-    margin-left: 50px;
-    input {
-        margin-left: 0px !important;
-        margin-top: 12px;
+.close {
+    cursor: pointer;
+    transition: .2s ease-in-out;
+    position: fixed;
+    right: 12px;
+    border: 1px solid red;
+    padding: 12px;
+    &:hover {
+        color: lighten(black,20%);
     }
 }
 
 .admin-add-user {
-
+    clear: right;
     display: flex;
     width: 100%;
     font-family: $default-font-family;

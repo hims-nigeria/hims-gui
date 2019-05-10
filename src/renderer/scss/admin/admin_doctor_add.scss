@@ -2,3 +2,12 @@
 select[name="rank"] {
     margin-left: 80px !important;
 }
+
+label.social {
+    display: block;
+    margin-left: 50px;
+    input {
+        margin-left: 0px !important;
+        margin-top: 12px;
+    }
+}
