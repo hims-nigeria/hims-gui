@@ -18,8 +18,7 @@ select {
     transition: .2s ease-in-out;
     position: fixed;
     right: 12px;
-    border: 1px solid red;
-    padding: 12px;
+    font-size: 1.5em;
     &:hover {
         color: lighten(black,20%);
     }
