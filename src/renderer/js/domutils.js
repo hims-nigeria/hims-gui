@@ -139,6 +139,18 @@ module.exports.createTable = obj => {
                 td.textContent = trow["phoneNumber"];
                 tr.appendChild(td);
                 return;
+            case "birth date":
+                td.textContent = trow["dob"];
+                tr.appendChild(td);
+                return;
+            case "blood group":
+                td.textContent = trow["bloodGroup"];
+                tr.appendChild(td);
+                return;
+            case "card no":
+                td.textContent = trow["cardNumber"];
+                tr.appendChild(td);
+                return;
             case "operations":
 
                 const editAnchor   = document.createElement("a");
