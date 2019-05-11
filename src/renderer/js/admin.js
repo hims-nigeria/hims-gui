@@ -22,6 +22,7 @@ const {
     ADD_CLIENT_URL,
     ADD_DOCTOR_URL,
     ADD_INTERN_URL,
+    ADD_ACCOUNTANT_URL,
     ADD_PHARMACIST_URL,
     ADD_RECEPTIONIST_URL,
     ADD_LABORATORIST_URL
@@ -343,6 +344,32 @@ admin.on("admin-laboratorist", async () => {
     });
 });
 
+
+
+admin.on("admin-accountant", async () => {
+    await admin.getUser({
+        props: {
+            elName: "accountantDiv",
+            class:  "accountant-div",
+            collection: "accountants",
+            nextUrl: LOGIN_URL,
+            apiUrl : "accountant",
+            idType: "accountantId"
+        },
+        addNew: {
+            text: "Add Accountant",
+            url: ADD_ACCOUNTANT_URL
+        },
+        table: {
+            tableSpec: { tableId: "accountantId", headers: [ "image", "name", "email" , "address" , "phone"] },
+            title: "Edit Accountant",
+            user: "accountants",
+            ipcEventName: "admin-accountant"
+        }
+    });
+});
+
+
 ipc.on("admin-nurse", () => admin.emit("admin-nurse"));
 ipc.on("admin-intern", () => admin.emit("admin-intern"));
 ipc.on("admin-receptionist", () => admin.emit("admin-receptionist"));
@@ -350,6 +377,7 @@ ipc.on("admin-doctor", () => admin.emit("admin-doctor"));
 ipc.on("admin-client", () => admin.emit("admin-client"));
 ipc.on("admin-pharmacist", () => admin.emit("admin-pharmacist"));
 ipc.on("admin-laboratorist", () => admin.emit("admin-laboratorist"));
+ipc.on("admin-accountant", () => admin.emit("admin-accountant"));
 
 
 module.exports = admin;

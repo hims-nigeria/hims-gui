@@ -8,7 +8,7 @@ Dexie.debug = true;
 
 hospitalDb.version(1).stores({
     healthFacility: "++id, &healthFacilityId, &email",
-    accountants: "++id, healthFacility, &accontantId, &phoneNumber, &email",
+    accountants: "++id, healthFacility, &accountantId, &phoneNumber, &email",
     departments: "++id, healthFacility",
     doctors: "++id, healthFacility, &doctorId, &phoneNumber, &email",
     interns: "++id, healthFacility, &internId, &phoneNumber, &email",
