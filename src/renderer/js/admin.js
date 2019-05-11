@@ -285,7 +285,7 @@ admin.on("admin-client", async () => {
             url: ADD_CLIENT_URL
         },
         table: {
-            tableSpec: { tableId: "clientId", headers: [ "image", "name", "email" , "phone"] },
+            tableSpec: { tableId: "clientId", headers: [ "card no", "image", "email" , "phone", "sex" , "birth date", "age" , "blood group"  ] },
             title: "Edit Client",
             user: "clients",
             ipcEventName: "admin-client"
