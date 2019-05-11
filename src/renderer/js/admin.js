@@ -23,7 +23,8 @@ const {
     ADD_DOCTOR_URL,
     ADD_INTERN_URL,
     ADD_PHARMACIST_URL,
-    ADD_RECEPTIONIST_URL
+    ADD_RECEPTIONIST_URL,
+    ADD_LABORATORIST_URL
 } = require("../js/constants.js");
 
 const { spinner , createTable } = require("../js/domutils.js");
@@ -318,12 +319,37 @@ admin.on("admin-pharmacist", async () => {
     });
 });
 
+
+admin.on("admin-laboratorist", async () => {
+    await admin.getUser({
+        props: {
+            elName: "laboratoristDiv",
+            class:  "laboratorist-div",
+            collection: "laboratorists",
+            nextUrl: LOGIN_URL,
+            apiUrl : "laboratorist",
+            idType: "laboratoristId"
+        },
+        addNew: {
+            text: "Add Laboratorist",
+            url: ADD_LABORATORIST_URL
+        },
+        table: {
+            tableSpec: { tableId: "laboratoristId", headers: [ "image", "name", "email" , "address" , "phone"] },
+            title: "Edit Laboratorist",
+            user: "laboratorists",
+            ipcEventName: "admin-laboratorist"
+        }
+    });
+});
+
 ipc.on("admin-nurse", () => admin.emit("admin-nurse"));
 ipc.on("admin-intern", () => admin.emit("admin-intern"));
 ipc.on("admin-receptionist", () => admin.emit("admin-receptionist"));
 ipc.on("admin-doctor", () => admin.emit("admin-doctor"));
 ipc.on("admin-client", () => admin.emit("admin-client"));
 ipc.on("admin-pharmacist", () => admin.emit("admin-pharmacist"));
+ipc.on("admin-laboratorist", () => admin.emit("admin-laboratorist"));
 
 
 module.exports = admin;

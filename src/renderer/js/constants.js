@@ -15,6 +15,7 @@ module.exports.ADD_RECEPTIONIST_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_
 module.exports.ADD_DOCTOR_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_doctor.html`;
 module.exports.ADD_CLIENT_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_client.html`;
 module.exports.ADD_PHARMACIST_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_pharmacist.html`;
+module.exports.ADD_LABORATORIST_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_laboratorist.html`;
 
 module.exports.PAGE_LIMIT = 25;
 
