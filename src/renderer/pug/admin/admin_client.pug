@@ -3,19 +3,19 @@ extends ../templates/head.pug
 mixin emergencyContacts(number)
   div(class="emergency" + number)
     p.emsec= "Emergency Contact " + number
-    label.fname
+    label.emergencyFullname
       span Fullname
       input(type="text" name="emergencyFullName" + number)
 
-    label.ctadr
+    label.emergencyAddress
       span Contact Address
       textarea(name="emergencyAddress" + number)
 
-    label.pnumber
+    label.emergencyPhonenumber
       span Phone Number
       input(type="text" name="emergencyPhoneNumber" + number )
 
-    label.rship
+    label.emergencyRelationship
       span Relationship
       input(type="text" name="emergencyRelationship" + number )      
 

@@ -77,12 +77,12 @@ label.weight , label.height {
         padding-top: 15px;
         padding-bottom: 15px;
         box-shadow: 0px 0px 10px 1px darken(grey,12%);
-        .fname,.pnumber,.rship {
+        .emergencyFullname,.emergencyPhoneumber,.emergencyRelationship {
             span {
                 margin-left: 130px !important;
             }
         }
-        .ctadr {
+        .emergencyAddress {
             span {
                 text-align: center;
                 margin-left: 113px;
