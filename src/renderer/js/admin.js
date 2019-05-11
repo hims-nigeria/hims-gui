@@ -22,6 +22,7 @@ const {
     ADD_CLIENT_URL,
     ADD_DOCTOR_URL,
     ADD_INTERN_URL,
+    ADD_PHARMACIST_URL,
     ADD_RECEPTIONIST_URL
 } = require("../js/constants.js");
 
@@ -293,11 +294,36 @@ admin.on("admin-client", async () => {
     });
 });
 
+
+admin.on("admin-pharmacist", async () => {
+    await admin.getUser({
+        props: {
+            elName: "pharmacistDiv",
+            class:  "pharmacist-div",
+            collection: "pharmacists",
+            nextUrl: LOGIN_URL,
+            apiUrl : "pharmacist",
+            idType: "pharmacistId"
+        },
+        addNew: {
+            text: "Add Pharmacist",
+            url: ADD_PHARMACIST_URL
+        },
+        table: {
+            tableSpec: { tableId: "pharmacistId", headers: [ "image", "name", "email" , "address" , "phone"] },
+            title: "Edit Pharmacist",
+            user: "pharmacists",
+            ipcEventName: "admin-pharmacist"
+        }
+    });
+});
+
 ipc.on("admin-nurse", () => admin.emit("admin-nurse"));
 ipc.on("admin-intern", () => admin.emit("admin-intern"));
 ipc.on("admin-receptionist", () => admin.emit("admin-receptionist"));
 ipc.on("admin-doctor", () => admin.emit("admin-doctor"));
 ipc.on("admin-client", () => admin.emit("admin-client"));
+ipc.on("admin-pharmacist", () => admin.emit("admin-pharmacist"));
 
 
 module.exports = admin;

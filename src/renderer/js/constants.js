@@ -14,6 +14,7 @@ module.exports.NOT_MAIN_WINDOW_URL = `file://${APP_PATH}/${SUBDIR}/not_main_wind
 module.exports.ADD_RECEPTIONIST_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_receptionist.html`;
 module.exports.ADD_DOCTOR_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_doctor.html`;
 module.exports.ADD_CLIENT_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_client.html`;
+module.exports.ADD_PHARMACIST_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_pharmacist.html`;
 
 module.exports.PAGE_LIMIT = 25;
 
