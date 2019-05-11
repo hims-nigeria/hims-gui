@@ -291,6 +291,53 @@ module.exports.loadImageToDom = ({file,fileReader}) => {
 };
 
 
+const convertPropsToJson = Object.create({});
+
+Object.defineProperty( convertPropsToJson , "admin-doctor" , {
+    value(fData) {
+
+        const fb_link = fData.get("fb_link");
+        const twitter_link = fData.get("twitter_link");
+        const googleplus_link = fData.get("googleplus_link");
+        const linkedin_link = fData.get("linkedin_link");
+
+        fData.delete("fb_link");
+        fData.delete("twitter_link");
+        fData.delete("googleplus_link");
+        fData.delete("linkedin_link");
+
+        return { key: "socialLinks" , value: { fb_link , twitter_link , googleplus_link , linkedin_link } };
+    }
+});
+
+Object.defineProperty( convertPropsToJson , "admin-client" , {
+    value(fData) {
+
+        return { key: "emergencyContacts" , value: ( () => {
+
+            const emerArray = [];
+
+            for ( let i = 1 ; i <= 3 ; i++ ) {
+
+                emerArray.push({
+                    [`emergencyFullName${i}`]: fData.has(`emergencyFullName${i}`) ? fData.get(`emergencyFullName${i}`) : "",
+                    [`emergencyAddress${i}`]: fData.has(`emergencyAddress${i}`) ? fData.get(`emergencyAddress${i}`) : "",
+                    [`emergencyPhoneNumber${i}`]: fData.has(`emergencyPhoneNumber${i}`) ?  fData.get(`emergencyPhoneNumber${i}`) : "",
+                    [`emergencyRelationship${i}`]: fData.has(`emergencyRelationship${i}`) ? fData.get(`emergencyRelationship${i}`): ""
+                });
+
+                fData.delete(`emergencyFullName${i}`);
+                fData.delete(`emergencyAddress${i}`);
+                fData.delete(`emergencyPhoneNumber${i}`);
+                fData.delete(`emergencyRelationship${i}`);
+            }
+
+            return emerArray;
+
+        })()};
+    }
+});
+
 module.exports.addUserFormHandler = async (FORM_STATE,{ evt , saveUser, editUser }) => {
 
     evt.preventDefault();
@@ -303,28 +350,12 @@ module.exports.addUserFormHandler = async (FORM_STATE,{ evt , saveUser, editUser
     const previewImage  = document.querySelector(".previewer");
     const btns = Array.from(document.querySelectorAll("button"));
     const fData = new FormData(evt.target);
-    console.log(FORM_STATE.__newWindowSpec.ipcEventName,"preetty pie");
-    if  ( FORM_STATE.__newWindowSpec.ipcEventName === "admin-doctor" ) {
 
-        const adminSocials = JSON.stringify(( () => {
+    const convertUniquePropsToJson = convertPropsToJson[FORM_STATE.__newWindowSpec.ipcEventName];
 
-            const fb_link = fData.get("fb_link");
-            const twitter_link = fData.get("twitter_link");
-            const googleplus_link = fData.get("googleplus_link");
-            const linkedin_link = fData.get("linkedin_link");
-
-            fData.delete("fb_link");
-            fData.delete("twitter_link");
-            fData.delete("googleplus_link");
-            fData.delete("linkedin_link");
-
-
-            return { fb_link , twitter_link , googleplus_link , linkedin_link };
-
-        })());
-
-        fData.append("socialLinks", adminSocials);
-        console.log(fData);
+    if ( convertUniquePropsToJson ) {
+        const { key , value } = convertUniquePropsToJson(fData);
+        fData.append(key,JSON.stringify(value));
     }
 
     let result;
@@ -369,7 +400,23 @@ module.exports.setupEventOnDomLoad = ( FORM_STATE , title ) => {
         FORM_STATE.state  = "EDIT";
 
         Object.keys(userToEdit).forEach( async x => {
+
             if ( typeof(userToEdit[x]) === "object" && ! (userToEdit[x] instanceof Uint8Array) ) {
+
+                if ( Array.isArray(userToEdit[x]) ) {
+
+                    userToEdit[x].forEach( elem => {
+                        Object.keys(elem).forEach( prop => {
+                            const el = document.querySelector(`[name=${prop}]`);
+                            if ( ! el ) return;
+                            el.value = elem[prop];
+                        });
+
+                    });
+
+                    return;
+                }
+
                 Object.keys(userToEdit[x]).forEach( prop => {
                     const el = document.querySelector(`[name=${prop}]`);
                     if ( ! el ) return;
