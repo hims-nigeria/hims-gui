@@ -32,13 +32,16 @@ module.exports.loadUsersInfo = async ({result,collection,obj}) => {
 
         const cursor = hospitalDb[collection].where({healthFacility : healthFacilityId});
 
+        const f = await hospitalDb[collection].where({healthFacility : healthFacilityId}).toArray();
+        console.log(f);
+
         Object.assign(__users[collection], {
             hasMore: await cursor.count() > ((obj.PAGE + 1) * PAGE_LIMIT),
             [collection]: await cursor.offset(PAGE_LIMIT * obj.PAGE).limit(PAGE_LIMIT).toArray(),
             fullName,
             role
         });
-        console.log(__users[collection]);
+        console.log(__users , collection);
     }
     return Object.keys(__users[collection]).length ? __users[collection] : result.response.data.message;
 };
@@ -210,7 +213,7 @@ module.exports.saveInterventionInfo = async ({ result , data , obj }) => {
         OBJECT_TO_CACHE[key] = value;
 
     const [ { healthFacilityId } ] = await hospitalDb.sessionObject.toArray();
-
+    console.log(Object.values(obj.generateIdFrom));
     const __id = createExternalId(
         OBJECT_TO_CACHE.healthFacilityId,
         ...Object.values(obj.generateIdFrom)
@@ -219,6 +222,7 @@ module.exports.saveInterventionInfo = async ({ result , data , obj }) => {
     );
 
     if ( ! result.response ) {
+
         if ( await hospitalDb[obj.collection].get({ [obj.idType]: __id }) ) {
             toast({
                 text: `Intervention is not available`,
@@ -226,9 +230,15 @@ module.exports.saveInterventionInfo = async ({ result , data , obj }) => {
             });
             return false;
         }
+
+        await hospitalDb.offlineAccounts.add({
+            newInformationType: obj.collection,
+            ...OBJECT_TO_CACHE,
+            flag: "new"
+        });
     }
 
-    OBJECT_TO_CACHE.heatlhFacility   = healthFacilityId;
+    OBJECT_TO_CACHE.healthFacility   = healthFacilityId;
     OBJECT_TO_CACHE[obj.idType]      = __id;
 
     await hospitalDb[obj.collection].add(OBJECT_TO_CACHE);

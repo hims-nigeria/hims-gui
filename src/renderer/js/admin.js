@@ -25,6 +25,7 @@ const {
     ADD_ACCOUNTANT_URL,
     ADD_PHARMACIST_URL,
     ADD_RECEPTIONIST_URL,
+    ADD_INTERVENTION_URL,
     ADD_LABORATORIST_URL
 } = require("../js/constants.js");
 
@@ -134,15 +135,13 @@ const admin = new(class Admin extends EventEmitter {
         this.__removeOnDom();
         this.sectionNavOps.appendChild(this.spin);
 
-        const result = __notUser
-              ? await __notUser.loadInfo({ url: apiUrl, collection, nextUrl, PAGE: 0 })
-              : await adminLoadUser({ url: apiUrl, collection, nextUrl, PAGE: 0});
+        const result = await adminLoadUser({ url: apiUrl, collection, nextUrl, PAGE: 0});
 
         this.spin.remove();
 
         if ( ! result )
             return;
-
+        
         this.__createSectionDiv( { property : this.currentSection, elName, class: cl, result})
             .appendChild(userOperation(
                 {
@@ -150,9 +149,8 @@ const admin = new(class Admin extends EventEmitter {
                     __internal     : { self: this , property: this.currentSection },
                     url            : userUrl,
                     text
-                }, async (page) => __notUser
-                    ? await __notUser.loadInfo({ url: apiUrl, collection, nextUrl, PAGE: page })
-                    : await adminLoadUser({ url: apiUrl, collection, nextUrl, PAGE: page }
+                }, async (page) => await adminLoadUser(
+                    { url: apiUrl, collection, nextUrl, PAGE: page }
                 )
             ));
 
@@ -373,17 +371,39 @@ admin.on("admin-accountant", async () => {
 });
 
 admin.on("admin-interventions", async () => {
+    await admin.getUser({
+        __notUser: { deleteInfo: "" },
+        props: {
+            elName: "interventionDiv",
+            class:  "intervention-div",
+            collection: "interventions",
+            nextUrl: LOGIN_URL,
+            apiUrl : "intervention",
+            idType: "interventionId"
+        },
+        addNew: {
+            text: "Add Intervention",
+            url: ADD_INTERVENTION_URL
+        },
+        table: {
+            tableSpec: { tableId: "interventionId", headers: [ "interventionName" ] },
+            title: "Edit Intervention",
+            user: "interventions",
+            ipcEventName: "admin-interventions"
+        }
+    });
 });
 
 
-ipc.on("admin-nurse", () => admin.emit("admin-nurse"));
-ipc.on("admin-intern", () => admin.emit("admin-intern"));
-ipc.on("admin-receptionist", () => admin.emit("admin-receptionist"));
-ipc.on("admin-doctor", () => admin.emit("admin-doctor"));
-ipc.on("admin-client", () => admin.emit("admin-client"));
-ipc.on("admin-pharmacist", () => admin.emit("admin-pharmacist"));
-ipc.on("admin-laboratorist", () => admin.emit("admin-laboratorist"));
-ipc.on("admin-accountant", () => admin.emit("admin-accountant"));
+ipc.on("admin-nurse",         () => admin.emit("admin-nurse"));
+ipc.on("admin-intern",        () => admin.emit("admin-intern"));
+ipc.on("admin-receptionist",  () => admin.emit("admin-receptionist"));
+ipc.on("admin-doctor",        () => admin.emit("admin-doctor"));
+ipc.on("admin-client",        () => admin.emit("admin-client"));
+ipc.on("admin-pharmacist",    () => admin.emit("admin-pharmacist"));
+ipc.on("admin-laboratorist",  () => admin.emit("admin-laboratorist"));
+ipc.on("admin-accountant",    () => admin.emit("admin-accountant"));
+ipc.on("admin-interventions", () => admin.emit("admin-interventions"));
 
 
 module.exports = admin;

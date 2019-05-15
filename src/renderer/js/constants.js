@@ -17,6 +17,7 @@ module.exports.ADD_CLIENT_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_client
 module.exports.ADD_PHARMACIST_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_pharmacist.html`;
 module.exports.ADD_LABORATORIST_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_laboratorist.html`;
 module.exports.ADD_ACCOUNTANT_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_accountant.html`;
+module.exports.ADD_INTERVENTION_URL = `file://${APP_PATH}/${SUBDIR}/admin/admin_intervention.html`;
 
 module.exports.PAGE_LIMIT = 25;
 

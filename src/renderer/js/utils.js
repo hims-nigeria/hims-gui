@@ -141,8 +141,6 @@ const appendTable = function ( ops , deleteUser ) {
         url
     } = ops;
 
-    console.log(ops.__newWindowSpec, "duh");
-
     console.log(apiResult);
 
     if ( ! apiResult[user].length ) return;
