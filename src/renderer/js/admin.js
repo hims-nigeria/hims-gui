@@ -38,7 +38,7 @@ const admin = new(class Admin extends EventEmitter {
 
     constructor() {
         super();
-        this.currentUser = {};
+        this.currentSection = {};
         this.sectionNavOps = document.querySelector(".section-nav-operation");
         this.spin = spinner();
     }
@@ -125,6 +125,7 @@ const admin = new(class Admin extends EventEmitter {
     async getUser(userObj) {
 
         const {
+            __notUser,
             props: { elName, class: cl, collection, nextUrl , idType , apiUrl },
             addNew: { text , url: userUrl },
             table: { tableSpec , title: editTitle, user: editWinUser , ipcEventName }
@@ -133,22 +134,25 @@ const admin = new(class Admin extends EventEmitter {
         this.__removeOnDom();
         this.sectionNavOps.appendChild(this.spin);
 
-        const result = await adminLoadUser({ url: apiUrl, collection, nextUrl, PAGE: 0});
+        const result = __notUser
+              ? await __notUser.loadInfo({ url: apiUrl, collection, nextUrl, PAGE: 0 })
+              : await adminLoadUser({ url: apiUrl, collection, nextUrl, PAGE: 0});
 
         this.spin.remove();
 
         if ( ! result )
             return;
 
-        this.__createSectionDiv( { property : this.currentUser, elName, class: cl, result})
+        this.__createSectionDiv( { property : this.currentSection, elName, class: cl, result})
             .appendChild(userOperation(
                 {
                     __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName },
-                    __internal     : { self: this , property: this.currentUser },
+                    __internal     : { self: this , property: this.currentSection },
                     url            : userUrl,
                     text
-                }, async (page) => await adminLoadUser(
-                    { url: apiUrl, collection, nextUrl, PAGE: page }
+                }, async (page) => __notUser
+                    ? await __notUser.loadInfo({ url: apiUrl, collection, nextUrl, PAGE: page })
+                    : await adminLoadUser({ url: apiUrl, collection, nextUrl, PAGE: page }
                 )
             ));
 
@@ -157,7 +161,7 @@ const admin = new(class Admin extends EventEmitter {
             appendTable(
                 {
                     tableSpec,
-                    __internal  : { self: this, property: this.currentUser },
+                    __internal  : { self: this, property: this.currentSection },
                     title       : editTitle,
                     user        : editWinUser,
                     url         : userUrl,
@@ -165,10 +169,9 @@ const admin = new(class Admin extends EventEmitter {
                     result,
                     __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName }
                 },
-                async (uId) => await adminDeleteUser(
-                    { [idType]: uId },
-                    { url: apiUrl, collection, idType }
-                )
+                async (uId) => __notUser
+                    ? await __notUser.deleteInfo({ [idType]: uId },{ url: apiUrl, collection, idType })
+                    : await adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType })
             );
         });
 
@@ -367,6 +370,9 @@ admin.on("admin-accountant", async () => {
             ipcEventName: "admin-accountant"
         }
     });
+});
+
+admin.on("admin-interventions", async () => {
 });
 
 

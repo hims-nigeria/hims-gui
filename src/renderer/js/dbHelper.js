@@ -201,3 +201,37 @@ module.exports.editUserInfo = async ({ result , data , obj , collection , idType
 
     return true;
 };
+
+module.exports.saveInterventionInfo = async ({ result , data , obj }) => {
+
+    const OBJECT_TO_CACHE = {};
+
+    for ( let [ key , value ] of data.entries() )
+        OBJECT_TO_CACHE[key] = value;
+
+    const [ { healthFacilityId } ] = await hospitalDb.sessionObject.toArray();
+
+    const __id = createExternalId(
+        OBJECT_TO_CACHE.healthFacilityId,
+        ...Object.values(obj.generateIdFrom)
+        // OBJECT_TO_CACHE.interventionName,
+        // OBJECT_TO_CACHE.subInterventionName
+    );
+
+    if ( ! result.response ) {
+        if ( await hospitalDb[obj.collection].get({ [obj.idType]: __id }) ) {
+            toast({
+                text: `Intervention is not available`,
+                createAfter: 6000
+            });
+            return false;
+        }
+    }
+
+    OBJECT_TO_CACHE.heatlhFacility   = healthFacilityId;
+    OBJECT_TO_CACHE[obj.idType]      = __id;
+
+    await hospitalDb[obj.collection].add(OBJECT_TO_CACHE);
+
+    return true;
+};

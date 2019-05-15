@@ -8,6 +8,7 @@ const { toast } = require("../js/domutils.js");
 const { REQUEST_URL } = require("../js/constants.js");
 
 const {
+    saveInterventionInfo,
     deleteUserInfo,
     loadUsersInfo,
     saveUserInfo,
@@ -290,7 +291,6 @@ module.exports.adminLoadUser = async obj => {
 
 module.exports.adminSaveUser = async ( data , obj ) => {
     let result;
-    data.append("role", obj.url);
     try {
         result = await axios.post(`${REQUEST_URL}/register/${obj.url}` , data );
     } catch(ex) {
@@ -342,6 +342,25 @@ module.exports.adminEditUser = async (data,obj) => {
             });
         });
     }
+};
+
+module.exports.adminCreateIntervention = async (data,obj) => {
+
+    let result;
+
+    try {
+        result = await axios.post(`${REQUEST_URL}/admin/${obj.url}` , data);
+    } catch(ex) {
+        result = ex;
+    } finally {
+        return apiCallHandler( result , obj , async () => {
+            return await saveInterventionInfo({
+                result,
+                data,
+                obj
+            });
+        });
+    };
 };
 
 module.exports.logout = async obj => {
