@@ -158,7 +158,7 @@ module.exports.createTable = obj => {
 
                 editAnchor.setAttribute("data-ops", "edit");
                 deleteAnchor.setAttribute("data-ops", "delete");
-                
+
 
                 editAnchor.textContent   = "Edit";
                 deleteAnchor.textContent = "Delete";
@@ -167,6 +167,10 @@ module.exports.createTable = obj => {
                 td.appendChild(deleteAnchor);
                 tr.appendChild(td);
 
+                return;
+            case "intervention":
+                td.textContent = trow["interventionName"];
+                tr.appendChild(td);
                 return;
             default:
 

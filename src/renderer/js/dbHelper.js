@@ -48,13 +48,14 @@ module.exports.loadUsersInfo = async ({result,collection,obj}) => {
 
 
 
-module.exports.deleteUserInfo = async ({data,idType,result,collection}) => {
+module.exports.deleteUserInfo = async ({data,idType,result,collection} , cb ) => {
 
     const [  { healthFacilityId }  ] = await hospitalDb.sessionObject.toArray();
+
     await hospitalDb[collection].where({ [idType]: data[idType] }).delete();
-    await hospitalDb.healthFacility.where({ healthFacilityId }).modify( result => {
-        result.dashboardInfo[collection] -= 1;
-    });
+
+    if ( cb )
+        await cb(healthFacilityId);
 
     if ( ! result.response ) {
         await hospitalDb.offlineAccounts.where(
@@ -242,6 +243,45 @@ module.exports.saveInterventionInfo = async ({ result , data , obj }) => {
     OBJECT_TO_CACHE[obj.idType]      = __id;
 
     await hospitalDb[obj.collection].add(OBJECT_TO_CACHE);
+
+    return true;
+};
+
+module.exports.editInterventionInfo = async ({ result , data , obj , collection , idType}) => {
+
+    const OBJECT_TO_CACHE = {};
+
+    for ( let [ key , value ] of data.entries() )
+        OBJECT_TO_CACHE[key] = value;
+
+    const userId = OBJECT_TO_CACHE[idType];
+
+    if ( ! ( await hospitalDb[collection].get({ [idType] : userId })) ) {
+        toast({
+            text: `intervention is not avaiable`,
+            createAfter: 5000
+        });
+        return false;
+    }
+
+    delete OBJECT_TO_CACHE[idType];
+    await hospitalDb[collection].where({ [idType]: userId }).modify(OBJECT_TO_CACHE);
+
+    if ( ! result.response ) {
+
+        await hospitalDb.offlineAccounts.where(
+            {
+                newInformationType: collection
+            }
+        ).and(
+            x => x[idType] === userId
+        ).modify(
+            {
+                ...OBJECT_TO_CACHE,
+                flag: "edit"
+            }
+        );
+    }
 
     return true;
 };

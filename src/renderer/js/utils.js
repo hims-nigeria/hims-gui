@@ -345,7 +345,6 @@ module.exports.addUserFormHandler = async (FORM_STATE,{ evt , saveUser, editUser
         return;
     }
 
-    const previewImage  = document.querySelector(".previewer");
     const btns = Array.from(document.querySelectorAll("button"));
     const fData = new FormData(evt.target);
 
@@ -367,6 +366,13 @@ module.exports.addUserFormHandler = async (FORM_STATE,{ evt , saveUser, editUser
         return ;
     }
 
+    if ( FORM_STATE.__newWindowSpec.generateIdFrom.length !== 0 ) {
+        const generateIdFromArray = Array.from(FORM_STATE.__newWindowSpec.generateIdFrom);
+        FORM_STATE.__newWindowSpec.generateIdFrom = {};
+        generateIdFromArray.forEach( x => {
+            FORM_STATE.__newWindowSpec.generateIdFrom[x] = fData.get(x);
+        });
+    }
 
     result = await saveUser(fData,btns);
 

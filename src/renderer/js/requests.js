@@ -9,6 +9,7 @@ const { REQUEST_URL } = require("../js/constants.js");
 
 const {
     saveInterventionInfo,
+    editInterventionInfo,
     deleteUserInfo,
     loadUsersInfo,
     saveUserInfo,
@@ -307,7 +308,7 @@ module.exports.adminSaveUser = async ( data , obj ) => {
     }
 };
 
-module.exports.adminDeleteUser = async (data,obj) => {
+module.exports.adminDeleteUser = async (data,obj,cb) => {
     let result;
     try {
         result = await axios.delete(`${REQUEST_URL}/delete/${obj.url}`, data );
@@ -320,7 +321,7 @@ module.exports.adminDeleteUser = async (data,obj) => {
                 idType: obj.idType,
                 result,
                 data
-            });
+            }, cb );
         });
     }
 };
@@ -361,6 +362,26 @@ module.exports.adminCreateIntervention = async (data,obj) => {
             });
         });
     };
+};
+
+
+module.exports.adminEditIntervention = async (data,obj) => {
+    let result;
+    try {
+        result = await axios.post(`${REQUEST_URL}/edit/${obj.url}` , data);
+    } catch(ex) {
+        result = ex;
+    } finally {
+        return apiCallHandler( result , obj , async () => {
+            return await editInterventionInfo({
+                collection: obj.collection,
+                idType    : obj.idType,
+                result,
+                data,
+                obj
+            });
+        });
+    }
 };
 
 module.exports.logout = async obj => {

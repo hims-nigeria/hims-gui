@@ -8,11 +8,13 @@
     } = require("electron");
 
     const {
-        setupEventOnDomLoad
+        setupEventOnDomLoad,
+        addUserFormHandler
     } = require("../../js/utils.js");
 
     const {
-        adminCreateIntervention
+        adminCreateIntervention,
+        adminEditIntervention
     } = require("../../js/requests.js");
 
     const form  = document.querySelector("form");
@@ -25,40 +27,27 @@
             idType: undefined,
             collection: undefined,
             url: undefined,
-            ipcEventName: undefined
+            ipcEventName: undefined,
+            generateIdFrom: undefined
         }
     };
 
 
-
-    form.addEventListener("submit", async evt => {
-
-        evt.preventDefault();
-
-        if ( ! form.checkValidity() ) {
-            dialog.showErrorBox("Something does not feel right","Please correct the wrong fields");
-            return;
+    form.addEventListener("submit", evt => addUserFormHandler(FORM_STATE,{
+        evt,
+        saveUser: async (fData,btns) => {
+            return await adminCreateIntervention(  fData , {
+                disabled  : btns,
+                ...FORM_STATE.__newWindowSpec
+            });
+        },
+        editUser: async (fData,btns) => {
+            return await adminEditIntervention( fData , {
+                disabled   : btns,
+                ...FORM_STATE.__newWindowSpec
+            });
         }
-
-        const fData  = new FormData(evt.target);
-        const btns   = Array.from(document.querySelectorAll("button"));
-
-        btns.forEach( x => x.disabled = true );
-
-        const result = await adminCreateIntervention(fData,{
-            disabled: btns,
-            generateIdFrom: {
-                interventionName: fData.get("interventionName")
-            },
-            idType: "interventionId",
-            collection: "interventions"
-        });
-
-        if ( ! result ) return;
-
-        ipc.sendTo( 1 , FORM_STATE.__newWindowSpec.ipcEventName);
-
-    });
+    }));
 
     window.addEventListener("DOMContentLoaded", () => setupEventOnDomLoad( FORM_STATE ));
 

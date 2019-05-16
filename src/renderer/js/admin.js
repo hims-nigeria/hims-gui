@@ -29,6 +29,8 @@ const {
     ADD_LABORATORIST_URL
 } = require("../js/constants.js");
 
+const hospitalDb = require("../js/db.js");
+
 const { spinner , createTable } = require("../js/domutils.js");
 const { appendTable , userOperation     } = require("../js/utils.js");
 const { EventEmitter } = require("events");
@@ -141,11 +143,11 @@ const admin = new(class Admin extends EventEmitter {
 
         if ( ! result )
             return;
-        
+
         this.__createSectionDiv( { property : this.currentSection, elName, class: cl, result})
             .appendChild(userOperation(
                 {
-                    __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName },
+                    __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName , generateIdFrom: __notUser ? __notUser.generateIdFrom : [] },
                     __internal     : { self: this , property: this.currentSection },
                     url            : userUrl,
                     text
@@ -165,11 +167,15 @@ const admin = new(class Admin extends EventEmitter {
                     url         : userUrl,
                     location,
                     result,
-                    __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName }
+                    __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName , generateIdFrom: __notUser ? __notUser.generateIdFrom : [] }
                 },
                 async (uId) => __notUser
-                    ? await __notUser.deleteInfo({ [idType]: uId },{ url: apiUrl, collection, idType })
-                    : await adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType })
+                    ? await adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType })
+                    : await adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType } , async healthFacilityId => {
+                        await hospitalDb.healthFacility.where({ healthFacilityId }).modify( result => {
+                            result.dashboardInfo[collection] -= 1;
+                        });
+                    })
             );
         });
 
@@ -372,7 +378,7 @@ admin.on("admin-accountant", async () => {
 
 admin.on("admin-interventions", async () => {
     await admin.getUser({
-        __notUser: { deleteInfo: "" },
+        __notUser: { generateIdFrom: [ "interventionName" ] },
         props: {
             elName: "interventionDiv",
             class:  "intervention-div",
@@ -386,7 +392,7 @@ admin.on("admin-interventions", async () => {
             url: ADD_INTERVENTION_URL
         },
         table: {
-            tableSpec: { tableId: "interventionId", headers: [ "interventionName" ] },
+            tableSpec: { tableId: "interventionId", headers: [ "intervention" ] },
             title: "Edit Intervention",
             user: "interventions",
             ipcEventName: "admin-interventions"
