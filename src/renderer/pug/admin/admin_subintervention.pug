@@ -1,0 +1,53 @@
+extends ../templates/head.pug
+
+block title
+  title Add SubIntervention
+
+append link
+  link(rel="stylesheet" href="../../css/admin/admin_add.css")
+  link(rel="stylesheet" href="../../css/admin/admin_subintervention.css")
+  link(rel="stylesheet" href="../../css/toast.css")
+
+block fa-link
+  link(rel="stylesheet" href="../../css/all.min.css")
+
+
+block content
+  i(class="fa fa-times-circle close")
+  section(class="admin-add-user")
+    form(class="admin-add-user-form" enctype="multipart/form-data")
+      p.op Add SubIntervention
+
+      label
+        p Intervention Name
+        select(name="interventionName" required)
+          option(value="Select Intervention" selected hidden) Select Intervention
+
+      label
+        p Enter SubIntervention Name
+        input(type="text" name="subInterventionName" required)
+
+      button(type="submit") Save
+      button(type="reset" class="reset") Reset
+
+  script.
+    ; ( async () => {
+
+      const { LOGIN_URL } = require("../../js/constants.js");
+      const { adminLoadUser } = require("../../js/requests.js");
+      const result = await adminLoadUser({ url: "intervention" , collection: "interventions" , nextUrl: LOGIN_URL });
+
+      if ( result.interventions.length === 0 ) return;
+
+      const select = document.querySelector("select");
+
+
+      result.interventions.forEach( x => {
+        const option = document.createElement("option");
+        option.textContent = option.value = x.interventionName;
+        select.appendChild(option);
+      });
+
+
+    })();
+  script(src="../../js/editIntervetion.js")

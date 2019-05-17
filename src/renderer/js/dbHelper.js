@@ -30,18 +30,22 @@ module.exports.loadUsersInfo = async ({result,collection,obj}) => {
 
         const [ { role , fullName, healthFacilityId } ] = session;
 
-        const cursor = hospitalDb[collection].where({healthFacility : healthFacilityId});
-
-        const f = await hospitalDb[collection].where({healthFacility : healthFacilityId}).toArray();
-        console.log(f);
-
-        Object.assign(__users[collection], {
-            hasMore: await cursor.count() > ((obj.PAGE + 1) * PAGE_LIMIT),
-            [collection]: await cursor.offset(PAGE_LIMIT * obj.PAGE).limit(PAGE_LIMIT).toArray(),
-            fullName,
-            role
-        });
-        console.log(__users , collection);
+        if ( obj.PAGE ) {
+            const cursor = hospitalDb[collection].where({healthFacility : healthFacilityId});
+            Object.assign(__users[collection], {
+                hasMore: await cursor.count() > ((obj.PAGE + 1) * PAGE_LIMIT),
+                [collection]: await cursor.offset(PAGE_LIMIT * obj.PAGE).limit(PAGE_LIMIT).toArray(),
+                fullName,
+                role
+            });
+        } else {
+            Object.assign(__users[collection], {
+                hasMore: false,
+                [collection]: await hospitalDb[collection].toArray(),
+                fullName,
+                role
+            });
+        }
     }
     return Object.keys(__users[collection]).length ? __users[collection] : result.response.data.message;
 };

@@ -26,7 +26,8 @@ const {
     ADD_PHARMACIST_URL,
     ADD_RECEPTIONIST_URL,
     ADD_INTERVENTION_URL,
-    ADD_LABORATORIST_URL
+    ADD_LABORATORIST_URL,
+    ADD_SUBINTERVENTION_URL
 } = require("../js/constants.js");
 
 const hospitalDb = require("../js/db.js");
@@ -400,16 +401,41 @@ admin.on("admin-interventions", async () => {
     });
 });
 
+admin.on("admin-subinterventions" , async () => {
 
-ipc.on("admin-nurse",         () => admin.emit("admin-nurse"));
-ipc.on("admin-intern",        () => admin.emit("admin-intern"));
-ipc.on("admin-receptionist",  () => admin.emit("admin-receptionist"));
-ipc.on("admin-doctor",        () => admin.emit("admin-doctor"));
-ipc.on("admin-client",        () => admin.emit("admin-client"));
-ipc.on("admin-pharmacist",    () => admin.emit("admin-pharmacist"));
-ipc.on("admin-laboratorist",  () => admin.emit("admin-laboratorist"));
-ipc.on("admin-accountant",    () => admin.emit("admin-accountant"));
-ipc.on("admin-interventions", () => admin.emit("admin-interventions"));
+    await admin.getUser({
+        __notUser: { generateIdFrom: [ "interventionName" , "subInterventionName" ] },
+        props: {
+            elName: "subInterventionDiv",
+            class:  "subIntervention-div",
+            collection: "subInterventions",
+            nextUrl: LOGIN_URL,
+            apiUrl : "subintervention",
+            idType: "subInterventionId"
+        },
+        addNew: {
+            text: "Add Subintervention",
+            url: ADD_SUBINTERVENTION_URL
+        },
+        table: {
+            tableSpec: { tableId: "subInterventionId", headers: [ "sub intervention" , "category" ] },
+            title: "Edit Subintervention",
+            user: "subInterventions",
+            ipcEventName: "admin-subinterventions"
+        }
+    });
+});
 
+
+ipc.on("admin-nurse",            () => admin.emit("admin-nurse"));
+ipc.on("admin-intern",           () => admin.emit("admin-intern"));
+ipc.on("admin-receptionist",     () => admin.emit("admin-receptionist"));
+ipc.on("admin-doctor",           () => admin.emit("admin-doctor"));
+ipc.on("admin-client",           () => admin.emit("admin-client"));
+ipc.on("admin-pharmacist",       () => admin.emit("admin-pharmacist"));
+ipc.on("admin-laboratorist",     () => admin.emit("admin-laboratorist"));
+ipc.on("admin-accountant",       () => admin.emit("admin-accountant"));
+ipc.on("admin-interventions",    () => admin.emit("admin-interventions"));
+ipc.on("admin-subinterventions", () => admin.emit("admin-subinterventions"));
 
 module.exports = admin;

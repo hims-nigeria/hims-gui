@@ -172,6 +172,14 @@ module.exports.createTable = obj => {
                 td.textContent = trow["interventionName"];
                 tr.appendChild(td);
                 return;
+            case "sub intervention":
+                td.textContent = trow["subInterventionName"];
+                tr.appendChild(td);
+                return;
+            case "category":
+                td.textContent = trow["interventionName"];
+                tr.appendChild(td);
+                return;
             default:
 
                 if ( headers[headers.length - 1] === tdata ) {

@@ -1,0 +1,18 @@
+
+label {
+    p {
+        text-align: center;
+    }
+    input,select {
+        width: 70% !important;
+        margin-left: 50px !important;
+        font-size: 1em;
+    }
+    select {
+        margin-left: 65px !important;
+    }
+}
+
+button:first-of-type {
+    margin-top: 50px !important;
+}
