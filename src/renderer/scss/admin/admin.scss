@@ -1,5 +1,6 @@
 @import "./admin_dashboard.scss";
 @import "../table.scss";
+@import "../override.scss";
 
 
 .navigator-icon {
@@ -34,6 +35,79 @@
             transition: .2s ease-in-out;
             &:hover {
                 background: lighten(darken(red,10%),3%);
+            }
+        }
+    }
+}
+
+
+.edit-profile {
+
+    font-size: 10px;
+    color: black;
+    font-weight: bold;
+
+    form {
+
+        clear: both;
+        box-shadow: 0px 0px 5px 1px darken(white,10%);
+        padding: 15px;
+
+        label {
+            margin-left: 150px;
+            input {
+                border: 1px solid gainsboro;
+                padding: 4px;
+                border-radius: 5px;
+                background: white;
+            }
+        }
+
+        &:last-of-type {
+            margin-top: 25px;
+        }
+
+        button {
+            border: none;
+            //border-color: #66BB6A;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #66BB6A;
+            color: white;
+            transition: .2s background ease-in;
+            &:hover {
+                background: lighten(#66BB6A, 10%);
+            }
+        }
+    }
+
+    .admin-edit-profile {
+        label {
+            input {
+                margin-left: 100px;
+            }
+            span {
+                position: relative;
+                left: 50px;
+            }
+        }
+    }
+
+    .admin-edit-password {
+        label {
+            input {
+                margin-left: 10px;
+            }
+
+            &:nth-of-type(2) {
+                span {
+                    position: relative;
+                    left: 25px;
+                }
+                input {
+                    margin-left: 35px !important;
+                }
             }
         }
     }

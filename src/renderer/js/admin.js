@@ -13,7 +13,8 @@ const {
 const {
     getDashboard,
     adminLoadUser,
-    adminDeleteUser
+    adminDeleteUser,
+    getAdminCredential
 } = require("../js/requests.js");
 
 const {
@@ -32,7 +33,7 @@ const {
 
 const hospitalDb = require("../js/db.js");
 
-const { spinner , createTable } = require("../js/domutils.js");
+const { spinner , createTable , buildAdminAccountPage } = require("../js/domutils.js");
 const { appendTable , userOperation     } = require("../js/utils.js");
 const { EventEmitter } = require("events");
 
@@ -181,6 +182,17 @@ const admin = new(class Admin extends EventEmitter {
         });
 
         this.emit("new-page-append", "prev" , result );
+    }
+
+    async adminAccount() {
+
+        this.__removeOnDom();
+
+        this.sectionNavOps.appendChild(this.spin);
+
+        this.__setCredentials(await buildAdminAccountPage(this.sectionNavOps));
+
+        this.spin.remove();
     }
 });
 
@@ -426,6 +438,10 @@ admin.on("admin-subinterventions" , async () => {
     });
 });
 
+
+admin.on("admin-account", async () => {
+    await admin.adminAccount();
+});
 
 ipc.on("admin-nurse",            () => admin.emit("admin-nurse"));
 ipc.on("admin-intern",           () => admin.emit("admin-intern"));

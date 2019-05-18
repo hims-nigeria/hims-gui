@@ -200,7 +200,7 @@ module.exports.userOperation = function (op,loadUserCb) {
         __internal: { self, property },
         __newWindowSpec,
         text,
-        url,
+        url
     } = op;
 
     const userOps    = document.createElement("div");

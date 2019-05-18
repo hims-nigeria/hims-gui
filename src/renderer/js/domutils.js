@@ -1,5 +1,7 @@
 "use script";
 
+const hospitalDb = require("../js/db.js");
+
 module.exports.toast = ( { text , createAfter, deleteAfter } ) => {
 
     const animateProperties = [
@@ -201,4 +203,53 @@ module.exports.createTable = obj => {
     table.appendChild(tbody);
 
     return table;
+};
+
+
+module.exports.buildAdminAccountPage = async sectionNav => {
+
+    const result = await hospitalDb.sessionObject.get({ id: 0 });
+
+    const editProfMarkup = `
+
+        <div class="edit-profile currently-shown">
+
+            <form class="admin-edit-profile">
+               <label>
+                  <span> Name </span>
+                  <input type="text" required value=${result.fullName} >
+               </label>
+               <label>
+                  <span> Email </span>
+                  <input type="email" value=${result.email} disabled >
+               </label>
+               <button type="button" class="update-profile"> Update Profile </button>
+            </form>
+
+            <form class="admin-edit-password">
+               <label>
+                  <span> Current Password </span>
+                  <input type="password" name="currentPassword" required />
+               </label>
+               <label>
+                  <span> New Password </span>
+                  <input type="password" name="password" required/>
+               </label>
+               <label>
+                  <span> Confirm Password </span>
+                  <input type="password" name="confirmPassword" required/>
+               </label>
+               <button type="button" class="update-profile"> Update Password </button>
+            </form>
+        </div>
+   `;
+
+    sectionNav.appendChild(
+        new DOMParser().parseFromString(
+            editProfMarkup,
+            "text/html"
+        ).querySelector(".currently-shown")
+    );
+
+    return result;
 };

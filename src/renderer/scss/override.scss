@@ -34,3 +34,8 @@ i {
     outline: none;
     user-select: none;
 }
+
+*:disabled {
+    background: darkgrey !important;
+    color: lightgrey;
+}
