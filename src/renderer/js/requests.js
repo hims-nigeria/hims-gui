@@ -267,7 +267,7 @@ module.exports.adminLoadUser = async obj => {
     let result;
 
     try {
-        result = await axios.get(`${REQUEST_URL}/admin/${obj.url}?page=${obj.PAGE}`);
+        result = await axios.get(`${REQUEST_URL}/admin/loaduser/${obj.url}?page=${obj.PAGE}`);
     } catch(ex) {
         result = ex;
     } finally {
