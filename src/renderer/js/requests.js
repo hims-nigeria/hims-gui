@@ -106,7 +106,7 @@ module.exports.getDashboard = async obj => {
             let userInfo = {} ;
 
             if ( ! result.response ) {
-
+                console.log("no server resones");
                 const session = await hospitalDb.sessionObject.toArray();
 
                 if ( ! session.length ) {
@@ -201,7 +201,7 @@ module.exports.register = async (data,obj) => {
     if ( ! hpwd ) return false;
 
     OBJECT_TO_CACHE.role = "admin";
-    OBJECT_TO_CACHE.healthFacilityId = createExternalId(OBJECT_TO_CACHE.healthCareName,Date.now());
+    OBJECT_TO_CACHE.healthFacilityId = createExternalId(OBJECT_TO_CACHE.healthCareName);
 
     delete OBJECT_TO_CACHE.activationKey;
 
@@ -282,6 +282,7 @@ module.exports.adminLoadUser = async obj => {
 };
 
 module.exports.adminSaveUser = async ( data , obj ) => {
+    console.log(obj.url, "path");
     let result;
     try {
         result = await axios.post(`${REQUEST_URL}/register/${obj.url}` , data );
