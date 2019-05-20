@@ -198,21 +198,12 @@ module.exports.register = async (data,obj) => {
 
     const hpwd = await formDataToObject(data,OBJECT_TO_CACHE);
 
-    if ( ! hpwd ) {
-        toast({
-            text: "password and current password does not match",
-            createAfter: 0
-        });
-        return false;
-    }
+    if ( ! hpwd ) return false;
 
-
-    OBJECT_TO_CACHE.password = hpwd;
     OBJECT_TO_CACHE.role = "admin";
     OBJECT_TO_CACHE.healthFacilityId = createExternalId(OBJECT_TO_CACHE.healthCareName,Date.now());
 
     delete OBJECT_TO_CACHE.activationKey;
-    delete OBJECT_TO_CACHE.confirmPassword;
 
     let result;
 
@@ -380,6 +371,64 @@ module.exports.adminEditIntervention = async (data,obj) => {
                 data,
                 obj
             });
+        });
+    }
+};
+
+module.exports.adminEditProfile = async (data,obj) => {
+
+    let result;
+
+    try {
+        result = axios.post(`${REQUEST_URL}/admin/update-profile`, data);
+    } catch(ex) {
+        result = ex;
+    } finally {
+
+        return apiCallHandler( result , obj , async () => {
+
+            let {
+                healthFacilityId,
+                fullName,
+                email
+            } = await hospitalDb.sessionObject.get({ id: 0 });
+
+            const OBJECT_TO_CACHE = {};
+
+            const hpwd = await formDataToObject(
+                data,
+                OBJECT_TO_CACHE,
+                (await hospitalDb.healthFacility.get({ healthFacilityId })).password
+            );
+
+            if ( ! hpwd ) return false;
+
+            await hospitalDb.healthFacility.where({ healthFacilityId }).modify(OBJECT_TO_CACHE);
+
+            fullName = OBJECT_TO_CACHE.fullName
+                ? ( async () => {
+                    await hospitalDb.sessionObject.where({ id: 0 }).modify({
+                        fullName: OBJECT_TO_CACHE.fullName
+                    });
+                    return OBJECT_TO_CACHE.fullName;
+                })()
+            : fullName;
+
+            if ( ! result.response ) {
+                await hospitalDb.offlineAccounts.where(
+                    {
+                        newInformationType: "healthFacilities"
+                    }
+                ).and(
+                    x => x.healthFacilityId === healthFacilityId
+                ).modify({
+                    ...OBJECT_TO_CACHE,
+                    flag: "edit"
+                });
+            }
+
+            return result.response ? result.response.data.message : { fullName , email };
+
         });
     }
 };

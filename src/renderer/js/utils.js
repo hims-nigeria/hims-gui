@@ -27,7 +27,7 @@ const hashPassword = async (pwd, cpwd) => {
 
 module.exports.hashPassword = hashPassword;
 
-module.exports.comparePassword = async ( plaintextPwd, hashedPwd )  => {
+const comparePassword = async ( plaintextPwd, hashedPwd )  => {
     try {
         return (await bcrypt.compare( plaintextPwd, hashedPwd ));
     } catch(ex) {
@@ -35,12 +35,14 @@ module.exports.comparePassword = async ( plaintextPwd, hashedPwd )  => {
     }
 };
 
+module.exports.comparePassword = comparePassword;
+
 module.exports.createExternalId = (...criteria) => {
     const crypto = require("crypto");
     return crypto.createHash("sha1").update(criteria.join("")).digest("hex");
 };
 
-module.exports.formDataToObject = async(formData,OBJECT_TO_CACHE) => {
+module.exports.formDataToObject = async(formData,OBJECT_TO_CACHE,dbPwd) => {
 
     for ( let [ key , value ] of formData.entries() ) {
         let _val;
@@ -54,6 +56,19 @@ module.exports.formDataToObject = async(formData,OBJECT_TO_CACHE) => {
             console.log(OBJECT_TO_CACHE);
         }
     }
+    // if it was not a request to update password
+    // or register/login a user.
+    // stop right here
+    if ( ! OBJECT_TO_CACHE.password ) return true;
+
+    if ( OBJECT_TO_CACHE.currentPassword ) {
+        const compared = await comparePassword(OBJECT_TO_CACHE.currentPassword, dbPwd);
+        if ( ! compared ) {
+            dialog.showErrorBox("password mismatch","The specified current password is wrong");
+            return false;
+        }
+        delete OBJECT_TO_CACHE.currentPassword;
+    }
 
     let hpwd;
 
@@ -63,14 +78,19 @@ module.exports.formDataToObject = async(formData,OBJECT_TO_CACHE) => {
     );
 
     if ( hpwd instanceof Error ) {
-        toast({
-            text: "An unexpected error has occurred. Please contact the system administrator",
-            createAfter: 0
-        });
+        console.log(hpwd);
+        dialog.showErrorBox(`unexpected error`,`Your request can not be handled`);
         return false;
     }
 
-    return hpwd;
+    if ( ! hpwd ) {
+        dialog.showErrorBox("password mismatch","new passwords is not the same as confirm password");
+        return false;
+    }
+
+    OBJECT_TO_CACHE.password = hpwd;
+    delete OBJECT_TO_CACHE.confirmPassword;
+    return true;
 };
 
 module.exports.isEmailExists = async ( email ) => (

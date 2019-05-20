@@ -2,7 +2,8 @@
 
     "use strict";
 
-    const { remote: { getCurrentWindow } } = require("electron");
+    const { remote: { getCurrentWindow , dialog } } = require("electron");
+
 
     const toggler = document.querySelector(".nav-header-toggler");
     const asideNav = document.querySelector(".section-nav");
@@ -14,6 +15,9 @@
 
     const { logout }    = require("../js/requests.js");
     const { LOGIN_URL } = require("../js/constants.js");
+
+
+    const { adminEditProfile }   = require("../js/requests.js");
 
     toggler.addEventListener("click", evt => {
         if ( asideNav.hasAttribute("data-hide-nav") ) {
@@ -57,5 +61,27 @@
 
         if ( result ) getCurrentWindow().webContents.loadURL(LOGIN_URL);
     });
+
+    navOperations.addEventListener("submit", async evt => {
+
+        evt.preventDefault();
+
+        if ( ! evt.target.checkValidity() ) {
+            dialog.showErrorBox(`Invalid values`,`Check the inputed values if they are correct`);
+            return;
+        }
+
+        const btn = evt.target.querySelector("button");
+
+        btn.disabled = true;
+
+        const result = await adminEditProfile(new FormData(evt.target), {
+            disabled: [ btn ]
+        });
+
+        if ( ! result ) return;
+        admin.__setCredentials(result);
+    });
+
 
 })();

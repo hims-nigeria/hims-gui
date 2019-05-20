@@ -1,5 +1,4 @@
 "use script";
-
 const hospitalDb = require("../js/db.js");
 
 module.exports.toast = ( { text , createAfter, deleteAfter } ) => {
@@ -210,6 +209,8 @@ module.exports.buildAdminAccountPage = async sectionNav => {
 
     const result = await hospitalDb.sessionObject.get({ id: 0 });
 
+    console.log(result, "duh duh");
+
     const editProfMarkup = `
 
         <div class="edit-profile currently-shown">
@@ -217,13 +218,13 @@ module.exports.buildAdminAccountPage = async sectionNav => {
             <form class="admin-edit-profile">
                <label>
                   <span> Name </span>
-                  <input type="text" required value=${result.fullName} >
+                  <input type="text" name="fullName" value=${result.fullName} required>
                </label>
                <label>
                   <span> Email </span>
-                  <input type="email" value=${result.email} disabled >
+                  <input type="email" value=${result.email} name="email" disabled >
                </label>
-               <button type="button" class="update-profile"> Update Profile </button>
+               <button type="submit" class="update-profile"> Update Profile </button>
             </form>
 
             <form class="admin-edit-password">
@@ -239,17 +240,17 @@ module.exports.buildAdminAccountPage = async sectionNav => {
                   <span> Confirm Password </span>
                   <input type="password" name="confirmPassword" required/>
                </label>
-               <button type="button" class="update-profile"> Update Password </button>
+               <button type="submit" class="update-profile"> Update Password </button>
             </form>
         </div>
    `;
 
-    sectionNav.appendChild(
-        new DOMParser().parseFromString(
-            editProfMarkup,
-            "text/html"
-        ).querySelector(".currently-shown")
-    );
+    const strHtml = new DOMParser().parseFromString(
+        editProfMarkup,
+        "text/html"
+    ).querySelector(".currently-shown");
+
+    sectionNav.appendChild(strHtml);
 
     return result;
 };
