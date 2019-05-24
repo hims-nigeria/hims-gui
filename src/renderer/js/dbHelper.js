@@ -19,7 +19,7 @@ module.exports.loadUsersInfo = async ({result,collection,obj}) => {
 
     const __users = { [collection]: {} };
 
-    if ( ! result.response ) {
+    if ( ! result.data ) {
 
         const session = await hospitalDb.sessionObject.toArray();
 
@@ -47,7 +47,7 @@ module.exports.loadUsersInfo = async ({result,collection,obj}) => {
             });
         }
     }
-    return Object.keys(__users[collection]).length ? __users[collection] : result.response.data.message;
+    return Object.keys(__users[collection]).length ? __users[collection] : result.data.message;
 };
 
 
@@ -61,7 +61,7 @@ module.exports.deleteUserInfo = async ({data,idType,result,collection} , cb ) =>
     if ( cb )
         await cb(healthFacilityId);
 
-    if ( ! result.response ) {
+    if ( ! result.data ) {
         await hospitalDb.offlineAccounts.where(
             {
                 newInformationType: collection
@@ -112,8 +112,7 @@ module.exports.saveUserInfo = async ({ data , obj , collection , result: apiResu
 
     OBJECT_TO_CACHE[obj.idType] = createExternalId(
         OBJECT_TO_CACHE.email,
-        OBJECT_TO_CACHE.phoneNumber,
-        Date.now()
+        OBJECT_TO_CACHE.phoneNumber
     );
 
     OBJECT_TO_CACHE.healthFacility = healthFacilityId;
@@ -124,7 +123,7 @@ module.exports.saveUserInfo = async ({ data , obj , collection , result: apiResu
         result.dashboardInfo[collection] += 1;
     });
 
-    if ( ! apiResult.response )
+    if ( ! apiResult.data )
         await hospitalDb.offlineAccounts.add({
             newInformationType: collection,
             ...OBJECT_TO_CACHE,
@@ -191,7 +190,7 @@ module.exports.editUserInfo = async ({ result , data , obj , collection , idType
     delete OBJECT_TO_CACHE[idType];
     await hospitalDb[collection].where({ [idType]: userId }).modify(OBJECT_TO_CACHE);
 
-    if ( ! result.response ) {
+    if ( ! result.data ) {
 
         await hospitalDb.offlineAccounts.where(
             {
@@ -226,7 +225,7 @@ module.exports.saveInterventionInfo = async ({ result , data , obj }) => {
         // OBJECT_TO_CACHE.subInterventionName
     );
 
-    if ( ! result.response ) {
+    if ( ! result.data ) {
 
         if ( await hospitalDb[obj.collection].get({ [obj.idType]: __id }) ) {
             toast({
@@ -271,7 +270,7 @@ module.exports.editInterventionInfo = async ({ result , data , obj , collection 
     delete OBJECT_TO_CACHE[idType];
     await hospitalDb[collection].where({ [idType]: userId }).modify(OBJECT_TO_CACHE);
 
-    if ( ! result.response ) {
+    if ( ! result.data ) {
 
         await hospitalDb.offlineAccounts.where(
             {

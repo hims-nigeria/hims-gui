@@ -128,7 +128,7 @@ module.exports.createTable = obj => {
             switch(tdata) {
             case "image":
                 const img = new Image();
-                img.src = (new TextDecoder()).decode(trow[tdata]);
+                img.src = trow[tdata] instanceof Uint8Array ? (new TextDecoder()).decode(trow[tdata]) : trow[tdata];
                 td.appendChild(img);
                 tr.appendChild(td);
                 return;

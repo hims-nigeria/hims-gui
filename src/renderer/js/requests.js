@@ -51,9 +51,10 @@ const apiCallHandler = async (result,obj, cb = function() {}) => {
             return false;
         }
     };
-
+    console.log(result);
     // when internet is down
-    if ( ! result.response ) {
+    if ( ! result.data ) {
+        console.log(result);
         toast({
             text: "Oops. We can't communicate with server now",
             createAfter : 0
@@ -62,22 +63,22 @@ const apiCallHandler = async (result,obj, cb = function() {}) => {
         return await __cb();
     }
 
-    if ( result.response.data.status >= 400 ) {
+    if ( result.data.status >= 400 ) {
 
         toast({
-            text: result.response.data.message,
+            text: result.data.message,
             createAfter: 0
         });
 
         // if user is not authorized to view a section
         // redirect that user to another url
-
-        if ( result.response.data.status === 401 ) {
+        
+        if ( result.data.status === 401 ) {
 
             if ( ! obj.nextUrl ) {
                 return dialog.showErrorBox("You are not authorized to carry out this operation", "Please logout and login again");
             }
-
+            
             setTimeout(() => {
                 getCurrentWindow().webContents.loadURL(obj.nextUrl);
             },6000);
@@ -105,8 +106,8 @@ module.exports.getDashboard = async obj => {
 
             let userInfo = {} ;
 
-            if ( ! result.response ) {
-                console.log("no server resones");
+            if ( ! result.data ) {
+                console.log("no server resones" , result," came ehre");
                 const session = await hospitalDb.sessionObject.toArray();
 
                 if ( ! session.length ) {
@@ -121,7 +122,7 @@ module.exports.getDashboard = async obj => {
                     break;
                 }
             }
-            return Object.keys(userInfo).length !== 0 ? userInfo : result.response.data.message ;
+            return Object.keys(userInfo).length !== 0 ? userInfo : result.data.message ;
         });
     }
 };
@@ -143,7 +144,7 @@ module.exports.login = async (data,obj) => {
         /**
            for logging in we are only intrested in setting
            sessionObject collection in indexDB
-           we would check if result.response is undefined
+           we would check if result.data is undefined
            if it is undefined we would search our local cache to login user and set sessionObject
            but in a situation were the internet is not down we are only interested in setting the sessionObject
            in indexDB. We are not interested in reading from the cache to login user
@@ -152,7 +153,7 @@ module.exports.login = async (data,obj) => {
 
             let res;
 
-            if ( ! result.response ) {
+            if ( ! result.data ) {
 
                 res = await isEmailExists( OBJECT_TO_CHECK_AGAINST.email );
 
@@ -177,7 +178,7 @@ module.exports.login = async (data,obj) => {
                 }
             }
 
-            const { role , healthFacilityId , fullName , email  } = res ? res : result.response.data.message;
+            const { role , healthFacilityId , fullName , email  } = res ? res : result.data.message;
 
             await hospitalDb.sessionObject.put({
                 healthFacilityId,
@@ -208,7 +209,7 @@ module.exports.register = async (data,obj) => {
     let result;
 
     try {
-        result = await axios.post(`${REQUEST_URL}/register/health-care-center`, data);
+        result = await axios.post(`${REQUEST_URL}/admin/register/health-care-center`, data);
     } catch(ex) {
         result = ex;
     } finally {
@@ -253,7 +254,7 @@ module.exports.register = async (data,obj) => {
                 createAfter : 0
             });
 
-            if ( ! result.response ) {
+            if ( ! result.data ) {
                 await hospitalDb.offlineAccounts.add({ ...OBJECT_TO_CACHE , newInformationType: "healthfacilities" , flag: "new" });
             }
 
@@ -282,10 +283,10 @@ module.exports.adminLoadUser = async obj => {
 };
 
 module.exports.adminSaveUser = async ( data , obj ) => {
-    console.log(obj.url, "path");
+    console.log(obj.url, data);
     let result;
     try {
-        result = await axios.post(`${REQUEST_URL}/register/${obj.url}` , data );
+        result = await axios.post(`${REQUEST_URL}/admin/register/${obj.url}` , data );
     } catch(ex) {
         result = ex;
     } finally {
@@ -415,7 +416,7 @@ module.exports.adminEditProfile = async (data,obj) => {
                 })()
             : fullName;
 
-            if ( ! result.response ) {
+            if ( ! result.data ) {
                 await hospitalDb.offlineAccounts.where(
                     {
                         newInformationType: "healthFacilities"
@@ -428,7 +429,7 @@ module.exports.adminEditProfile = async (data,obj) => {
                 });
             }
 
-            return result.response ? result.response.data.message : { fullName , email };
+            return result.data ? result.data.message : { fullName , email };
 
         });
     }
