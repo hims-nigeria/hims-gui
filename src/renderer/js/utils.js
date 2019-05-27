@@ -21,6 +21,7 @@ const hospitalDb = require("../js/db.js");
 module.exports.checkForInternet = async cb => https.get("https://google.com", res => cb(res,null)).on("error", e => cb(null,e) );
 
 const hashPassword = async (pwd, cpwd) => {
+    console.log(cpwd,pwd);
     if ( cpwd && (pwd !== cpwd) ) return false;
     try { return await bcrypt.hash( pwd , 10 ); } catch(ex) { return ex; }
 };
@@ -130,7 +131,7 @@ const createNewWindow = async ( { id , url , title , state , options } ) => {
     win.__bid = title.replace(/\s+/,"");
 
     win.on("ready-to-show", () => {
-        console.log(win);
+        console.log(win, "hi here");
         win.show();
     });
 
@@ -141,7 +142,7 @@ const createNewWindow = async ( { id , url , title , state , options } ) => {
     ipc.once("get:window:state", (evt,id) => {
         ipc.sendTo(id,"window-state", state, options);
     });
-
+    
     win.webContents.openDevTools( { mode: "bottom" } );
     win.webContents.loadURL(url);
 };
@@ -268,7 +269,7 @@ module.exports.userOperation = function (op,loadUserCb) {
     userOps.appendChild(addNewUser);
     userOps.appendChild(prevIcon);
     userOps.appendChild(nextIcon);
-
+    
     addNewUser.addEventListener("click" , async () => await createNewWindow( { id: text.replace(/\s+/,"") , url , title: text , options:{ __newWindowSpec }}));
 
     return userOps;

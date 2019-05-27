@@ -51,6 +51,7 @@ function createWindow() {
         expirationDate: Math.floor(Date.now()/1000) * 1209600
     } , error => console.log(error) );
 
+
     Menu.setApplicationMenu(null);
 
     app.setName("Himi Nigeria");

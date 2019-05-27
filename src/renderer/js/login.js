@@ -25,7 +25,7 @@
         reset.disabled  = true;
 
         const result = await login(new FormData(form), { disabled: [ submit, reset ], nextUrl:  ADMIN_URL });
-
+        console.log(result,"hi there");
         if ( result ) getCurrentWindow().webContents.loadURL(ADMIN_URL);
 
     });
