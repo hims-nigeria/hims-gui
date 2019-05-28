@@ -217,13 +217,14 @@ module.exports.saveInterventionInfo = async ({ result , data , obj }) => {
         OBJECT_TO_CACHE[key] = value;
 
     const [ { healthFacilityId } ] = await hospitalDb.sessionObject.toArray();
-    console.log(Object.values(obj.generateIdFrom));
+
     const __id = createExternalId(
         OBJECT_TO_CACHE.healthFacilityId,
         ...Object.values(obj.generateIdFrom)
-        // OBJECT_TO_CACHE.interventionName,
-        // OBJECT_TO_CACHE.subInterventionName
     );
+
+    if ( ! /^\s$/.test(obj.dataUri) )
+        OBJECT_TO_CACHE.image = (new TextEncoder()).encode(obj.dataUri);
 
     if ( ! result.data ) {
 

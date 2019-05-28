@@ -142,7 +142,7 @@ const createNewWindow = async ( { id , url , title , state , options } ) => {
     ipc.once("get:window:state", (evt,id) => {
         ipc.sendTo(id,"window-state", state, options);
     });
-    
+
     win.webContents.openDevTools( { mode: "bottom" } );
     win.webContents.loadURL(url);
 };
@@ -162,7 +162,7 @@ const appendTable = function ( ops , deleteUser ) {
         url
     } = ops;
 
-    console.log(apiResult);
+    console.log(apiResult,user);
 
     if ( ! apiResult[user].length ) return;
 
@@ -269,7 +269,7 @@ module.exports.userOperation = function (op,loadUserCb) {
     userOps.appendChild(addNewUser);
     userOps.appendChild(prevIcon);
     userOps.appendChild(nextIcon);
-    
+
     addNewUser.addEventListener("click" , async () => await createNewWindow( { id: text.replace(/\s+/,"") , url , title: text , options:{ __newWindowSpec }}));
 
     return userOps;
@@ -291,24 +291,6 @@ const page = async (ops,loadUser) => {
     ops.property.hasMore = result.hasMore;
     ops.self.emit("new-page-append", ops.location , result );
 };
-
-
-module.exports.loadImageToDom = ({file,fileReader}) => {
-
-    const previewParent = document.querySelector(".image-preview");
-    const previewImage  = document.querySelector(".previewer");
-    const imageText     = document.querySelector(".image-preview-text");
-
-    fileReader.readAsDataURL(file);
-
-    fileReader.addEventListener("load", evt => {
-        imageText.style.display = "none";
-        previewParent.style.padding = "unset";
-        previewImage.src = evt.target.result;
-        previewImage.style.display = "block";
-    });
-};
-
 
 const convertPropsToJson = Object.create({});
 
@@ -368,6 +350,12 @@ module.exports.addUserFormHandler = async (FORM_STATE,{ evt , saveUser, editUser
 
     const btns = Array.from(document.querySelectorAll("button"));
     const fData = new FormData(evt.target);
+
+    if ( FORM_STATE.__newWindowSpec.role )
+        fData.append(
+            "role",
+            FORM_STATE.__newWindowSpec.role
+        );
 
     const convertUniquePropsToJson = convertPropsToJson[FORM_STATE.__newWindowSpec.ipcEventName];
 

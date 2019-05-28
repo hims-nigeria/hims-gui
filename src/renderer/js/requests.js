@@ -51,7 +51,15 @@ const apiCallHandler = async (result,obj, cb = function() {}) => {
             return false;
         }
     };
-    console.log(result);
+
+
+    result.data = result.response
+        ? Object.create(result.response)
+        : ( () => result.data ? Object.create(result.data) : undefined )();
+
+    delete result.response;
+
+    console.log({...result});
     // when internet is down
     if ( ! result.data ) {
         console.log(result);
@@ -70,11 +78,13 @@ const apiCallHandler = async (result,obj, cb = function() {}) => {
             createAfter: 0
         });
 
+        console.log("hereeee");
+
         // if user is not authorized to view a section
         // redirect that user to another url
 
         if ( result.data.status === 401 ) {
-
+            console.log("how far sha");
             if ( ! obj.nextUrl ) {
                 return dialog.showErrorBox("You are not authorized to carry out this operation", "Please logout and login again");
             }
@@ -97,7 +107,7 @@ module.exports.getDashboard = async obj => {
     let result;
 
     try {
-        result = await axios.get(`${REQUEST_URL}/dashboard/`);
+        result = await axios.get(`${REQUEST_URL}/admin/dashboard/`);
     } catch(ex) {
         result = ex;
     } finally {
@@ -137,7 +147,7 @@ module.exports.login = async (data,obj) => {
     let result;
 
     try {
-        result = await axios.post(`${REQUEST_URL}/login/`, data );
+        result = await axios.post(`${REQUEST_URL}/admin/login/`, data );
     } catch(ex) {
         result = ex;
     } finally {
@@ -343,7 +353,7 @@ module.exports.adminCreateIntervention = async (data,obj) => {
     let result;
 
     try {
-        result = await axios.post(`${REQUEST_URL}/admin/${obj.url}` , data);
+        result = await axios.post(`${REQUEST_URL}/admin/register/${obj.url}` , data);
     } catch(ex) {
         result = ex;
     } finally {
@@ -438,7 +448,7 @@ module.exports.adminEditProfile = async (data,obj) => {
 module.exports.logout = async obj => {
     let result;
     try {
-        result = await axios.post(`${REQUEST_URL}/logout`);
+        result = await axios.post(`${REQUEST_URL}/admin/logout`);
     } catch(ex) {
         result = ex;
     } finally {

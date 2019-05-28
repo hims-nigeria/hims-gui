@@ -24,7 +24,6 @@ block content
         span Department
         select(name="department" required)
           option(value="Please Select" selected hidden) Please Select
-          option(value="Consultant") Consultant
 
       label
         span Rank
@@ -39,19 +38,19 @@ block content
 
       label
         span Social Links
-        
+
         label.social
           span Facebook Profile
           input(type="text" placeholder="facebook profile link" name="fb_link")
-        
+
         label.social
           span Twitter Profile
           input(type="text" placeholder="twitter profile link" name="twitter_link")
-       
+
         label.social
           span Google Plus Prifle
           input(type="text" placeholder="google plus profile link" name="googleplus_link")
-        
+
         label.social
           span Linkedin Profile
           input(type="text" placeholder="linkedin profile link" name="linkedin_link")
@@ -61,4 +60,23 @@ block content
 
       button(type="submit") Save
       button(type="reset" class="reset") Reset
+
+  script.
+    ; ( async () => {
+
+      const { LOGIN_URL } = require("../../js/constants.js");
+      const { adminLoadUser } = require("../../js/requests.js");
+      const result = await adminLoadUser({ url: "department" , collection: "departments" , nextUrl: LOGIN_URL });
+
+      if ( result.departments.length === 0 ) return;
+
+      const select = document.querySelector("[name=department]");
+
+      result.departments.forEach( x => {
+        const option = document.createElement("option");
+        option.textContent = option.value = x.name;
+        select.appendChild(option);
+      });
+
+    })();
   script(src="../../js/editUser.js")

@@ -1,4 +1,5 @@
 "use script";
+
 const hospitalDb = require("../js/db.js");
 
 module.exports.toast = ( { text , createAfter, deleteAfter } ) => {
@@ -120,11 +121,11 @@ module.exports.createTable = obj => {
             tr.classList.add("data-color");
             idx = 1;
         } else idx = 0;
-
+        
         headers.forEach( tdata => {
 
             const td  = document.createElement("td");
-
+            console.log(tdata,trow);
             switch(tdata) {
             case "image":
                 const img = new Image();
@@ -133,7 +134,7 @@ module.exports.createTable = obj => {
                 tr.appendChild(td);
                 return;
             case "name":
-                td.textContent = trow["fullName"];
+                td.textContent = trow["fullName"] || trow["name"];
                 tr.appendChild(td);
                 return;
             case "phone":
@@ -141,7 +142,19 @@ module.exports.createTable = obj => {
                 tr.appendChild(td);
                 return;
             case "birth date":
-                td.textContent = trow["dob"];
+                td.textContent = typeof(trow["dob"]) === "date" ? trow["dob"].toLocaleDateString(): new Date(trow["dob"]).toLocaleDateString();
+                tr.appendChild(td);
+                return;
+            case "age":
+                const cDateObj = new Date();
+                const dDateObj = typeof(trow["dob"]) === "date" ? trow["dob"] : new Date(trow["dob"]);
+                const [ dyear, dmonth , ddate ] = [ dDateObj.getFullYear(), dDateObj.getMonth(), dDateObj.getDate() ];
+                const [ cyear, cmonth, cdate  ] = [ cDateObj.getFullYear(), cDateObj.getMonth() , cDateObj.getDate() ];
+
+                if ( dmonth === cmonth && cdate === cdate )
+                    td.textContent = cyear - dyear;
+                else
+                    td.textContent = cyear  - dyear - 1;
                 tr.appendChild(td);
                 return;
             case "blood group":
@@ -253,4 +266,35 @@ module.exports.buildAdminAccountPage = async sectionNav => {
     sectionNav.appendChild(strHtml);
 
     return result;
+};
+
+
+module.exports.handleUploadedImage = () => {
+
+    const previewImage = document.querySelector(".previewer");
+    const fileLoader   = document.querySelector("[type=file]");
+    const selectImage  = document.querySelector(".select-image");
+
+    const fileReader = new FileReader();
+
+    if ( selectImage)
+        selectImage.addEventListener("click", () => {
+            fileLoader.click();
+        });
+
+    if ( fileLoader )
+        fileLoader.addEventListener("input", evt => {
+            const previewParent = document.querySelector(".image-preview");
+            const previewImage  = document.querySelector(".previewer");
+            const imageText     = document.querySelector(".image-preview-text");
+            fileReader.readAsDataURL(evt.target.files[0]);
+            fileReader.addEventListener("load", evt => {
+                imageText.style.display = "none";
+                previewParent.style.padding = "unset";
+                previewImage.src = evt.target.result;
+                previewImage.style.display = "block";
+            });
+        });
+
+    return previewImage;
 };

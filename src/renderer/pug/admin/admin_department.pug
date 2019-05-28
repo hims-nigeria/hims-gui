@@ -1,0 +1,34 @@
+extends ../templates/head.pug
+
+block title
+  title Add Department
+
+append link
+  link(rel="stylesheet" href="../../css/admin/admin_add.css")
+  link(rel="stylesheet" href="../../css/admin/admin_department.css")
+  link(rel="stylesheet" href="../../css/toast.css")
+
+block fa-link
+  link(rel="stylesheet" href="../../css/all.min.css")
+
+
+block content
+  i(class="fa fa-times-circle close")
+  section(class="admin-add-user")
+    form(class="admin-add-user-form" enctype="multipart/form-data")
+      p.op Add Department
+
+
+      label.name
+        span Name
+        input(type="text" name="name")
+        
+      label.description
+        span Description
+        textarea(type="text" name="description")
+
+      include ../templates/user_image_form.pug
+
+      button(type="submit") Save
+      button(type="reset" class="reset") Reset
+  script(src="../../js/editIntervetion.js")

@@ -6,23 +6,24 @@
 
     const {
         setupEventOnDomLoad,
-        addUserFormHandler,
-        loadImageToDom
+        addUserFormHandler
     } = require("../../js/utils.js");
 
-    const { adminSaveUser , adminEditUser } = require("../../js/requests.js");
+    const {
+        handleUploadedImage
+    } = require("../../js/domutils.js");
+
+    const {
+        adminSaveUser,
+        adminEditUser
+    } = require("../../js/requests.js");
 
     const hospitalDb = require("../../js/db.js");
-
-    const selectImage   = document.querySelector(".select-image");
-    const previewImage  = document.querySelector(".previewer");
-    const fileLoader    = document.querySelector("[type=file]");
 
     const form  = document.querySelector(".admin-add-user-form");
     const close = document.querySelector(".close");
 
-    const fileReader = new FileReader();
-
+    const previewImage = handleUploadedImage();
 
     const FORM_STATE = {
         state  : undefined,
@@ -34,17 +35,6 @@
             ipcEventName: undefined
         }
     };
-
-    if ( selectImage)
-        selectImage.addEventListener("click", () => {
-            fileLoader.click();
-        });
-
-    if ( fileLoader )
-        fileLoader.addEventListener("input", evt => loadImageToDom({
-            file: evt.target.files[0],
-            fileReader
-        }));
 
     form.addEventListener("submit", evt => addUserFormHandler(FORM_STATE,{
         evt,

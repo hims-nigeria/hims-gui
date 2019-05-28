@@ -17,8 +17,14 @@
         adminEditIntervention
     } = require("../../js/requests.js");
 
+    const {
+        handleUploadedImage
+    } = require("../../js/domutils.js");
+
     const form  = document.querySelector("form");
     const close = document.querySelector(".close");
+
+    const previewImage = handleUploadedImage();
 
     const FORM_STATE = {
         state  : undefined,
@@ -32,18 +38,19 @@
         }
     };
 
-
     form.addEventListener("submit", evt => addUserFormHandler(FORM_STATE,{
         evt,
         saveUser: async (fData,btns) => {
             return await adminCreateIntervention(  fData , {
                 disabled  : btns,
+                dataUri   : previewImage ? previewImage.src : "",
                 ...FORM_STATE.__newWindowSpec
             });
         },
         editUser: async (fData,btns) => {
             return await adminEditIntervention( fData , {
                 disabled   : btns,
+                dataUri    : previewImage ? previewImage.src : "",
                 ...FORM_STATE.__newWindowSpec
             });
         }

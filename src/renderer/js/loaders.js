@@ -36,6 +36,8 @@
                     nextUrl  :  constants.LOGIN_URL
                 });
 
+                if ( ! result ) return;
+
                 if ( result && result.role ) {
                     // load the relivant user
                     getCurrentWindow().webContents.loadURL(constants[`${result.role.toUpperCase()}_URL`]);

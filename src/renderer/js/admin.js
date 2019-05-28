@@ -23,6 +23,7 @@ const {
     ADD_CLIENT_URL,
     ADD_DOCTOR_URL,
     ADD_INTERN_URL,
+    ADD_DEPARTMENT_URL,
     ADD_ACCOUNTANT_URL,
     ADD_PHARMACIST_URL,
     ADD_RECEPTIONIST_URL,
@@ -131,7 +132,7 @@ const admin = new(class Admin extends EventEmitter {
 
         const {
             __notUser,
-            props: { elName, class: cl, collection, nextUrl , idType , apiUrl },
+            props: { elName, class: cl, collection, nextUrl , idType , apiUrl , role },
             addNew: { text , url: userUrl },
             table: { tableSpec , title: editTitle, user: editWinUser , ipcEventName }
         } = userObj;
@@ -149,7 +150,7 @@ const admin = new(class Admin extends EventEmitter {
         this.__createSectionDiv( { property : this.currentSection, elName, class: cl, result})
             .appendChild(userOperation(
                 {
-                    __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName , generateIdFrom: __notUser ? __notUser.generateIdFrom : [] },
+                    __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName , role , generateIdFrom: __notUser ? __notUser.generateIdFrom : [] },
                     __internal     : { self: this , property: this.currentSection },
                     url            : userUrl,
                     text
@@ -169,7 +170,7 @@ const admin = new(class Admin extends EventEmitter {
                     url         : userUrl,
                     location,
                     result,
-                    __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName , generateIdFrom: __notUser ? __notUser.generateIdFrom : [] }
+                    __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName , role , generateIdFrom: __notUser ? __notUser.generateIdFrom : [] }
                 },
                 async (uId) => __notUser
                     ? await adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType })
@@ -207,7 +208,8 @@ admin.on("admin-receptionist", async () => {
             collection: "receptionists",
             nextUrl: LOGIN_URL,
             apiUrl : "receptionist",
-            idType: "receptionistId"
+            idType: "receptionistId",
+            role: "receptionist"
         },
         addNew: {
             text: "Add Receptionist",
@@ -230,7 +232,8 @@ admin.on("admin-nurse", async () => {
             collection: "nurses",
             nextUrl: LOGIN_URL,
             apiUrl : "nurse",
-            idType: "nurseId"
+            idType: "nurseId",
+            role: "nurse"
         },
         addNew: {
             text: "Add Nurse",
@@ -253,7 +256,8 @@ admin.on("admin-intern", async () => {
             collection: "interns",
             nextUrl: LOGIN_URL,
             apiUrl : "intern",
-            idType: "internId"
+            idType: "internId",
+            role: "intern"
         },
         addNew: {
             text: "Add Intern",
@@ -277,14 +281,15 @@ admin.on("admin-doctor", async () => {
             collection: "doctors",
             nextUrl: LOGIN_URL,
             apiUrl : "doctor",
-            idType: "doctorId"
+            idType: "doctorId",
+            role: "doctor"
         },
         addNew: {
             text: "Add Doctor",
             url: ADD_DOCTOR_URL
         },
         table: {
-            tableSpec: { tableId: "doctorId", headers: [ "image", "name", "email" , "phone"] },
+            tableSpec: { tableId: "doctorId", headers: [ "image", "name", "email" , "phone" , "department" ] },
             title: "Edit Doctor",
             user: "doctors",
             ipcEventName: "admin-doctor"
@@ -301,7 +306,8 @@ admin.on("admin-client", async () => {
             collection: "clients",
             nextUrl: LOGIN_URL,
             apiUrl : "client",
-            idType: "clientId"
+            idType: "clientId",
+            role: "client"
         },
         addNew: {
             text: "Add Client",
@@ -325,7 +331,8 @@ admin.on("admin-pharmacist", async () => {
             collection: "pharmacists",
             nextUrl: LOGIN_URL,
             apiUrl : "pharmacist",
-            idType: "pharmacistId"
+            idType: "pharmacistId",
+            role: "pharmacist"
         },
         addNew: {
             text: "Add Pharmacist",
@@ -349,7 +356,8 @@ admin.on("admin-laboratorist", async () => {
             collection: "laboratorists",
             nextUrl: LOGIN_URL,
             apiUrl : "laboratorist",
-            idType: "laboratoristId"
+            idType: "laboratoristId",
+            role: "laboratorist"
         },
         addNew: {
             text: "Add Laboratorist",
@@ -374,7 +382,8 @@ admin.on("admin-accountant", async () => {
             collection: "accountants",
             nextUrl: LOGIN_URL,
             apiUrl : "accountant",
-            idType: "accountantId"
+            idType: "accountantId",
+            role: "accountant"
         },
         addNew: {
             text: "Add Accountant",
@@ -414,7 +423,6 @@ admin.on("admin-interventions", async () => {
 });
 
 admin.on("admin-subinterventions" , async () => {
-
     await admin.getUser({
         __notUser: { generateIdFrom: [ "interventionName" , "subInterventionName" ] },
         props: {
@@ -432,8 +440,33 @@ admin.on("admin-subinterventions" , async () => {
         table: {
             tableSpec: { tableId: "subInterventionId", headers: [ "sub intervention" , "category" ] },
             title: "Edit Subintervention",
-            user: "subInterventions",
+            user: "subinterventions",
             ipcEventName: "admin-subinterventions"
+        }
+    });
+});
+
+
+admin.on("admin-department", async () => {
+    await admin.getUser({
+        __notUser: { generateIdFrom: [ "name", "description" ] },
+        props: {
+            elName: "departmentDiv",
+            class:  "department-div",
+            collection: "departments",
+            nextUrl: LOGIN_URL,
+            apiUrl : "department",
+            idType: "departmentId"
+        },
+        addNew: {
+            text: "Add Department",
+            url: ADD_DEPARTMENT_URL
+        },
+        table: {
+            tableSpec: { tableId: "departmentId", headers: [ "image" , "name" , "description" ] },
+            title: "Edit Department",
+            user: "departments",
+            ipcEventName: "admin-department"
         }
     });
 });
@@ -445,12 +478,13 @@ admin.on("admin-account", async () => {
 
 ipc.on("admin-nurse",            () => admin.emit("admin-nurse"));
 ipc.on("admin-intern",           () => admin.emit("admin-intern"));
-ipc.on("admin-receptionist",     () => admin.emit("admin-receptionist"));
 ipc.on("admin-doctor",           () => admin.emit("admin-doctor"));
 ipc.on("admin-client",           () => admin.emit("admin-client"));
+ipc.on("admin-department",       () => admin.emit("admin-department"));
 ipc.on("admin-pharmacist",       () => admin.emit("admin-pharmacist"));
-ipc.on("admin-laboratorist",     () => admin.emit("admin-laboratorist"));
 ipc.on("admin-accountant",       () => admin.emit("admin-accountant"));
+ipc.on("admin-receptionist",     () => admin.emit("admin-receptionist"));
+ipc.on("admin-laboratorist",     () => admin.emit("admin-laboratorist"));
 ipc.on("admin-interventions",    () => admin.emit("admin-interventions"));
 ipc.on("admin-subinterventions", () => admin.emit("admin-subinterventions"));
 
