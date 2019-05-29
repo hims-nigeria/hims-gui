@@ -312,9 +312,11 @@ module.exports.adminSaveUser = async ( data , obj ) => {
 };
 
 module.exports.adminDeleteUser = async (data,obj,cb) => {
+
     let result;
+
     try {
-        result = await axios.delete(`${REQUEST_URL}/delete/${obj.url}`, data );
+        result = await axios.delete(`${REQUEST_URL}/admin/delete/${obj.url}/${data[obj.idType]}`);
     } catch(ex) {
         result = ex;
     } finally {
