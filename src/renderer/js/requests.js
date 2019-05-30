@@ -334,7 +334,7 @@ module.exports.adminDeleteUser = async (data,obj,cb) => {
 module.exports.adminEditUser = async (data,obj) => {
     let result;
     try {
-        result = await axios.post(`${REQUEST_URL}/edit/${obj.url}` , data);
+        result = await axios.post(`${REQUEST_URL}/admin/edit/${obj.url}` , data);
     } catch(ex) {
         result = ex;
     } finally {
