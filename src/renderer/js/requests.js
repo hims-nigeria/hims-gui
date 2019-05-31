@@ -373,7 +373,7 @@ module.exports.adminCreateIntervention = async (data,obj) => {
 module.exports.adminEditIntervention = async (data,obj) => {
     let result;
     try {
-        result = await axios.post(`${REQUEST_URL}/edit/${obj.url}` , data);
+        result = await axios.post(`${REQUEST_URL}/admin/edit/${obj.url}` , data);
     } catch(ex) {
         result = ex;
     } finally {
@@ -393,6 +393,28 @@ module.exports.adminEditProfile = async (data,obj) => {
 
     let result;
 
+    let {
+        healthFacilityId,
+        fullName,
+        email
+    } = await hospitalDb.sessionObject.get({ id: 0 });
+
+    const OBJECT_TO_CACHE = {};
+
+    const hpwd = await formDataToObject(
+        data,
+        OBJECT_TO_CACHE,
+        (await hospitalDb.healthFacility.get({ healthFacilityId })).password
+    );
+
+    if ( ! hpwd ) {
+        if ( obj.disabled )
+            obj.disabled.forEach(
+                el => el.disabled = false
+            );
+        return false;
+    }
+
     try {
         result = axios.post(`${REQUEST_URL}/admin/update-profile`, data);
     } catch(ex) {
@@ -400,22 +422,6 @@ module.exports.adminEditProfile = async (data,obj) => {
     } finally {
 
         return apiCallHandler( result , obj , async () => {
-
-            let {
-                healthFacilityId,
-                fullName,
-                email
-            } = await hospitalDb.sessionObject.get({ id: 0 });
-
-            const OBJECT_TO_CACHE = {};
-
-            const hpwd = await formDataToObject(
-                data,
-                OBJECT_TO_CACHE,
-                (await hospitalDb.healthFacility.get({ healthFacilityId })).password
-            );
-
-            if ( ! hpwd ) return false;
 
             await hospitalDb.healthFacility.where({ healthFacilityId }).modify(OBJECT_TO_CACHE);
 
