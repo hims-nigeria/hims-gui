@@ -11,13 +11,6 @@ const {
 } = require("electron");
 
 const {
-    getDashboard,
-    adminLoadUser,
-    adminDeleteUser,
-    getAdminCredential
-} = require("../js/requests.js");
-
-const {
     LOGIN_URL,
     ADD_NURSE_URL,
     ADD_CLIENT_URL,
@@ -30,15 +23,17 @@ const {
     ADD_INTERVENTION_URL,
     ADD_LABORATORIST_URL,
     ADD_SUBINTERVENTION_URL
-} = require("../js/constants.js");
+} = require("../../js/constants.js");
 
-const hospitalDb = require("../js/db.js");
+const hospitalDb = require("../../js/db.js");
 
-const { spinner , createTable , buildAdminAccountPage } = require("../js/domutils.js");
-const { appendTable , userOperation     } = require("../js/utils.js");
+const { spinner , createTable , buildAdminAccountPage } = require("../../js/domutils.js");
+const { appendTable , userOperation     } = require("../../js/utils.js");
 const { EventEmitter } = require("events");
 
-const { navigation } = require("../js/eventHandlersReusables.js");
+const { navigation } = require("../../js/eventHandlersReusables.js");
+
+const { adminReq } = require("../../js/admin/adminRequest.js");
 
 const admin = new(class Admin extends EventEmitter {
 
@@ -86,7 +81,7 @@ const admin = new(class Admin extends EventEmitter {
         this.__removeOnDom();
         this.sectionNavOps.appendChild(this.spin);
 
-        const result = await getDashboard({
+        const result = await adminReq.getDashboard({
             nextUrl: LOGIN_URL
         });
 
@@ -140,7 +135,7 @@ const admin = new(class Admin extends EventEmitter {
         this.__removeOnDom();
         this.sectionNavOps.appendChild(this.spin);
 
-        const result = await adminLoadUser({ url: apiUrl, collection, nextUrl, PAGE: 0});
+        const result = await adminReq.adminLoadUser({ url: apiUrl, collection, nextUrl, PAGE: 0});
 
         this.spin.remove();
 
@@ -154,7 +149,7 @@ const admin = new(class Admin extends EventEmitter {
                     __internal     : { self: this , property: this.currentSection },
                     url            : userUrl,
                     text
-                }, async (page) => await adminLoadUser(
+                }, async (page) => await adminReq.adminLoadUser(
                     { url: apiUrl, collection, nextUrl, PAGE: page }
                 )
             ));
@@ -173,8 +168,8 @@ const admin = new(class Admin extends EventEmitter {
                     __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName , role , generateIdFrom: __notUser ? __notUser.generateIdFrom : [] }
                 },
                 async (uId) => __notUser
-                    ? await adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType })
-                    : await adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType } , async healthFacilityId => {
+                    ? await adminReq.adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType })
+                    : await adminReq.adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType } , async healthFacilityId => {
                         await hospitalDb.healthFacility.where({ healthFacilityId }).modify( result => {
                             result.dashboardInfo[collection] -= 1;
                         });
@@ -440,7 +435,7 @@ admin.on("admin-subinterventions" , async () => {
         table: {
             tableSpec: { tableId: "subInterventionId", headers: [ "sub intervention" , "category" ] },
             title: "Edit Subintervention",
-            user: "subinterventions",
+            user: "subInterventions",
             ipcEventName: "admin-subinterventions"
         }
     });

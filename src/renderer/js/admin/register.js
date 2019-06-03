@@ -4,7 +4,7 @@
 
 
     const { remote: { getCurrentWindow , dialog } } = require("electron");
-    const { register } = require("../js/requests.js");
+    const { adminReq } = require("../js/admin/adminRequest.js");
 
     const statesAndCapital = require("../assets/stateandcapital.json");
     const { toast } = require("../js/domutils.js");
@@ -54,7 +54,7 @@
 
         registerBtns.forEach( x => x.disabled = true);
 
-        const result =  await register(new FormData(form) , { disabled: Array.from(registerBtns) , nextUrl: ADMIN_URL } );
+        const result =  await adminReq.register(new FormData(form) , { disabled: Array.from(registerBtns) , nextUrl: ADMIN_URL } );
 
         if ( result ) getCurrentWindow().webContents.loadURL(ADMIN_URL);
 

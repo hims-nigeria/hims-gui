@@ -5,11 +5,11 @@
 //     const path = require("path");
 //     const { remote: { app } } = require("electron");
 
-//     const { checkForInternet } = require("../js/utils.js");
-//     const { toast } = require("../js/domutils.js");
+//     const { checkForInternet } = require("../../js/utils.js");
+//     const { toast } = require("../../js/domutils.js");
 
 //     const MongoClient = require("mongodb").MongoClient;
-//     const hospitalDb  = require("../js/db.js");
+//     const hospitalDb  = require("../../js/db.js");
 
 //     const dotenv  = require("dotenv").config({
 //         path: process.env.NODE_ENV === "development"

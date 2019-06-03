@@ -2,25 +2,23 @@
 
     "use strict";
 
-    const { remote: { getCurrentWindow } } = require("electron");
+    const {
+        ipcRenderer: ipc,
+        remote: { getCurrentWindow, dialog }
+    } = require("electron");
 
     const {
         setupEventOnDomLoad,
         addUserFormHandler
     } = require("../../js/utils.js");
 
+    const { adminReq } = require("../../js/admin/adminRequest.js");
+
     const {
         handleUploadedImage
     } = require("../../js/domutils.js");
 
-    const {
-        adminSaveUser,
-        adminEditUser
-    } = require("../../js/requests.js");
-
-    const hospitalDb = require("../../js/db.js");
-
-    const form  = document.querySelector(".admin-add-user-form");
+    const form  = document.querySelector("form");
     const close = document.querySelector(".close");
 
     const previewImage = handleUploadedImage();
@@ -32,21 +30,22 @@
             idType: undefined,
             collection: undefined,
             url: undefined,
-            ipcEventName: undefined
+            ipcEventName: undefined,
+            generateIdFrom: undefined
         }
     };
 
     form.addEventListener("submit", evt => addUserFormHandler(FORM_STATE,{
         evt,
         saveUser: async (fData,btns) => {
-            return await adminSaveUser(  fData , {
+            return await adminReq.adminCreateIntervention(  fData , {
                 disabled  : btns,
                 dataUri   : previewImage ? previewImage.src : "",
                 ...FORM_STATE.__newWindowSpec
             });
         },
         editUser: async (fData,btns) => {
-            return await adminEditUser( fData , {
+            return await adminReq.adminEditIntervention( fData , {
                 disabled   : btns,
                 dataUri    : previewImage ? previewImage.src : "",
                 ...FORM_STATE.__newWindowSpec

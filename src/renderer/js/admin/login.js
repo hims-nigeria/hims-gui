@@ -2,7 +2,7 @@
     "use strict";
 
     const { remote: { getCurrentWindow , dialog } } = require("electron");
-    const { login } = require("../js/requests.js");
+    const { adminReq } = require("../js/admin/adminRequest.js");
 
     const form   = document.querySelector("form");
     const submit = document.querySelector("[type=submit]");
@@ -24,7 +24,7 @@
         submit.disabled = true;
         reset.disabled  = true;
 
-        const result = await login(new FormData(form), { disabled: [ submit, reset ], nextUrl:  ADMIN_URL });
+        const result = await adminReq.login(new FormData(form), { disabled: [ submit, reset ], nextUrl:  ADMIN_URL });
         console.log(result,"hi there");
         if ( result ) getCurrentWindow().webContents.loadURL(ADMIN_URL);
 

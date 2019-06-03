@@ -6,7 +6,7 @@
 
     const { checkForInternet } = require("../js/utils.js");
     const { toast } = require("../js/domutils.js");
-    const { getDashboard } = require("../js/requests.js");
+    const { adminReq } = require("../js/admin/adminRequest.js");
 
     const constants = require("../js/constants.js");
 
@@ -32,7 +32,7 @@
 
                 clearInterval(id);
 
-                const result = await getDashboard({
+                const result = await adminReq.getDashboard({
                     nextUrl  :  constants.LOGIN_URL
                 });
 

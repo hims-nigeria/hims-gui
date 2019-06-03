@@ -65,8 +65,8 @@ block content
     ; ( async () => {
 
       const { LOGIN_URL } = require("../../js/constants.js");
-      const { adminLoadUser } = require("../../js/requests.js");
-      const result = await adminLoadUser({ url: "department" , collection: "departments" , nextUrl: LOGIN_URL });
+      const { adminReq } = require("../../js/admin/adminRequest.js");
+      const result = await adminReq.adminLoadUser({ url: "department" , collection: "departments" , nextUrl: LOGIN_URL });
 
       if ( result.departments.length === 0 ) return;
 
@@ -79,4 +79,4 @@ block content
       });
 
     })();
-  script(src="../../js/editUser.js")
+  script(src="../../js/admin/editUser.js")

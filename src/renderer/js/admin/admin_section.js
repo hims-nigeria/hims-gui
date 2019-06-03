@@ -11,13 +11,11 @@
     const logoutBtn  = document.querySelector(".logout");
     const navList = document.querySelector(".nav-list");
 
-    const admin = require("../js/admin.js");
+    const admin = require("../js/admin/admin.js");
 
-    const { logout }    = require("../js/requests.js");
+    const { adminReq  } = require("../js/admin/adminRequest.js");
     const { LOGIN_URL } = require("../js/constants.js");
 
-
-    const { adminEditProfile }   = require("../js/requests.js");
 
     toggler.addEventListener("click", evt => {
         if ( asideNav.hasAttribute("data-hide-nav") ) {
@@ -55,7 +53,7 @@
 
     logoutBtn.addEventListener("click", async () => {
 
-        const result = await logout({
+        const result = await adminReq.logout({
             nextUrl: LOGIN_URL
         });
 
@@ -75,7 +73,7 @@
 
         btn.disabled = true;
 
-        const result = await adminEditProfile(new FormData(evt.target), {
+        const result = await adminReq.adminEditProfile(new FormData(evt.target), {
             disabled: [ btn ]
         });
 

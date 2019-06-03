@@ -34,8 +34,8 @@ block content
     ; ( async () => {
 
       const { LOGIN_URL } = require("../../js/constants.js");
-      const { adminLoadUser } = require("../../js/requests.js");
-      const result = await adminLoadUser({ url: "intervention" , collection: "interventions" , nextUrl: LOGIN_URL });
+      const { adminReq } = require("../../js/admin/adminRequest.js");
+      const result = await adminReq.adminLoadUser({ url: "intervention" , collection: "interventions" , nextUrl: LOGIN_URL });
 
       if ( result.interventions.length === 0 ) return;
 
@@ -48,6 +48,5 @@ block content
         select.appendChild(option);
       });
 
-
     })();
-  script(src="../../js/editIntervetion.js")
+  script(src="../../js/admin/editIntervention.js")
