@@ -13,7 +13,7 @@
         handleUploadedImage
     } = require("../../js/domutils.js");
 
-    const { adminReq } = require("../../js/admin/adminRequest.js");
+    const { instance } = require("../../js/admin/adminRequest.js");
 
     const hospitalDb = require("../../js/db.js");
 
@@ -36,14 +36,14 @@
     form.addEventListener("submit", evt => addUserFormHandler(FORM_STATE,{
         evt,
         saveUser: async (fData,btns) => {
-            return await adminReq.adminSaveUser(  fData , {
+            return await instance.adminSaveUser(  fData , {
                 disabled  : btns,
                 dataUri   : previewImage ? previewImage.src : "",
                 ...FORM_STATE.__newWindowSpec
             });
         },
         editUser: async (fData,btns) => {
-            return await adminReq.adminEditUser( fData , {
+            return await instance.adminEditUser( fData , {
                 disabled   : btns,
                 dataUri    : previewImage ? previewImage.src : "",
                 ...FORM_STATE.__newWindowSpec

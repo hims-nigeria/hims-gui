@@ -92,7 +92,6 @@ module.exports.saveUserInfo = async ({ data , obj , collection , result: apiResu
     }
 
     OBJECT_TO_CACHE.role = data.get("role");
-    OBJECT_TO_CACHE.password = hpwd;
 
     if ( ! /^\s$/.test(obj.dataUri) )
         OBJECT_TO_CACHE.image = (new TextEncoder()).encode(obj.dataUri);

@@ -13,7 +13,7 @@
 
     const admin = require("../js/admin/admin.js");
 
-    const { adminReq  } = require("../js/admin/adminRequest.js");
+    const { instance  } = require("../js/admin/adminRequest.js");
     const { LOGIN_URL } = require("../js/constants.js");
 
 
@@ -53,7 +53,7 @@
 
     logoutBtn.addEventListener("click", async () => {
 
-        const result = await adminReq.logout({
+        const result = await instance.logout({
             nextUrl: LOGIN_URL
         });
 
@@ -73,7 +73,7 @@
 
         btn.disabled = true;
 
-        const result = await adminReq.adminEditProfile(new FormData(evt.target), {
+        const result = await instance.adminEditProfile(new FormData(evt.target), {
             disabled: [ btn ]
         });
 

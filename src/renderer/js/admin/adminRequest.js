@@ -29,8 +29,8 @@ const hospitalDb = require("../../js/db.js");
 class AdminRequest {
 
     constructor(baseUrl,role) {
-        this.baseUrl = baseUrl;
-        this.role    = role;
+        this.baseUrl   = baseUrl;
+        this.role      = role;
     }
 
     static async ApiCallHandler(result,obj, cb = function() {}) {
@@ -271,69 +271,6 @@ class AdminRequest {
         }
     }
 
-    async login(data,obj) {
-
-        const OBJECT_TO_CHECK_AGAINST = {};
-
-        for ( let [ key , value ] of data.entries() )
-            OBJECT_TO_CHECK_AGAINST[key] = value;
-
-        let result;
-
-        try {
-            result = await axios.post(`${REQUEST_URL}${this.baseUrl}login/`, data );
-        } catch(ex) {
-            result = ex;
-        } finally {
-            /**
-               for logging in we are only intrested in setting
-               sessionObject collection in indexDB
-               we would check if result.data is undefined
-               if it is undefined we would search our local cache to login user and set sessionObject
-               but in a situation were the internet is not down we are only interested in setting the sessionObject
-               in indexDB. We are not interested in reading from the cache to login user
-            **/
-            return AdminRequest.ApiCallHandler(result,obj, async () => {
-
-                let res;
-
-                if ( ! result.data ) {
-
-                    res = await isEmailExists( OBJECT_TO_CHECK_AGAINST.email );
-
-                    if ( ! res.length ) {
-                        toast({
-                            text: `No account is associated with ${OBJECT_TO_CHECK_AGAINST.email}`,
-                            createAfter: 6000
-                        });
-                        return false;
-                    }
-
-                    ( [ res ] = res );
-
-                    const pwd = await comparePassword(OBJECT_TO_CHECK_AGAINST.password,res.password);
-
-                    if ( pwd instanceof Error ||  ! pwd ) {
-                        toast({
-                            text: `email and/or password is incorrect`,
-                            createAfter: 6000
-                        });
-                        return false;
-                    }
-                }
-                const { role , healthFacilityId , fullName , email  } = res ? res : result.data.message;
-                await hospitalDb.sessionObject.put({
-                    healthFacilityId,
-                    fullName,
-                    email,
-                    role,
-                    id: 0
-                });
-                return true;
-            });
-        }
-    }
-
     async adminEditIntervention (data,obj)  {
         let result;
         try {
@@ -440,10 +377,74 @@ class AdminRequest {
                 });
             });
         }
-    };
+    }
+
+    static async LoginUniqueUser (data,obj) {
+
+        const OBJECT_TO_CHECK_AGAINST = {};
+
+        for ( let [ key , value ] of data.entries() )
+            OBJECT_TO_CHECK_AGAINST[key] = value;
+
+        let result;
+
+        try {
+            result = await axios.post(`${REQUEST_URL}/login/`, data );
+        } catch(ex) {
+            result = ex;
+        } finally {
+            /**
+               for logging in we are only intrested in setting
+               sessionObject collection in indexDB
+               we would check if result.data is undefined
+               if it is undefined we would search our local cache to login user and set sessionObject
+               but in a situation were the internet is not down we are only interested in setting the sessionObject
+               in indexDB. We are not interested in reading from the cache to login user
+            **/
+            return AdminRequest.ApiCallHandler(result,obj, async () => {
+
+                let res;
+
+                if ( ! result.data ) {
+
+                    res = await isEmailExists( OBJECT_TO_CHECK_AGAINST.email );
+
+                    if ( ! res.length ) {
+                        toast({
+                            text: `No account is associated with ${OBJECT_TO_CHECK_AGAINST.email}`,
+                            createAfter: 6000
+                        });
+                        return false;
+                    }
+
+                    ( [ res ] = res );
+                    console.log(res);
+                    const pwd = await comparePassword(OBJECT_TO_CHECK_AGAINST.password,res.password);
+                    console.log(pwd);
+                    if ( pwd instanceof Error ||  ! pwd ) {
+                        toast({
+                            text: `email and/or password is incorrect`,
+                            createAfter: 6000
+                        });
+                        return false;
+                    }
+                }
+                const { role , healthFacilityId , fullName , email  } = res ? res : result.data.message;
+                await hospitalDb.sessionObject.put({
+                    healthFacilityId,
+                    fullName,
+                    email,
+                    role,
+                    id: 0
+                });
+                return res ? res : result.data.message;
+            });
+        }
+    }
+
 }
 
 module.exports = {
-    adminReq: new AdminRequest("/admin/", "admin"),
+    instance: new AdminRequest("/admin/", "admin"),
     AdminRequest
 };

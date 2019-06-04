@@ -65,8 +65,8 @@ block content
     ; ( async () => {
 
       const { LOGIN_URL } = require("../../js/constants.js");
-      const { adminReq } = require("../../js/admin/adminRequest.js");
-      const result = await adminReq.adminLoadUser({ url: "department" , collection: "departments" , nextUrl: LOGIN_URL });
+      const { instance } = require("../../js/admin/adminRequest.js");
+      const result = await instance.adminLoadUser({ url: "department" , collection: "departments" , nextUrl: LOGIN_URL });
 
       if ( result.departments.length === 0 ) return;
 

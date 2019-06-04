@@ -33,7 +33,7 @@ const { EventEmitter } = require("events");
 
 const { navigation } = require("../../js/eventHandlersReusables.js");
 
-const { adminReq } = require("../../js/admin/adminRequest.js");
+const { instance } = require("../../js/admin/adminRequest.js");
 
 const admin = new(class Admin extends EventEmitter {
 
@@ -81,7 +81,7 @@ const admin = new(class Admin extends EventEmitter {
         this.__removeOnDom();
         this.sectionNavOps.appendChild(this.spin);
 
-        const result = await adminReq.getDashboard({
+        const result = await instance.getDashboard({
             nextUrl: LOGIN_URL
         });
 
@@ -135,7 +135,7 @@ const admin = new(class Admin extends EventEmitter {
         this.__removeOnDom();
         this.sectionNavOps.appendChild(this.spin);
 
-        const result = await adminReq.adminLoadUser({ url: apiUrl, collection, nextUrl, PAGE: 0});
+        const result = await instance.adminLoadUser({ url: apiUrl, collection, nextUrl, PAGE: 0});
 
         this.spin.remove();
 
@@ -149,7 +149,7 @@ const admin = new(class Admin extends EventEmitter {
                     __internal     : { self: this , property: this.currentSection },
                     url            : userUrl,
                     text
-                }, async (page) => await adminReq.adminLoadUser(
+                }, async (page) => await instance.adminLoadUser(
                     { url: apiUrl, collection, nextUrl, PAGE: page }
                 )
             ));
@@ -168,8 +168,8 @@ const admin = new(class Admin extends EventEmitter {
                     __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName , role , generateIdFrom: __notUser ? __notUser.generateIdFrom : [] }
                 },
                 async (uId) => __notUser
-                    ? await adminReq.adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType })
-                    : await adminReq.adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType } , async healthFacilityId => {
+                    ? await instance.adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType })
+                    : await instance.adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType } , async healthFacilityId => {
                         await hospitalDb.healthFacility.where({ healthFacilityId }).modify( result => {
                             result.dashboardInfo[collection] -= 1;
                         });

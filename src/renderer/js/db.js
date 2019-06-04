@@ -21,6 +21,10 @@ hospitalDb.version(1).stores({
     interventions: "++id, healthFacility, &interventionId",
     subInterventions: "++id, healthFacility, &subInterventionId",
 
+
+
+    services: "++id, healthFacility, &serviceId",
+
     /**
        sessionObject will contain an email address
        the email address will be used to map to the current logged in user
@@ -43,6 +47,14 @@ hospitalDb.subInterventions.defineClass({
     subInterventionId  : String,
     interventionName   : String, // from interventions collection
     healthFacility     : String
+});
+
+hospitalDb.services.defineClass({
+    serviceName   : String,
+    serviceId     : String,
+    department    : String,
+    rate          : Number,
+    healthFacility: String
 });
 
 module.exports = hospitalDb;

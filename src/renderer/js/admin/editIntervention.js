@@ -12,7 +12,7 @@
         addUserFormHandler
     } = require("../../js/utils.js");
 
-    const { adminReq } = require("../../js/admin/adminRequest.js");
+    const { instance } = require("../../js/admin/adminRequest.js");
 
     const {
         handleUploadedImage
@@ -38,14 +38,14 @@
     form.addEventListener("submit", evt => addUserFormHandler(FORM_STATE,{
         evt,
         saveUser: async (fData,btns) => {
-            return await adminReq.adminCreateIntervention(  fData , {
+            return await instance.adminCreateIntervention(  fData , {
                 disabled  : btns,
                 dataUri   : previewImage ? previewImage.src : "",
                 ...FORM_STATE.__newWindowSpec
             });
         },
         editUser: async (fData,btns) => {
-            return await adminReq.adminEditIntervention( fData , {
+            return await instance.adminEditIntervention( fData , {
                 disabled   : btns,
                 dataUri    : previewImage ? previewImage.src : "",
                 ...FORM_STATE.__newWindowSpec
