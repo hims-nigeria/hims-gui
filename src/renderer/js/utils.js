@@ -466,3 +466,23 @@ module.exports.setupEventOnDomLoad = ( FORM_STATE , title ) => {
 
     ipc.sendTo(1,"get:window:state", getCurrentWindow().webContents.id);
 };
+
+
+module.exports.getAppropriateUser = async session => {
+
+    let dashboardInfo,
+        userObject,
+        fullName,
+        image,
+        role;
+
+    switch( session[0].role ) {
+    case "admin":
+        userObject = ({ fullName, role , dashboardInfo, image } = await hospitalDb.healthFacility.get({ healthFacilityId : session[0].healthFacilityId }));
+        break;
+    case "receptionist":
+        userObject = ( { fullName , role, dashboardInfo, image } = await hospitalDb.receptionists.get({ email: session[0].email }));
+        break;
+    }
+    return userObject;
+};

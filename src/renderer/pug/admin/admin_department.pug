@@ -31,4 +31,9 @@ block content
 
       button(type="submit") Save
       button(type="reset" class="reset") Reset
-  script(src="../../js/admin/editIntervention.js")
+  script.
+    ; ( () => {
+      document.forms[0].addEventListener("submit", evt => evt.preventDefault());
+      const { AdminRequest , instance } = require("../../js/admin/adminRequest.js");
+      AdminRequest.EditNonUsers(instance);
+    })();

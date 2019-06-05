@@ -17,12 +17,17 @@ block content
   section(class="admin-add-user")
     form(class="admin-add-user-form" enctype="multipart/form-data")
       p.op Add Intervention
-      
+
       label
         p.intervention Enter Intervention Name
         input(type="text" name="interventionName")
 
       button(type="submit") Save
       button(type="reset" class="reset") Reset
-  
-  script(src="../../js/admin/editIntervention.js")
+
+  script.
+    ; ( () => {
+      document.forms[0].addEventListener("submit", evt => evt.preventDefault());
+      const { AdminRequest , instance } = require("../../js/admin/adminRequest.js");
+      AdminRequest.EditNonUsers(instance);
+    })();

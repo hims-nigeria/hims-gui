@@ -8,22 +8,22 @@ Dexie.debug = true;
 
 hospitalDb.version(1).stores({
     healthFacility: "++id, &healthFacilityId, &email",
-    accountants: "++id, healthFacility, &accountantId, &phoneNumber, &email",
-    departments: "++id, healthFacility, &departmentId",
-    doctors: "++id, healthFacility, &doctorId, &phoneNumber, &email",
-    interns: "++id, healthFacility, &internId, &phoneNumber, &email",
-    laboratorists: "++id, healthFacility, &laboratoristId, &phoneNumber, &email",
-    nurses: "++id, healthFacility, &nurseId, &phoneNumber, &email",
-    clients: "++id, healthFacility, &clientId, &phoneNumber, &email",
-    pharmacists: "++id, healthFacility, &pharmacistId, &phoneNumber, &email",
-    transactions: "++id, healthFacility",
-    receptionists: "++id, healthFacility, &receptionistId, &phoneNumber, &email",
-    interventions: "++id, healthFacility, &interventionId",
-    subInterventions: "++id, healthFacility, &subInterventionId",
+    accountants: "++id, healthFacilityId, &accountantId, &phoneNumber, &email",
+    departments: "++id, healthFacilityId, &departmentId",
+    doctors: "++id, healthFacilityId, &doctorId, &phoneNumber, &email",
+    interns: "++id, healthFacilityId, &internId, &phoneNumber, &email",
+    laboratorists: "++id, healthFacilityId, &laboratoristId, &phoneNumber, &email",
+    nurses: "++id, healthFacilityId, &nurseId, &phoneNumber, &email",
+    clients: "++id, healthFacilityId, &clientId, &phoneNumber, &email",
+    pharmacists: "++id, healthFacilityId, &pharmacistId, &phoneNumber, &email",
+    transactions: "++id, healthFacilityId",
+    receptionists: "++id, healthFacilityId, &receptionistId, &phoneNumber, &email",
+    interventions: "++id, healthFacilityId, &interventionId",
+    subInterventions: "++id, healthFacilityId, &subInterventionId",
 
 
 
-    services: "++id, healthFacility, &serviceId",
+    services: "++id, healthFacilityId, &serviceId",
 
     /**
        sessionObject will contain an email address
@@ -37,24 +37,24 @@ hospitalDb.version(1).stores({
 
 
 hospitalDb.interventions.defineClass({
-    interventionName: String,
-    healthFacility  : String,
-    interventionId  : String
+    interventionName  : String,
+    healthFacilityId  : String,
+    interventionId    : String
 });
 
 hospitalDb.subInterventions.defineClass({
     subInterventionName: String,
     subInterventionId  : String,
     interventionName   : String, // from interventions collection
-    healthFacility     : String
+    healthFacilityId   : String
 });
 
 hospitalDb.services.defineClass({
-    serviceName   : String,
-    serviceId     : String,
-    department    : String,
-    rate          : Number,
-    healthFacility: String
+    serviceName     : String,
+    serviceId       : String,
+    department      : String,
+    rate            : Number,
+    healthFacilityId: String
 });
 
 module.exports = hospitalDb;

@@ -31,7 +31,7 @@ module.exports.loadUsersInfo = async ({result,collection,obj}) => {
         const [ { role , fullName, healthFacilityId } ] = session;
 
         if ( obj.PAGE ) {
-            const cursor = hospitalDb[collection].where({healthFacility : healthFacilityId});
+            const cursor = hospitalDb[collection].where({healthFacilityId : healthFacilityId});
             Object.assign(__users[collection], {
                 hasMore: await cursor.count() > ((obj.PAGE + 1) * PAGE_LIMIT),
                 [collection]: await cursor.offset(PAGE_LIMIT * obj.PAGE).limit(PAGE_LIMIT).toArray(),
@@ -114,7 +114,7 @@ module.exports.saveUserInfo = async ({ data , obj , collection , result: apiResu
         OBJECT_TO_CACHE.phoneNumber
     );
 
-    OBJECT_TO_CACHE.healthFacility = healthFacilityId;
+    OBJECT_TO_CACHE.healthFacilityId = healthFacilityId;
 
     await hospitalDb[collection].add(OBJECT_TO_CACHE);
 
@@ -242,7 +242,7 @@ module.exports.saveInterventionInfo = async ({ result , data , obj }) => {
         });
     }
 
-    OBJECT_TO_CACHE.healthFacility   = healthFacilityId;
+    OBJECT_TO_CACHE.healthFacilityId   = healthFacilityId;
     OBJECT_TO_CACHE[obj.idType]      = __id;
 
     await hospitalDb[obj.collection].add(OBJECT_TO_CACHE);

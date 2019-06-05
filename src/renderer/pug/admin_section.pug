@@ -77,12 +77,24 @@ block content
         i(class="fa fa-envelope user-nav-item-icon")
         span Contact Emails
 
-
       li(class="user-nav-item" data-fire="admin-account")
         i(class="fa fa-user user-nav-item-icon")
         span Account
 
     include ./templates/users_footer.pug
 
-  script(src="../js/admin/admin_section.js")
+  script.
+
+    ; ( () => {
+
+      const { AdminRequest , instance } = require("../js/admin/adminRequest.js");
+      const { admin } = require("../js/admin/admin.js");
+
+      AdminRequest.SectionPrep( instance , admin );
+
+      window.addEventListener("DOMContentLoaded", async () => {
+        admin.emit("admin-dashboard");
+      });
+
+    })();
   script(src="../js/admin/onlineOffline.js")

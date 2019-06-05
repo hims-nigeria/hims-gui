@@ -33,12 +33,13 @@ const { EventEmitter } = require("events");
 
 const { navigation } = require("../../js/eventHandlersReusables.js");
 
-const { instance } = require("../../js/admin/adminRequest.js");
+const { instance , AdminRequest } = require("../../js/admin/adminRequest.js");
 
-const admin = new(class Admin extends EventEmitter {
+class Admin extends EventEmitter {
 
-    constructor() {
+    constructor(instance) {
         super();
+        this.instance = instance;
         this.currentSection = {};
         this.sectionNavOps = document.querySelector(".section-nav-operation");
         this.spin = spinner();
@@ -51,11 +52,13 @@ const admin = new(class Admin extends EventEmitter {
 
     __setCredentials(result) {
 
-        const userRole = document.querySelector(".user-role");
-        const userName = document.querySelector(".user-name");
+        const userRole  = document.querySelector(".user-role");
+        const userName  = document.querySelector(".user-name");
+        const userImage = document.querySelector(".user-image");
 
         userRole.textContent = result.role;
         userName.textContent = result.fullName;
+        userImage.src        = (new TextDecoder()).decode(result.image);
     }
 
     __createSectionDiv({ elName, class: cl, property , result: apiResult }) {
@@ -69,7 +72,7 @@ const admin = new(class Admin extends EventEmitter {
         property.hasMore       = apiResult.hasMore;
 
         this.sectionNavOps.appendChild(el);
-        this.__setCredentials(apiResult);
+        //this.__setCredentials(apiResult);
 
         this.on("navigated", navigation );
 
@@ -81,7 +84,7 @@ const admin = new(class Admin extends EventEmitter {
         this.__removeOnDom();
         this.sectionNavOps.appendChild(this.spin);
 
-        const result = await instance.getDashboard({
+        const result = await AdminRequest.GetDashboard({
             nextUrl: LOGIN_URL
         });
 
@@ -96,7 +99,7 @@ const admin = new(class Admin extends EventEmitter {
 
         let idx = 0;
 
-        Object.keys(result.dashboardInfo).sort().forEach( x => {
+        Object.keys(result.dashboardInfo  || {} ).sort().forEach( x => {
 
             const li = document.createElement("li");
             const p  = document.createElement("p");
@@ -135,7 +138,7 @@ const admin = new(class Admin extends EventEmitter {
         this.__removeOnDom();
         this.sectionNavOps.appendChild(this.spin);
 
-        const result = await instance.adminLoadUser({ url: apiUrl, collection, nextUrl, PAGE: 0});
+        const result = await this.instance.adminLoadUser({ url: apiUrl, collection, nextUrl, PAGE: 0});
 
         this.spin.remove();
 
@@ -149,7 +152,7 @@ const admin = new(class Admin extends EventEmitter {
                     __internal     : { self: this , property: this.currentSection },
                     url            : userUrl,
                     text
-                }, async (page) => await instance.adminLoadUser(
+                }, async (page) => await this.instance.adminLoadUser(
                     { url: apiUrl, collection, nextUrl, PAGE: page }
                 )
             ));
@@ -168,8 +171,8 @@ const admin = new(class Admin extends EventEmitter {
                     __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName , role , generateIdFrom: __notUser ? __notUser.generateIdFrom : [] }
                 },
                 async (uId) => __notUser
-                    ? await instance.adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType })
-                    : await instance.adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType } , async healthFacilityId => {
+                    ? await this.instance.adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType })
+                    : await this.instance.adminDeleteUser({ [idType]: uId },{ url: apiUrl, collection, idType } , async healthFacilityId => {
                         await hospitalDb.healthFacility.where({ healthFacilityId }).modify( result => {
                             result.dashboardInfo[collection] -= 1;
                         });
@@ -181,16 +184,14 @@ const admin = new(class Admin extends EventEmitter {
     }
 
     async adminAccount() {
-
         this.__removeOnDom();
-
         this.sectionNavOps.appendChild(this.spin);
-
         this.__setCredentials(await buildAdminAccountPage(this.sectionNavOps));
-
         this.spin.remove();
     }
-});
+};
+
+const admin = new Admin( instance );
 
 admin.on("admin-dashboard",    admin.dashboard );
 
@@ -483,4 +484,5 @@ ipc.on("admin-laboratorist",     () => admin.emit("admin-laboratorist"));
 ipc.on("admin-interventions",    () => admin.emit("admin-interventions"));
 ipc.on("admin-subinterventions", () => admin.emit("admin-subinterventions"));
 
-module.exports = admin;
+module.exports.admin = admin;
+module.exports.Admin = Admin;

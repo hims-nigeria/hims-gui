@@ -1,11 +1,16 @@
 "use strict";
 
 const { remote: { getCurrentWindow, dialog } } = require("electron");
-const axios = require("axios");
-const qs    = require("querystring");
 
-const { toast } = require("../../js/domutils.js");
-const { REQUEST_URL } = require("../../js/constants.js");
+const axios      = require("axios");
+const qs         = require("querystring");
+const constants  = require("../../js/constants.js");
+const hospitalDb = require("../../js/db.js");
+
+const {
+    toast,
+    handleUploadedImage
+} = require("../../js/domutils.js");
 
 const {
     saveInterventionInfo,
@@ -17,14 +22,16 @@ const {
 } = require("../../js/dbHelper.js");
 
 const {
+    setupEventOnDomLoad, 
+    addUserFormHandler,
+    getAppropriateUser,
     formDataToObject,
     hashPassword,
     createExternalId,
     comparePassword,
+    checkForInternet,
     isEmailExists
 } = require("../../js/utils.js");
-
-const hospitalDb = require("../../js/db.js");
 
 class AdminRequest {
 
@@ -108,7 +115,7 @@ class AdminRequest {
         let result;
 
         try {
-            result = await axios.post(`${REQUEST_URL}${this.baseUrl}register/health-care-center`, data);
+            result = await axios.post(`${constants.REQUEST_URL}${this.baseUrl}register/health-care-center`, data);
         } catch(ex) {
             result = ex;
         } finally {
@@ -162,12 +169,12 @@ class AdminRequest {
         }
     }
 
-    async getDashboard (obj) {
+    static async GetDashboard (obj) {
 
         let result;
 
         try {
-            result = await axios.get(`${REQUEST_URL}${this.baseUrl}dashboard/`);
+            result = await axios.get(`${constants.REQUEST_URL}/dashboard/`);
         } catch(ex) {
             result = ex;
         } finally {
@@ -177,7 +184,7 @@ class AdminRequest {
                 let userInfo = {} ;
 
                 if ( ! result.data ) {
-                    console.log("no server resones" , result," came ehre");
+
                     const session = await hospitalDb.sessionObject.toArray();
 
                     if ( ! session.length ) {
@@ -185,12 +192,11 @@ class AdminRequest {
                         return false;
                     }
 
-                    //const { fullName, role , dashboardInfo } = await hospitalDb.healthFacility.get({ healthFacilityId : session[0].healthFacilityId });
-                    const localDbRes = await  hospitalDb.healthFacility.get({ healthFacilityId : session[0].healthFacilityId });
-                    delete localDbRes.password;
-                    Object.assign( userInfo , localDbRes );
+                    Object.assign( userInfo , await getAppropriateUser( session ) );
                 }
+
                 return Object.keys(userInfo).length !== 0 ? userInfo : result.data.message ;
+
             });
         }
     }
@@ -198,7 +204,7 @@ class AdminRequest {
     async logout(obj) {
         let result;
         try {
-            result = await axios.post(`${REQUEST_URL}${this.baseUrl}logout`);
+            result = await axios.post(`${constants.REQUEST_URL}${this.baseUrl}logout`);
         } catch(ex) {
             result = ex;
         } finally {
@@ -236,7 +242,7 @@ class AdminRequest {
         }
 
         try {
-            result = axios.post(`${REQUEST_URL}${this.baseUrl}update-profile`, data);
+            result = axios.post(`${constants.REQUEST_URL}${this.baseUrl}update-profile`, data);
         } catch(ex) {
             result = ex;
         } finally {
@@ -274,7 +280,7 @@ class AdminRequest {
     async adminEditIntervention (data,obj)  {
         let result;
         try {
-            result = await axios.post(`${REQUEST_URL}${this.baseUrl}edit/${obj.url}` , data);
+            result = await axios.post(`${constants.REQUEST_URL}${this.baseUrl}edit/${obj.url}` , data);
         } catch(ex) {
             result = ex;
         } finally {
@@ -293,7 +299,7 @@ class AdminRequest {
     async adminCreateIntervention(data,obj) {
         let result;
         try {
-            result = await axios.post(`${REQUEST_URL}${this.baseUrl}register/${obj.url}` , data);
+            result = await axios.post(`${constants.REQUEST_URL}${this.baseUrl}register/${obj.url}` , data);
         } catch(ex) {
             result = ex;
         } finally {
@@ -310,7 +316,7 @@ class AdminRequest {
     async adminEditUser(data,obj) {
         let result;
         try {
-            result = await axios.post(`${REQUEST_URL}${this.baseUrl}edit/${obj.url}` , data);
+            result = await axios.post(`${constants.REQUEST_URL}${this.baseUrl}edit/${obj.url}` , data);
         } catch(ex) {
             result = ex;
         } finally {
@@ -329,7 +335,7 @@ class AdminRequest {
     async adminDeleteUser(data,obj,cb) {
         let result;
         try {
-            result = await axios.delete(`${REQUEST_URL}${this.baseUrl}delete/${obj.url}/${data[obj.idType]}`);
+            result = await axios.delete(`${constants.REQUEST_URL}${this.baseUrl}delete/${obj.url}/${data[obj.idType]}`);
         } catch(ex) {
             result = ex;
         } finally {
@@ -347,7 +353,7 @@ class AdminRequest {
     async adminSaveUser( data , obj ) {
         let result;
         try {
-            result = await axios.post(`${REQUEST_URL}${this.baseUrl}register/${obj.url}` , data );
+            result = await axios.post(`${constants.REQUEST_URL}${this.baseUrl}register/${obj.url}` , data );
         } catch(ex) {
             result = ex;
         } finally {
@@ -365,7 +371,7 @@ class AdminRequest {
     async adminLoadUser(obj) {
         let result;
         try {
-            result = await axios.get(`${REQUEST_URL}${this.baseUrl}loaduser/${obj.url}?page=${obj.PAGE}`);
+            result = await axios.get(`${constants.REQUEST_URL}${this.baseUrl}loaduser/${obj.url}?page=${obj.PAGE}`);
         } catch(ex) {
             result = ex;
         } finally {
@@ -389,7 +395,7 @@ class AdminRequest {
         let result;
 
         try {
-            result = await axios.post(`${REQUEST_URL}/login/`, data );
+            result = await axios.post(`${constants.REQUEST_URL}/login/`, data );
         } catch(ex) {
             result = ex;
         } finally {
@@ -440,6 +446,154 @@ class AdminRequest {
                 return res ? res : result.data.message;
             });
         }
+    }
+
+    static NavToggler(toggler,asideNav,navOperations) {
+
+        toggler.addEventListener("click", evt => {
+
+            if ( asideNav.hasAttribute("data-hide-nav") ) {
+                asideNav.removeAttribute("data-hide-nav");
+                asideNav.removeAttribute("style");
+                navOperations.removeAttribute("style");
+                return;
+            }
+
+            asideNav.setAttribute("data-hide-nav", true);
+            asideNav.style.width = "10%";
+            navOperations.style.width = "90%";
+
+        });
+
+        return AdminRequest;
+    }
+
+    static EmitTriggerEvents(navList,instance,secInstance) {
+
+        navList.addEventListener("click", evt => {
+
+            let { target } = evt;
+
+            if ( target instanceof HTMLUListElement ) return;
+
+            if ( ! (target instanceof HTMLLIElement) )
+                target = target.parentNode;
+
+            const eventName = target.getAttribute("data-fire");
+
+            secInstance.removeAllListeners("new-page-append");
+            secInstance.emit(eventName);
+
+        });
+
+        return AdminRequest;
+    }
+
+
+    static LogoutUser( logoutBtn , instance ) {
+        logoutBtn.addEventListener("click", async () => {
+            const result = await instance.logout({
+                nextUrl: constants.LOGIN_URL
+            });
+            if ( result ) getCurrentWindow().webContents.loadURL(constants.LOGIN_URL);
+        });
+        return AdminRequest;
+    }
+
+    static ProfileUpdate(navOperations,instance,secInstance) {
+
+        navOperations.addEventListener("submit", async evt => {
+
+            evt.preventDefault();
+
+            if ( ! evt.target.checkValidity() ) {
+                dialog.showErrorBox(`Invalid values`,`Check the inputed values if they are correct`);
+                return;
+            }
+
+            const btn = evt.target.querySelector("button");
+
+            btn.disabled = true;
+
+            const result = await instance.adminEditProfile(new FormData(evt.target), {
+                disabled: [ btn ]
+            });
+
+            if ( ! result ) return;
+
+            secInstance.__setCredentials(result);
+
+        });
+
+        return AdminRequest;
+    }
+
+    static SectionPrep(instance,secInstance) {
+
+        const toggler = document.querySelector(".nav-header-toggler");
+        const asideNav = document.querySelector(".section-nav");
+        const navOperations = document.querySelector(".section-nav-operation");
+        const logoutBtn  = document.querySelector(".logout");
+        const navList = document.querySelector(".nav-list");
+
+        AdminRequest
+            .NavToggler(toggler,asideNav,navOperations)
+            .EmitTriggerEvents(navList,instance,secInstance)
+            .ProfileUpdate(navOperations,instance,secInstance)
+            .LogoutUser(logoutBtn,instance,secInstance);
+    }
+
+    static FormHandler(form,previewImage,instance) {
+        console.log(AdminRequest.FORM_STATE, "hi there");
+        form.addEventListener("submit", evt => addUserFormHandler(AdminRequest.FORM_STATE,{
+            evt,
+            saveUser: async (fData,btns) => {
+                return await instance.adminCreateIntervention(  fData , {
+                    disabled  : btns,
+                    dataUri   : previewImage ? previewImage.src : "",
+                    ...AdminRequest.FORM_STATE.__newWindowSpec
+                });
+            },
+            editUser: async (fData,btns) => {
+                return await instance.adminEditIntervention( fData , {
+                    disabled   : btns,
+                    dataUri    : previewImage ? previewImage.src : "",
+                    ...AdminRequest.FORM_STATE.__newWindowSpec
+                });
+            }
+        }));
+
+        return AdminRequest;
+
+    }
+
+    static SetupFormState() {
+        AdminRequest.FORM_STATE = {
+            state  : undefined,
+            userId : undefined,
+            __newWindowSpec: {
+                idType: undefined,
+                collection: undefined,
+                url: undefined,
+                ipcEventName: undefined,
+                generateIdFrom: undefined
+            }
+        };
+        setupEventOnDomLoad( AdminRequest.FORM_STATE );
+        return AdminRequest;
+    }
+
+    static EditNonUsers(instance) {
+
+        const form  = document.querySelector("form");
+        const close = document.querySelector(".close");
+        const previewImage = handleUploadedImage();
+        console.log(instance);
+        close.addEventListener("click", () => getCurrentWindow().close() );
+
+        AdminRequest
+            .SetupFormState()
+            .FormHandler(form,previewImage,instance);
     }
 
 }

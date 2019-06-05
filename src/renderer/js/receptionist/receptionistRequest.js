@@ -13,4 +13,7 @@ class ReceptionRequest extends AdminRequest {
 }
 
 
-module.exports = { instance: new ReceptionRequest("receptionists", "/receptionist/") };
+module.exports = {
+    instance: new ReceptionRequest("/receptionist/", "receptionist"),
+    ReceptionRequest
+};

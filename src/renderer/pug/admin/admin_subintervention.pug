@@ -32,21 +32,21 @@ block content
 
   script.
     ; ( async () => {
+        document.forms[0].addEventListener("submit", evt => evt.preventDefault());
+        const { LOGIN_URL } = require("../../js/constants.js");
+        const { AdminRequest, instance } = require("../../js/admin/adminRequest.js");
+        const result = await instance.adminLoadUser({ url: "intervention" , collection: "interventions" , nextUrl: LOGIN_URL });
 
-      const { LOGIN_URL } = require("../../js/constants.js");
-      const { instance } = require("../../js/admin/instanceuest.js");
-      const result = await instance.adminLoadUser({ url: "intervention" , collection: "interventions" , nextUrl: LOGIN_URL });
+        if ( result.interventions.length === 0 ) return;
 
-      if ( result.interventions.length === 0 ) return;
-
-      const select = document.querySelector("select");
+        const select = document.querySelector("select");
 
 
-      result.interventions.forEach( x => {
-        const option = document.createElement("option");
-        option.textContent = option.value = x.interventionName;
-        select.appendChild(option);
-      });
+        result.interventions.forEach( x => {
+          const option = document.createElement("option");
+          option.textContent = option.value = x.interventionName;
+          select.appendChild(option);
+        });
 
+        AdminRequest.EditNonUsers(instance);
     })();
-  script(src="../../js/admin/editIntervention.js")

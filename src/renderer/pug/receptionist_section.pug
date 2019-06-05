@@ -1,0 +1,56 @@
+extends ./templates/head.pug
+
+block title
+  title Receptionist Section
+
+append link
+  link(rel="stylesheet" href="../css/users_section.css")
+  link(rel="stylesheet" href="../css/admin/admin.css")
+  link(rel="stylesheet" href="../css/toast.css")
+
+
+block content
+  section(class="user-section")
+    include ./templates/users_header.pug
+      li(class="user-nav-item" data-fire="receptionist-dashboard")
+        i(class="fa fa-desktop user-nav-item-icon")
+        span Dashboard
+
+      li(class="user-nav-item" data-fire="receptionist-daily-attendance")
+        i(class="fa fa-briefcase-medical user-nav-item-icon")
+        span Daily Attendance
+
+      li(class="user-nav-item" data-fire="receptionist-intervention")
+        i(class="fa fa-plus-square user-nav-item-icon")
+        span Interventions
+
+      li(class="user-nav-item" data-fire="receptionist-service")
+        i(class="fa fa-sitemap user-nav-item-icon")
+        span Services
+
+      li(class="user-nav-item" data-fire="receptionist-manage-hospital")
+        i(class="fa fa-user-md user-nav-item-icon")
+        span Manage Donor Hospitals
+
+      li(class="user-nav-item" data-fire="receptionist-profile")
+        i(class="fa fa-user-circle user-nav-item-icon")
+        span Profile
+
+    include ./templates/users_footer.pug
+
+  script.
+
+    ; ( () => {
+
+      const { AdminRequest } = require("../js/admin/adminRequest.js");
+      const { instance }     = require("../js/receptionist/receptionistRequest.js");
+      const receptionist     = require("../js/receptionist/receptionist.js");
+
+      AdminRequest.SectionPrep( instance , receptionist );
+
+      window.addEventListener("DOMContentLoaded", async () => {
+         receptionist.emit("receptionist-dashboard");
+      });
+    })();
+
+  script(src="../js/admin/onlineOffline.js")
