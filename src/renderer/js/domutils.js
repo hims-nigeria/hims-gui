@@ -2,6 +2,16 @@
 
 const hospitalDb = require("../js/db.js");
 
+const {
+    updatePhoneNumber,
+    updatePassword,
+    updateAddress,
+    updateButton,
+    updateEmail,
+    updateImage,
+    updateName
+} = require("../js/template-html-string.js");
+
 module.exports.toast = ( { text , createAfter, deleteAfter } ) => {
 
     const animateProperties = [
@@ -121,7 +131,7 @@ module.exports.createTable = obj => {
             tr.classList.add("data-color");
             idx = 1;
         } else idx = 0;
-        
+
         headers.forEach( tdata => {
 
             const td  = document.createElement("td");
@@ -134,7 +144,7 @@ module.exports.createTable = obj => {
                 tr.appendChild(td);
                 return;
             case "name":
-                td.textContent = trow["fullName"] || trow["name"];
+                td.textContent = trow["fullName"] || trow["name"] || trow["serviceName"];
                 tr.appendChild(td);
                 return;
             case "phone":
@@ -194,6 +204,10 @@ module.exports.createTable = obj => {
                 td.textContent = trow["interventionName"];
                 tr.appendChild(td);
                 return;
+            case "Hospital Name":
+                td.textContent = trow["donorHospitalName"];
+                tr.appendChild(td);
+                return;
             default:
 
                 if ( headers[headers.length - 1] === tdata ) {
@@ -222,38 +236,18 @@ module.exports.buildAdminAccountPage = async sectionNav => {
 
     const result = await hospitalDb.sessionObject.get({ id: 0 });
 
-    console.log(result, "duh duh");
-
     const editProfMarkup = `
 
         <div class="edit-profile currently-shown">
-
             <form class="admin-edit-profile">
-               <label>
-                  <span> Name </span>
-                  <input type="text" name="fullName" value=${result.fullName} required>
-               </label>
-               <label>
-                  <span> Email </span>
-                  <input type="email" value=${result.email} name="email" disabled >
-               </label>
-               <button type="submit" class="update-profile"> Update Profile </button>
+               ${updateName(result.fullName)}
+               ${updateEmail(result.email)}
+               ${updateButton}
             </form>
 
             <form class="admin-edit-password">
-               <label>
-                  <span> Current Password </span>
-                  <input type="password" name="currentPassword" required />
-               </label>
-               <label>
-                  <span> New Password </span>
-                  <input type="password" name="password" required/>
-               </label>
-               <label>
-                  <span> Confirm Password </span>
-                  <input type="password" name="confirmPassword" required/>
-               </label>
-               <button type="submit" class="update-profile"> Update Password </button>
+               ${updatePassword}
+               ${updateButton}
             </form>
         </div>
    `;
@@ -269,7 +263,45 @@ module.exports.buildAdminAccountPage = async sectionNav => {
 };
 
 
-module.exports.handleUploadedImage = () => {
+
+module.exports.buildReceptionistAccountPage = async sectionNav => {
+
+    let result    = await hospitalDb.sessionObject.get({ id: 0 });
+        result    = await hospitalDb.receptionists.get({ email: result.email });
+
+    console.log(result);
+    const editProfMarkup = `
+        <div class="edit-profile currently-shown">
+            <form class="admin-edit-profile receptionist-edit">
+               ${updateName(result.fullName)}
+               ${updateEmail(result.email)}
+               ${updateAddress(result.address)}
+               ${updatePhoneNumber(result.phoneNumber)}
+               ${updateImage(result.image)}
+               ${updateButton}
+            </form>
+            <form class="admin-edit-password">
+               ${updatePassword}
+               ${updateButton}
+            </form>
+        </div>
+   `;
+
+    const strHtml = new DOMParser().parseFromString(
+        editProfMarkup,
+        "text/html"
+    ).querySelector(".currently-shown");
+
+    sectionNav.appendChild(strHtml);
+
+    return result;
+};
+
+
+
+
+
+module.exports.handleUploadedImage = cb => {
 
     const previewImage = document.querySelector(".previewer");
     const fileLoader   = document.querySelector("[type=file]");
@@ -283,7 +315,12 @@ module.exports.handleUploadedImage = () => {
         });
 
     if ( fileLoader )
-        fileLoader.addEventListener("input", evt => {
+        fileLoader.addEventListener("input", evt => cb(fileReader,evt) );
+
+    return previewImage;
+};
+
+/**
             const previewParent = document.querySelector(".image-preview");
             const previewImage  = document.querySelector(".previewer");
             const imageText     = document.querySelector(".image-preview-text");
@@ -294,7 +331,4 @@ module.exports.handleUploadedImage = () => {
                 previewImage.src = evt.target.result;
                 previewImage.style.display = "block";
             });
-        });
-
-    return previewImage;
-};
+**/

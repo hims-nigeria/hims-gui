@@ -93,7 +93,7 @@ module.exports.saveUserInfo = async ({ data , obj , collection , result: apiResu
 
     OBJECT_TO_CACHE.role = data.get("role");
 
-    if ( ! /^\s$/.test(obj.dataUri) )
+    if ( obj.dataUri )
         OBJECT_TO_CACHE.image = (new TextEncoder()).encode(obj.dataUri);
 
 

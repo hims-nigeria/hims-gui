@@ -82,7 +82,6 @@ module.exports.formDataToObject = async(formData,OBJECT_TO_CACHE,dbPwd) => {
     );
 
     if ( hpwd instanceof Error ) {
-        console.log(hpwd);
         dialog.showErrorBox(`unexpected error`,`Your request can not be handled`);
         return false;
     }

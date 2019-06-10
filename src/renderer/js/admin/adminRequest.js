@@ -22,7 +22,7 @@ const {
 } = require("../../js/dbHelper.js");
 
 const {
-    setupEventOnDomLoad, 
+    setupEventOnDomLoad,
     addUserFormHandler,
     getAppropriateUser,
     formDataToObject,
@@ -35,9 +35,8 @@ const {
 
 class AdminRequest {
 
-    constructor(baseUrl,role) {
-        this.baseUrl   = baseUrl;
-        this.role      = role;
+    constructor(obj) {
+        Object.assign( this , obj );
     }
 
     static async ApiCallHandler(result,obj, cb = function() {}) {
@@ -217,20 +216,14 @@ class AdminRequest {
 
     async adminEditProfile (data,obj) {
 
-        let result;
+        let result, OBJECT_TO_CACHE = {};
 
-        let {
-            healthFacilityId,
-            fullName,
-            email
-        } = await hospitalDb.sessionObject.get({ id: 0 });
-
-        const OBJECT_TO_CACHE = {};
+        let session = await hospitalDb.sessionObject.get({ id: 0 });
 
         const hpwd = await formDataToObject(
             data,
             OBJECT_TO_CACHE,
-            (await hospitalDb.healthFacility.get({ healthFacilityId })).password
+            (await hospitalDb[this.collection].get({ email: session.email })).password
         );
 
         if ( ! hpwd ) {
@@ -240,6 +233,9 @@ class AdminRequest {
                 );
             return false;
         }
+        console.log(obj.dataUri, "here");
+        if ( obj.dataUri )
+            OBJECT_TO_CACHE.image = (new TextEncoder()).encode(obj.dataUri);
 
         try {
             result = axios.post(`${constants.REQUEST_URL}${this.baseUrl}update-profile`, data);
@@ -249,30 +245,41 @@ class AdminRequest {
 
             return AdminRequest.ApiCallHandler( result , obj , async () => {
 
-                await hospitalDb.healthFacility.where({ healthFacilityId }).modify(OBJECT_TO_CACHE);
+                await hospitalDb[this.collection].where({ email: session.email }).modify(OBJECT_TO_CACHE);
 
-                fullName = OBJECT_TO_CACHE.fullName
-                    ? ( async () => {
-                        await hospitalDb.sessionObject.where({ id: 0 }).modify({
-                            fullName: OBJECT_TO_CACHE.fullName
-                        });
-                        return OBJECT_TO_CACHE.fullName;
-                    })()
-                : fullName;
+                const objKeys = Object.keys(OBJECT_TO_CACHE);
+
+                // if it is a password update
+                // we don't want it in the session object
+                const newData = (objKeys.length && ! objKeys.includes("password"))
+                      ? ( async () => {
+
+                          OBJECT_TO_CACHE.image = ! OBJECT_TO_CACHE.image
+                              ? ( new TextEncoder()).decode(session.image)
+                              : OBJECT_TO_CACHE.image;
+
+                          await hospitalDb.sessionObject.where({ id: 0 }).modify({
+                              ...OBJECT_TO_CACHE
+                          });
+
+                          return OBJECT_TO_CACHE;
+
+                      })()
+                      : session;
 
                 if ( ! result.data ) {
                     await hospitalDb.offlineAccounts.where(
                         {
-                            newInformationType: "healthFacilities"
+                            newInformationType: this.collection
                         }
                     ).and(
-                        x => x.healthFacilityId === healthFacilityId
+                        x => x[this.id] === session[this.id]
                     ).modify({
                         ...OBJECT_TO_CACHE,
                         flag: "edit"
                     });
                 }
-                return result.data ? result.data.message : { fullName , email };
+                return result.data ? result.data.message : newData;
             });
         }
     }
@@ -424,9 +431,9 @@ class AdminRequest {
                     }
 
                     ( [ res ] = res );
-                    console.log(res);
+
                     const pwd = await comparePassword(OBJECT_TO_CHECK_AGAINST.password,res.password);
-                    console.log(pwd);
+
                     if ( pwd instanceof Error ||  ! pwd ) {
                         toast({
                             text: `email and/or password is incorrect`,
@@ -435,15 +442,21 @@ class AdminRequest {
                         return false;
                     }
                 }
-                const { role , healthFacilityId , fullName , email  } = res ? res : result.data.message;
+
+                // check if the result is from the cache
+                // or the api
+                const data = res ? res : result.data.message;
+
+                // remove properties that should not be in
+                // the session
+                delete data.password;
+
                 await hospitalDb.sessionObject.put({
-                    healthFacilityId,
-                    fullName,
-                    email,
-                    role,
+                    ...data,
                     id: 0
                 });
-                return res ? res : result.data.message;
+
+                return data;
             });
         }
     }
@@ -500,6 +513,31 @@ class AdminRequest {
         return AdminRequest;
     }
 
+
+    static FileReaderCB(fileReader,evt) {
+        const previewParent = document.querySelector(".image-preview");
+        const previewImage  = document.querySelector(".previewer");
+        const imageText     = document.querySelector(".image-preview-text");
+        fileReader.readAsDataURL(evt.target.files[0]);
+        fileReader.addEventListener("load", evt => {
+            imageText.style.display = "none";
+            previewParent.style.padding = "unset";
+            previewImage.src = evt.target.result;
+            previewImage.style.display = "block";
+        });
+    }
+
+
+    static UserProfileImageLoad() {
+        handleUploadedImage( ( fileReader , evt ) => {
+            const previewImage  = document.querySelector(".previewer");
+            fileReader.readAsDataURL(evt.target.files[0]);
+            fileReader.addEventListener("load", evt => {
+                previewImage.src = evt.target.result;
+            });
+        });
+    }
+
     static ProfileUpdate(navOperations,instance,secInstance) {
 
         navOperations.addEventListener("submit", async evt => {
@@ -512,11 +550,13 @@ class AdminRequest {
             }
 
             const btn = evt.target.querySelector("button");
-
+            const previewImage = document.querySelector(".previewer");
+            
             btn.disabled = true;
 
             const result = await instance.adminEditProfile(new FormData(evt.target), {
-                disabled: [ btn ]
+                disabled: [ btn ],
+                dataUri: previewImage ? previewImage.src : undefined
             });
 
             if ( ! result ) return;
@@ -535,7 +575,7 @@ class AdminRequest {
         const navOperations = document.querySelector(".section-nav-operation");
         const logoutBtn  = document.querySelector(".logout");
         const navList = document.querySelector(".nav-list");
-
+        
         AdminRequest
             .NavToggler(toggler,asideNav,navOperations)
             .EmitTriggerEvents(navList,instance,secInstance)
@@ -544,20 +584,20 @@ class AdminRequest {
     }
 
     static FormHandler(form,previewImage,instance) {
-        console.log(AdminRequest.FORM_STATE, "hi there");
+
         form.addEventListener("submit", evt => addUserFormHandler(AdminRequest.FORM_STATE,{
             evt,
             saveUser: async (fData,btns) => {
                 return await instance.adminCreateIntervention(  fData , {
                     disabled  : btns,
-                    dataUri   : previewImage ? previewImage.src : "",
+                    dataUri   : previewImage ? previewImage.src : undefined,
                     ...AdminRequest.FORM_STATE.__newWindowSpec
                 });
             },
             editUser: async (fData,btns) => {
                 return await instance.adminEditIntervention( fData , {
                     disabled   : btns,
-                    dataUri    : previewImage ? previewImage.src : "",
+                    dataUri    : previewImage ? previewImage.src : undefined,
                     ...AdminRequest.FORM_STATE.__newWindowSpec
                 });
             }
@@ -587,8 +627,8 @@ class AdminRequest {
 
         const form  = document.querySelector("form");
         const close = document.querySelector(".close");
-        const previewImage = handleUploadedImage();
-        console.log(instance);
+        const previewImage = handleUploadedImage( AdminRequest.FileReaderCB );
+
         close.addEventListener("click", () => getCurrentWindow().close() );
 
         AdminRequest
@@ -599,6 +639,11 @@ class AdminRequest {
 }
 
 module.exports = {
-    instance: new AdminRequest("/admin/", "admin"),
+    instance: new AdminRequest({
+        collection: "healthFacility",
+        baseUrl   : "/admin/",
+        role      : "admin",
+        id        : "healthFacilityId"
+    }),
     AdminRequest
 };

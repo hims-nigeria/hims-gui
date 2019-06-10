@@ -1,0 +1,26 @@
+
+.receptionist-edit {
+    .image-update {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 68%;
+        span {
+            left: -255px !important;
+        }
+        img {
+            height: 8vw;
+            border-radius: 62px;
+            box-shadow: 0px 0px 15px -3px black;
+        }
+        button {
+            margin-top: 16px;
+        }
+    }
+    .address-update {
+        textarea {
+            margin-left: 150px;
+            border-radius: 3px;
+        }
+    }
+}

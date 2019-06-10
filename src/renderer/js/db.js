@@ -24,6 +24,7 @@ hospitalDb.version(1).stores({
 
 
     services: "++id, healthFacilityId, &serviceId",
+    donorHospital: "++id, healthfacilityId , &donorHospitalId",
 
     /**
        sessionObject will contain an email address
@@ -55,6 +56,12 @@ hospitalDb.services.defineClass({
     department      : String,
     rate            : Number,
     healthFacilityId: String
+});
+
+hospitalDb.donorHospital.defineClass({
+    donorHospitalName: String,
+    healthFacilityId : String,
+    donorHospitalId  : String
 });
 
 module.exports = hospitalDb;

@@ -39,3 +39,11 @@ i {
     background: darkgrey !important;
     color: lightgrey;
 }
+
+textarea {
+    resize: unset;
+    display: block;
+    margin-left: 95px;
+    width: 200px;
+    height: 100px;
+}

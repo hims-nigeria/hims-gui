@@ -13,14 +13,14 @@
         handleUploadedImage
     } = require("../../js/domutils.js");
 
-    const { instance } = require("../../js/admin/adminRequest.js");
+    const { instance , AdminRequest } = require("../../js/admin/adminRequest.js");
 
     const hospitalDb = require("../../js/db.js");
 
     const form  = document.querySelector(".admin-add-user-form");
     const close = document.querySelector(".close");
 
-    const previewImage = handleUploadedImage();
+    const previewImage = handleUploadedImage( AdminRequest.FileReaderCB  );
 
     const FORM_STATE = {
         state  : undefined,

@@ -57,7 +57,7 @@ receptionist.on("receptionist-service" , async () => {
             url: ADD_SERVICE_URL
         },
         table: {
-            tableSpec: { tableId: "serviceId", headers: [ "image" , "name" , "description" ] },
+            tableSpec: { tableId: "serviceId", headers: [ "name" , "rate" , "department" ] },
             title: "Edit Service",
             user: "services",
             ipcEventName: "receptionist-service"
@@ -65,4 +65,34 @@ receptionist.on("receptionist-service" , async () => {
     });
 });
 
+receptionist.on("receptionist-manage-hospital" , async () => {
+
+    await receptionist.getUser({
+        __notUser: { generateIdFrom: [ "donorHospitalName" ] },
+        props: {
+            elName: "hospitalDiv",
+            class:  "hospital-div",
+            collection: "donorHospital",
+            nextUrl: LOGIN_URL,
+            apiUrl : "donor-hospital",
+            idType: "donorHospitalId"
+        },
+        addNew: {
+            text: "Add Hospital",
+            url: ADD_HOSPITAL_URL
+        },
+        table: {
+            tableSpec: { tableId: "donorHospitalId", headers: [ "Hospital Name" ] },
+            title: "Edit Hospital",
+            user: "donorHospital",
+            ipcEventName: "receptionist-manage-hospital"
+        }
+    });
+});
+
+receptionist.on("receptionist-profile", async () => {
+    await receptionist.receptionistAccount();
+});
+
 ipc.on("receptionist-service", () => receptionist.emit("receptionist-service") );
+ipc.on("receptionist-manage-hospital", () => receptionist.emit("receptionist-manage-hospital"));

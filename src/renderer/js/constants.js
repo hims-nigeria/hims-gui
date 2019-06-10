@@ -26,7 +26,7 @@ module.exports.ADD_DEPARTMENT_URL      = `file://${APP_PATH}/${SUBDIR}/admin/adm
 
 
 module.exports.ADD_SERVICE_URL     = `file://${APP_PATH}/${SUBDIR}/receptionist/receptionist_service.html`;
-
+module.exports.ADD_HOSPITAL_URL    = `file://${APP_PATH}/${SUBDIR}/receptionist/receptionist_manage_hospital.html`;
 
 
 module.exports.PAGE_LIMIT = 25;

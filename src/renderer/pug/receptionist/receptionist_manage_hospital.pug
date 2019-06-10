@@ -1,0 +1,37 @@
+extends ../templates/head.pug
+
+block title
+  title Add Service
+
+append link
+  link(rel="stylesheet" href="../../css/admin/admin_add.css")
+  link(rel="stylesheet" href="../../css/toast.css")
+
+block fa-link
+  link(rel="stylesheet" href="../../css/all.min.css")
+
+
+block content
+
+  i(class="fa fa-times-circle close")
+
+  section(class="admin-add-user")
+
+    form(class="admin-add-user-form" enctype="multipart/form-data")
+
+      p.op Add Hospital
+
+      label
+        p(style="text-align: center") Hospital Name
+        input(type="text" name="donorHospitalName" style="width: 70%;" required)
+
+      button(type="submit") Save
+      button(type="reset" class="reset") Reset
+
+  script.
+    ; ( async () => {
+      document.forms[0].addEventListener("submit", evt => evt.preventDefault());
+      const { LOGIN_URL } = require("../../js/constants.js");
+      const { ReceptionRequest , instance } = require("../../js/receptionist/receptionistRequest.js");
+      ReceptionRequest.EditNonUsers(instance);
+    })();

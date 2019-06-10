@@ -43,7 +43,8 @@
         margin-top: 50px;
         overflow-y: auto;
         overflow-x: hidden;
-        height: 500px;
+        height: 100%;
+        font-size: 14px;
         .user-descr {
             padding: 12px;
             display: flex;
@@ -51,6 +52,7 @@
             img {
                 border-radius: 50px;
                 width: 70%;
+                height: 60px;
                 vertical-align: center;
             }
             span {
