@@ -13,16 +13,27 @@ const {
 const { instance } = require("./receptionistRequest.js");
 const { Admin    } = require("../admin/admin.js");
 
+const { AdminRequest } = require("../admin/adminRequest.js");
+
 const {
+    ADD_HOSPITAL_URL,
     ADD_SERVICE_URL,
     LOGIN_URL
 } = require("../constants.js");
 
-
+const {
+    handleUploadedImage,
+    buildReceptionistAccountPage
+} = require("../../js/domutils.js");
 
 const receptionist = module.exports = new( class Receptionist extends Admin {
     constructor(instance) {
         super(instance);
+    }
+
+    async receptionistAccount() {
+        await super.adminAccount(buildReceptionistAccountPage);
+        AdminRequest.UserProfileImageLoad();
     }
 })(instance);
 

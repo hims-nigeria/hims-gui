@@ -183,10 +183,10 @@ class Admin extends EventEmitter {
         this.emit("new-page-append", "prev" , result );
     }
 
-    async adminAccount() {
+    async adminAccount(buildPage = buildAdminAccountPage) {
         this.__removeOnDom();
         this.sectionNavOps.appendChild(this.spin);
-        this.__setCredentials(await buildAdminAccountPage(this.sectionNavOps));
+        this.__setCredentials(await buildPage(this.sectionNavOps));
         this.spin.remove();
     }
 };
