@@ -4,10 +4,20 @@
     "description": "GUI Application for lexar",
     "main": "./src/main/index.js",
     "scripts": {
-        "start": "export NODE_ENV=development ; electron .",
+        "start": "electron .",
         "watch": "gulp",
         "test": "npm run test",
-        "postinstall": "npm rebuild ; electron-rebuild -w bcrypt"
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder",
+        "postinstall": "electron-builder install-app-deps && npm rebuild && electron-rebuild -w bcrypt"
+    },
+    "build": {
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "deleteAppDataOnUninstall": true,
+            "runAfterFinish": true
+        }
     },
     "author": "lexar",
     "license": "ISC",
@@ -16,10 +26,10 @@
         "bcrypt": "^3.0.5",
         "dexie": "^2.0.4",
         "dotenv": "^7.0.0",
-        "electron": "^4.1.4",
         "mongodb": "^3.2.3"
     },
     "devDependencies": {
+        "electron": "^4.1.4",
         "electron-rebuild": "^1.8.4",
         "electron-reload": "^1.4.0",
         "gulp": "^4.0.0",

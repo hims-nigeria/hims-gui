@@ -145,7 +145,7 @@ const createNewWindow = async ( { id , url , title , state , options } ) => {
         ipc.sendTo(id,"window-state", state, options);
     });
 
-    win.webContents.openDevTools( { mode: "bottom" } );
+    //win.webContents.openDevTools( { mode: "bottom" } );
     win.webContents.loadURL(url);
 };
 

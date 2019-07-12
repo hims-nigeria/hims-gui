@@ -67,7 +67,7 @@ function createWindow() {
 
     win.loadURL(`file://${app.getAppPath()}/src/renderer/html/loader.html`);
 
-    win.webContents.openDevTools({ mode: "bottom" });
+    //win.webContents.openDevTools({ mode: "bottom" });
 }
 
 app.on("ready", createWindow );
