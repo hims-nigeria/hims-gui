@@ -67,3 +67,27 @@ module.exports.updatePassword = `
           <input type="password" name="confirmPassword" required/>
       </label>
 `;
+
+module.exports.searchLimitTempString = () => {
+    return `
+<div class="section-nav-table-ops">
+   <div class="perPageForm">
+       <select name="pageView">
+          <option value="10"> 10 </option>
+          <option value="20"> 20 </option>
+          <option value="30"> 30 </option>
+          <option value="50"> 50 </option>
+          <option value="100"> 100 </option>
+       </select>
+       <span> Per Page </span>
+   </div>
+
+   <div class="searchForm">
+       <label> 
+          <span> Search: </span>
+          <input type="text" name="search">
+       </label>
+   </div>
+</div>
+`;
+};

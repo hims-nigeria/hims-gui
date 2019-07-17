@@ -11,18 +11,20 @@ block content
 
   section(class="user-login")
   
-    form(class="user-login-form" enctype="multipart/form-data")
-    
-      img(class="user-login-logo" src="../assets/logo-1.png" alt="logo")
-      
-      input(type="email" placeholder="Email" name="email" required)
-      input(type="password" placeholder="Password" name="password" required)
+    aside.login-aside
+      form(class="user-login-form" enctype="multipart/form-data")
 
-      div#user-login-buttons
-        button(type="submit") Submit
-        button(type="reset") Reset
+        img(class="user-login-logo" src="../assets/logo-1.png" alt="logo")
+
+        input(type="email" placeholder="Email" name="email" required)
+        input(type="password" placeholder="Password" name="password" required)
+
+        div#user-login-buttons
+          button(type="submit") Login
+
+        p.user-forget-pwd= "Forget Password"
+        p.user-register= "Haven't Registered Your Hospital Yet?"
         
-      p.user-forget-pwd= "Forget Password"
-      p.user-register= "Haven't Registered Your Hospital Yet?"
+    aside.picture-aside
       
   script(src="../js/admin/login.js")

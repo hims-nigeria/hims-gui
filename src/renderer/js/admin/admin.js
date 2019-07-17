@@ -31,6 +31,8 @@ const { spinner , createTable , buildAdminAccountPage } = require("../../js/domu
 const { appendTable , userOperation     } = require("../../js/utils.js");
 const { EventEmitter } = require("events");
 
+const { searchLimitTempString } = require("../../js/template-html-string.js");
+
 const { navigation } = require("../../js/eventHandlersReusables.js");
 
 const { instance , AdminRequest } = require("../../js/admin/adminRequest.js");
@@ -61,7 +63,7 @@ class Admin extends EventEmitter {
         userImage.src        = (new TextDecoder()).decode(result.image);
     }
 
-    __createSectionDiv({ elName, class: cl, property , result: apiResult }) {
+    __createSectionDiv({ elName, class: cl, property , result: apiResult  }) {
 
         const el =  property[elName] = document.createElement("div");
 
@@ -72,7 +74,6 @@ class Admin extends EventEmitter {
         property.hasMore       = apiResult.hasMore;
 
         this.sectionNavOps.appendChild(el);
-        //this.__setCredentials(apiResult);
 
         this.on("navigated", navigation );
 
@@ -144,9 +145,10 @@ class Admin extends EventEmitter {
 
         if ( ! result )
             return;
-
-        this.__createSectionDiv( { property : this.currentSection, elName, class: cl, result})
-            .appendChild(userOperation(
+        
+        const curShowingEl = this.__createSectionDiv( { property : this.currentSection, elName, class: cl, result });
+        
+        curShowingEl.appendChild(userOperation(
                 {
                     __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName , role , generateIdFrom: __notUser ? __notUser.generateIdFrom : [] },
                     __internal     : { self: this , property: this.currentSection },
@@ -157,6 +159,11 @@ class Admin extends EventEmitter {
                 )
             ));
 
+        curShowingEl.appendChild(
+            new DOMParser().parseFromString(
+                searchLimitTempString(),"text/html"
+            ).querySelector(".section-nav-table-ops")
+        );
 
         this.on("new-page-append", (location,result) => {
             appendTable(

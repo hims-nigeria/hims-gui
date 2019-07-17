@@ -28,6 +28,8 @@ module.exports.ADD_DEPARTMENT_URL      = `file://${APP_PATH}/${SUBDIR}/admin/adm
 module.exports.ADD_SERVICE_URL     = `file://${APP_PATH}/${SUBDIR}/receptionist/receptionist_service.html`;
 module.exports.ADD_HOSPITAL_URL    = `file://${APP_PATH}/${SUBDIR}/receptionist/receptionist_manage_hospital.html`;
 
+module.exports.ADD_DAILY_ATTENDANCE_URL = `file://${APP_PATH}/${SUBDIR}/receptionist/receptionist_daily_attendance.html`;
+
 
 module.exports.PAGE_LIMIT = 25;
 

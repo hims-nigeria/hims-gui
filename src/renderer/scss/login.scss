@@ -3,13 +3,35 @@
 @import "./utils.scss";
 @import "./extends.scss";
 
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: initial;
+}
+
+.login-aside {
+    justify-content: center;
+    box-shadow: 1px 1px 1px white;
+    float: left;
+    width: 40%;
+    display: flex;
+    height: 100vh;
+}
+
+.picture-aside {
+    float: right;
+    width: 58%;
+    height: 100vh;
+    background-image: url("../assets/background-image.jpg");
+    background-size: cover;
+}
 
 .user-login {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-top: 150px;
     .user-login-form {
+        margin-top: 100px;
         padding: 20px;
         img {
             width: 50px;
@@ -24,7 +46,7 @@
         input {
             padding: 12px;
             border: none;
-            border-radius: 12px;
+            //border-radius: 12px;
         }
         p {
             text-align: center;
@@ -41,6 +63,9 @@
             justify-content: center;
             button {
                 @extend %button;
+                border-radius: 0;
+                width: 100%;
+                margin-left: 0 !important;
             }
         }
     }

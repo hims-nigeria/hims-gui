@@ -16,6 +16,7 @@ const { Admin    } = require("../admin/admin.js");
 const { AdminRequest } = require("../admin/adminRequest.js");
 
 const {
+    ADD_DAILY_ATTENDANCE_URL,
     ADD_HOSPITAL_URL,
     ADD_SERVICE_URL,
     LOGIN_URL
@@ -90,9 +91,35 @@ receptionist.on("receptionist-manage-hospital" , async () => {
     });
 });
 
+receptionist.on("receptionist-daily-attendance" , async () => {
+    
+    await receptionist.getUser({
+        __notUser: { generateIdFrom: [ "cardNo" , "fullName" ] },
+        props: {
+            elName: "dailyAttendanceDiv",
+            class:  "daily-attendance-div",
+            collection: "dailyAttendance",
+            nextUrl: LOGIN_URL,
+            apiUrl : "daily-attendance",
+            idType: "dailyAttendanceId"
+        },
+        addNew: {
+            text: "Add Daily Attendance",
+            url: ADD_DAILY_ATTENDANCE_URL
+        },
+        table: {
+            tableSpec: { tableId: "dailyAttendanceId", headers: [ "Registration Date" , "Patient/Client Name", "Card No" , "Birth Date", "Gender" ] },
+            title: "Edit Daily Attendance",
+            user: "dailyAttendance",
+            ipcEventName: "receptionist-daily-attendance"
+        }
+    }); 
+});
+
 receptionist.on("receptionist-profile", async () => {
     await receptionist.receptionistAccount();
 });
 
 ipc.on("receptionist-service", () => receptionist.emit("receptionist-service") );
 ipc.on("receptionist-manage-hospital", () => receptionist.emit("receptionist-manage-hospital"));
+ipc.on("receptionist-daily-attendance", () => receptionist.emit("receptionist-daily-attendance"));

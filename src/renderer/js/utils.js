@@ -51,7 +51,6 @@ module.exports.formDataToObject = async(formData,OBJECT_TO_CACHE,dbPwd) => {
     for ( let [ key , value ] of formData.entries() ) {
         let _val;
         try {
-            console.log(value, "in");
             _val = JSON.parse(value);
         } catch(ex) {
             _val = value;
@@ -243,7 +242,6 @@ module.exports.userOperation = function (op,loadUserCb) {
     nextIcon.classList.add("fa-arrow-alt-circle-right");
     nextIcon.classList.add("next");
     nextIcon.classList.add("navigator-icon");
-
 
     prevIcon.addEventListener("click", async () => {
         if ( property.__first__page > 0 )

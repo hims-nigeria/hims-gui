@@ -6,7 +6,6 @@
 
     const form   = document.querySelector("form");
     const submit = document.querySelector("[type=submit]");
-    const reset  = document.querySelector("[type=reset]");
 
     const register = document.querySelector(".user-register");
     const constants = require("../js/constants.js");
@@ -23,9 +22,8 @@
         }
 
         submit.disabled = true;
-        reset.disabled  = true;
 
-        const result = await AdminRequest.LoginUniqueUser(new FormData(form), { disabled: [ submit, reset ], nextUrl:  constants.LOGIN_URL });
+        const result = await AdminRequest.LoginUniqueUser(new FormData(form), { disabled: [ submit ], nextUrl:  constants.LOGIN_URL });
 
         if ( result ) {
             console.log(result);
