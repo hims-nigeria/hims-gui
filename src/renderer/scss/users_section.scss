@@ -15,6 +15,7 @@
 
 .section-nav {
     width: 20%;
+    box-shadow: 0px 0px 19px 9px lightgrey;
     .nav-header {
         padding: 20px;
         .nav-header-img {
@@ -69,18 +70,18 @@
             margin-top: 10px;
             padding: 5px;
             transition: .2s ease-in-out;
-            
+
             > i {
                 margin-left: 15%;
             }
             > span {
                 margin-left: 20px;
             }
-            
+
             &:hover,&.active {
                 background: lighten($background-list-color,30%);
             }
-            
+
         }
     }
 }
@@ -90,25 +91,43 @@
     width: 80%;
     padding: 10px;
     .section-nav-operation-header {
-        width: 100%;
-        .user-role {
-            color: black;
-            float: left;
+        
+        width: 95%;
+        display: flex;
+        justify-content: space-between;
+
+        padding: 10px;
+        
+        margin-top: 12px;
+        margin-left: 20px;
+        
+        border-bottom: 1px solid lightgrey;
+        
+        .user-identification {
+            .user-role {
+                color: black;
+                //float: left;
+                margin-left: 12px;
+            }
         }
-        > button {
-            float: right;
-            margin-top: 10px;
-            border: none;
-            width: 12%;
-            padding: 12px;
-            border-radius: 25px;
-            font-size: 1em;
-            font-family: $default-font-family;
-            background: darken(white,10%);
-            cursor: pointer;
-            transition: .2s ease-in-out;
-            &:hover {
-                background: darken(white,20%);
+        .user-logout-website {
+            display: flex;
+            .website {
+                margin-right: 25px;
+                border-right: 3px solid lightgrey;
+                cursor: pointer;
+                .user-web {
+                    padding-left: 5px;
+                    padding-right: 25px;
+                }
+            }
+            .logout {
+                .user-logout {
+                    margin-top: 10px;
+                    padding-right: 5px;
+                    cursor: pointer;
+                    transition: .2s ease-in-out;
+                }
             }
         }
     }

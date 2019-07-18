@@ -1,6 +1,6 @@
 "use strict";
 
-const { remote: { getCurrentWindow, dialog } } = require("electron");
+const { remote: { getCurrentWindow, dialog , shell } } = require("electron");
 
 const axios      = require("axios");
 const qs         = require("querystring");
@@ -551,7 +551,7 @@ class AdminRequest {
 
             const btn = evt.target.querySelector("button");
             const previewImage = document.querySelector(".previewer");
-            
+
             btn.disabled = true;
 
             const result = await instance.adminEditProfile(new FormData(evt.target), {
@@ -568,6 +568,15 @@ class AdminRequest {
         return AdminRequest;
     }
 
+    static VisitExternalWebsite() {
+        const web = document.querySelector(".user-web");
+        console.log(web);
+        web.addEventListener("click", () => {
+            shell.openExternal("https://hims-nigeria.com/");
+        });
+        return AdminRequest;
+    }
+
     static SectionPrep(instance,secInstance) {
 
         const toggler = document.querySelector(".nav-header-toggler");
@@ -575,11 +584,12 @@ class AdminRequest {
         const navOperations = document.querySelector(".section-nav-operation");
         const logoutBtn  = document.querySelector(".logout");
         const navList = document.querySelector(".nav-list");
-        
+
         AdminRequest
             .NavToggler(toggler,asideNav,navOperations)
             .EmitTriggerEvents(navList,instance,secInstance)
             .ProfileUpdate(navOperations,instance,secInstance)
+            .VisitExternalWebsite()
             .LogoutUser(logoutBtn,instance,secInstance);
     }
 

@@ -145,13 +145,14 @@ class Admin extends EventEmitter {
 
         if ( ! result )
             return;
-        
+
         const curShowingEl = this.__createSectionDiv( { property : this.currentSection, elName, class: cl, result });
-        
+
         curShowingEl.appendChild(userOperation(
                 {
                     __newWindowSpec: { collection , idType, url: apiUrl, ipcEventName , role , generateIdFrom: __notUser ? __notUser.generateIdFrom : [] },
                     __internal     : { self: this , property: this.currentSection },
+                    user           : editWinUser,
                     url            : userUrl,
                     text
                 }, async (page) => await this.instance.adminLoadUser(
@@ -166,6 +167,7 @@ class Admin extends EventEmitter {
         );
 
         this.on("new-page-append", (location,result) => {
+
             appendTable(
                 {
                     tableSpec,

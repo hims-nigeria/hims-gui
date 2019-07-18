@@ -12,6 +12,18 @@ const {
     updateName
 } = require("../js/template-html-string.js");
 
+const noRecordInformation = (result,tbody) => {
+    
+    if ( result.length ) return;
+    
+    const noRecordP = document.createElement("p");
+    
+    noRecordP.textContent = "No record have been added here yet";
+    noRecordP.style.textAlign = "left";
+
+    tbody.appendChild(noRecordP);
+};
+
 module.exports.toast = ( { text , createAfter, deleteAfter } ) => {
 
     const animateProperties = [
@@ -227,6 +239,8 @@ module.exports.createTable = obj => {
 
     table.appendChild(thead);
     table.appendChild(tbody);
+
+    noRecordInformation(tableRows,tbody);
 
     return table;
 };

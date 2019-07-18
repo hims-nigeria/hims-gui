@@ -163,9 +163,6 @@ const appendTable = function ( ops , deleteUser ) {
         url
     } = ops;
 
-    console.log(apiResult,user);
-
-    if ( ! apiResult[user].length ) return;
 
     let table;
 
@@ -216,19 +213,12 @@ const appendTable = function ( ops , deleteUser ) {
 
 module.exports.appendTable = appendTable;
 
-module.exports.userOperation = function (op,loadUserCb) {
+const navigationAdditinOps = ({ property , loadUserCb , self , text , url , __newWindowSpec }) => {
 
-    const {
-        __internal: { self, property },
-        __newWindowSpec,
-        text,
-        url
-    } = op;
-
-    const userOps    = document.createElement("div");
-    const addNewUser = document.createElement("button");
-    const prevIcon   = document.createElement("i");
-    const nextIcon   = document.createElement("i");
+    const operationAside = document.createElement("aside");
+    const addNewUser     = document.createElement("button");
+    const prevIcon       = document.createElement("i");
+    const nextIcon       = document.createElement("i");
 
     addNewUser.type = "button";
     addNewUser.textContent = text;
@@ -242,6 +232,12 @@ module.exports.userOperation = function (op,loadUserCb) {
     nextIcon.classList.add("fa-arrow-alt-circle-right");
     nextIcon.classList.add("next");
     nextIcon.classList.add("navigator-icon");
+
+    operationAside.setAttribute("class", "user-section-operation");
+    operationAside.appendChild(addNewUser);
+    operationAside.appendChild(prevIcon);
+    operationAside.appendChild(nextIcon);
+
 
     prevIcon.addEventListener("click", async () => {
         if ( property.__first__page > 0 )
@@ -264,15 +260,43 @@ module.exports.userOperation = function (op,loadUserCb) {
             },loadUserCb);
     });
 
-    userOps.setAttribute("class", "user-ops");
-
-    userOps.appendChild(addNewUser);
-    userOps.appendChild(prevIcon);
-    userOps.appendChild(nextIcon);
-
     addNewUser.addEventListener("click" , async () => await createNewWindow( { id: text.replace(/\s+/,"") , url , title: text , options:{ __newWindowSpec }}));
 
-    return userOps;
+    return operationAside;
+};
+
+const sectionInformation = section => {
+    const infoSection = document.createElement("aside");
+    const icon        = document.createElement("i");
+    const span        = document.createElement("span");
+
+    infoSection.setAttribute("class", "user-section-information");
+
+    span.textContent  = section[0].toUpperCase() + section.replace(new RegExp(section[0]), "");
+    icon.setAttribute("class", "fa fa-arrow-alt-circle-right info-section-icon");
+
+    infoSection.appendChild(icon);
+    infoSection.appendChild(span);
+    return infoSection;
+};
+
+module.exports.userOperation = function (op,loadUserCb) {
+
+    const {
+        __internal: { self, property },
+        __newWindowSpec,
+        text,
+        user,
+        url
+    } = op;
+
+    const opsInfo = document.createElement("section");
+
+    opsInfo.setAttribute("class", "user-info-ops");
+    opsInfo.appendChild(sectionInformation(user));
+    opsInfo.appendChild(navigationAdditinOps({ property , loadUserCb , self , text , url , __newWindowSpec}));
+
+    return opsInfo;
 };
 
 const page = async (ops,loadUser) => {
