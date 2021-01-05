@@ -22,7 +22,7 @@
     "author": "lexar",
     "license": "ISC",
     "dependencies": {
-        "axios": "^0.18.0",
+        "axios": "^0.21.1",
         "bcrypt": "^3.0.5",
         "dexie": "^2.0.4",
         "dotenv": "^7.0.0",
