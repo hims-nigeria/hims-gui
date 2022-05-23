@@ -24,7 +24,7 @@
     "dependencies": {
         "axios": "^0.18.0",
         "bcrypt": "^3.0.5",
-        "dexie": "^2.0.4",
+        "dexie": "^3.2.2",
         "dotenv": "^7.0.0",
         "mongodb": "^3.2.3"
     },
