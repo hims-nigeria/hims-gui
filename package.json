@@ -29,7 +29,7 @@
         "mongodb": "^3.2.3"
     },
     "devDependencies": {
-        "electron": "^4.1.4",
+        "electron": "^18.3.7",
         "electron-rebuild": "^1.8.4",
         "electron-reload": "^1.4.0",
         "gulp": "^4.0.0",
